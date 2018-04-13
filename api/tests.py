@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.urls import include, path, reverse
+from django.urls import include, path, reverse, resolve
 from django.contrib.auth.models import User
 from rest_framework.test import APITestCase, URLPatternsTestCase, APIClient
 from rest_framework.authtoken.models import Token
@@ -51,18 +51,27 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-        
+
         # Since user model instance is not serializable, use its Id/PK
         self.harvester_data = {'name': 'HellHarvester', 'owner': user.id, 'url': 'http://somewhere.url/v1/'}
         self.response = self.client.post(
-            reverse('create'),
+            reverse('api:create'),
             self.harvester_data,
             format="json")
+
+    def test_startharvesters_view_status_code(self):
+        url = reverse('api:runharvesters')
+        response = self.client.post(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_harvestersgo_url_resolves_run_harvesters_view(self):
+        view = resolve('/v1/harvesters/go/')
+        self.assertEquals(view.func, 'run_harvesters')
 
     def test_api_can_create_a_harvester(self):
         """Test the api has harvester creation capability."""
         self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
-        
+
     def test_authorization_is_enforced(self):
         """Test that the api has user authorization."""
         new_client = APIClient()
@@ -70,7 +79,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             '/v1/harvesters/',
             kwargs={'pk': 3},
             format="json")
-        
+
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_api_can_get_a_harvester(self):
@@ -89,18 +98,18 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         harvester = Harvester.objects.get()
         change_harvester = {'name': 'newHarSilvester', 'url': 'http://somewhat.url/v2/'}
         res = self.client.put(
-            reverse('harvester-detail', kwargs={'name': harvester.name}),
+            reverse('api:harvester-detail', kwargs={'name': harvester.name}),
             change_harvester,
             format='json')
-        
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_api_can_delete_harvester(self):
         """Test the api can delete a harvester."""
         harvester = Harvester.objects.get()
         response = self.client.delete(
-            reverse('harvester-detail', kwargs={'name': harvester.name}),
+            reverse('api:harvester-detail', kwargs={'name': harvester.name}),
             format='json',
             follow=True)
-        
+
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)

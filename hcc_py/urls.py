@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+# development settings for gunicorn!!
+#from django.conf import settings
+#from django.conf.urls.static import static
+# end here
 from rest_framework_swagger.views import get_swagger_view
+from api import views
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -28,7 +33,10 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 schema_view = get_swagger_view(title='Harvester ControlCenter API')
 
 urlpatterns = [
+    path('', views.index, name='home'),
     path('admin/', admin.site.urls),
-    path('v1/', include(('api.urls', 'controlcenter'), namespace='v1')),
+    path('v1/', include(('api.urls'), namespace='v1')),
     path('docs/', schema_view),
-]
+    path('auth/',
+         include('rest_framework.urls', namespace='rest_framework')),
+] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #dev settings remove for production and use nginx as reverse proxy

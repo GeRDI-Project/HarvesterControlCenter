@@ -1,11 +1,39 @@
-# Dockerfile to create a Harevster Controlcenter Dockercontainer aka Microservice
-# GeRDI ControlCenter Docker-Image for Harvesters
+# Dockerfile to create a Harvester Controlcenter Microservice
+# GeRDI ControlCenter for Harvesters
 # Author: Jan Frömberg (jan.froember@tu-dresden.de)
 
-FROM python:latest
-ENV PYTHONUNBUFFERED 1  
-RUN mkdir /code  
-WORKDIR /code  
-ADD requirements.txt /code/  
-RUN pip install -r requirements.txt 
-ADD . /code/
+# FROM directive instructing base image to build upon
+FROM python:alpine
+
+WORKDIR /usr/src/app
+
+COPY requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# COPY startup script into container
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
+# Install Nginx (later this will be outsourced to another docker container)
+RUN apk add -f --progress --no-cache nginx
+# Remove the default Nginx configuration file
+RUN rm -v /etc/nginx/nginx.conf
+# Copy a configuration file from the current directory
+ADD nginx/nginx.conf /etc/nginx/
+# Append "daemon off;" to the beginning of the configuration
+# RUN echo "daemon on;" >> /etc/nginx/nginx.conf
+
+
+# Expose ports
+#EXPOSE 8000
+EXPOSE 80
+
+# test nginx config and collect static files for production
+RUN nginx -t && python3 manage.py collectstatic --no-input
+
+#CMD nginx
+
+# specifcies the command to execute to start the server running.
+ENTRYPOINT ["/docker-entrypoint.sh"]
