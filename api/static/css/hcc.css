@@ -1,0 +1,50 @@
+body {
+    
+}
+
+.page-header {
+    background-color: #ff9400;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding: 20px 20px 20px 40px;
+}
+
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    color: #ffffff;
+    font-size: 36pt;
+    text-decoration: none;
+}
+
+.content {
+
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1 a {
+    color: #FCA204;
+    font-family: 'Open Sans';
+}
+
+.date {
+    float: right;
+    color: #828282;
+}
+
+.save {
+    float: right;
+}
+
+.harvester-form textarea, .harvester-form input {
+    width: 100%;
+}
+
+.harvester {
+    margin-bottom: 70px;
+}
+
+.harvester h1 a, .harvester h1 a:visited {
+    color: #000000;
+}

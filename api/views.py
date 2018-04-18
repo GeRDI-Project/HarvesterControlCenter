@@ -28,7 +28,8 @@ def index(request):
                         isnt nearly foolish enough to attack him.')
 
 def home(request):
-    return HttpResponse('Control Center GUI is coming soon...')
+    hs = Harvester.objects.all()
+    return render(request, 'hcc/index.html', {'harvesters': hs})
 
 @api_view(["POST"])
 @authentication_classes((TokenAuthentication, BasicAuthentication))

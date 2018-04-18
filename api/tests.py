@@ -53,7 +53,11 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
         # Since user model instance is not serializable, use its Id/PK
-        self.harvester_data = {'name': 'HellHarvester', 'owner': user.id, 'url': 'http://somewhere.url/v1/'}
+        self.harvester_data = {
+            'name': 'HellHarvester',
+            'owner': user.id,
+            'url': 'http://somewhere.url/v1/'
+        }
         self.response = self.client.post(
             reverse('api:create'),
             self.harvester_data,

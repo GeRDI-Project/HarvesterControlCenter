@@ -1,0 +1,21 @@
+{% extends 'hcc/base.html' %}
+
+{% block content %}
+<div class="content container">
+    <div class="row">
+        <div class="col-md-8">
+          {% for harvester in harvesters %}
+            <div class="harvester border rounded p-4">
+              <h1><a href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a> <button type="button" class="btn btn-primary btn-sm">Enabled is {{ harvester.enabled }}</button></h1>
+
+              <p>Harvests: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
+              <button type="button" class="btn btn-success btn-sm">Status 1</button>
+              <button type="button" class="btn btn-warning btn-sm">Status 2</button>
+              <button type="button" class="btn btn-danger btn-sm">Status 3</button>
+            </div>
+            <br>
+          {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
