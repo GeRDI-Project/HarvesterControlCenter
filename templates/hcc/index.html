@@ -1,21 +1,39 @@
 {% extends 'hcc/base.html' %}
 
+{% block title %}<a href="/">Harvester Control Center</a>{% endblock %}
+
 {% block content %}
 <div class="content container">
+    {% if user.is_authenticated %}
     <div class="row">
-        <div class="col-md-8">
-          {% for harvester in harvesters %}
-            <div class="harvester border rounded p-4">
-              <h1><a href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a> <button type="button" class="btn btn-primary btn-sm">Enabled is {{ harvester.enabled }}</button></h1>
+      {% for harvester in harvesters %}
+        <div class="col-sm">
 
-              <p>Harvests: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
+            <div class="harvester border rounded p-4">
+              <h1>
+                {% if harvester.enabled %}
+                  <button type="button" class="btn btn-success btn-sm">on</button>
+                {% else %}
+                  <button type="button" class="btn btn-secondary btn-sm">off</button>
+                {% endif %}
+                <a href="{% url 'api:harvester-detail' name=harvester.name %}">Harvester</a>
+                <span class="badge badge-secondary">
+                  {{ harvester.name }}
+                </span>
+              </h1>
+
+              <p>API: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
               <button type="button" class="btn btn-success btn-sm">Status 1</button>
               <button type="button" class="btn btn-warning btn-sm">Status 2</button>
               <button type="button" class="btn btn-danger btn-sm">Status 3</button>
             </div>
-            <br>
-          {% endfor %}
+
         </div>
+        <br>
+      {% endfor %}
     </div>
+    {% else %}
+      <div class="alert alert-danger" role="alert">Login to see more...</div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -1,6 +1,4 @@
-body {
-    
-}
+body {}
 
 .page-header {
     background-color: #ff9400;
@@ -15,9 +13,7 @@ body {
     text-decoration: none;
 }
 
-.content {
-
-}
+.content {}
 
 h1, h2, h3, h4 {
     font-family: 'Open Sans', sans-serif;
@@ -28,7 +24,7 @@ h1 a {
     font-family: 'Open Sans';
 }
 
-.date {
+.login {
     float: right;
     color: #828282;
 }
@@ -42,7 +38,7 @@ h1 a {
 }
 
 .harvester {
-    margin-bottom: 70px;
+    margin-bottom: 35px;
 }
 
 .harvester h1 a, .harvester h1 a:visited {

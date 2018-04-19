@@ -54,6 +54,8 @@ INSTALLED_APPS = [
 SWAGGER_SETTINGS = {}
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
+LOGIN_REDIRECT_URL = 'api:home'
+LOGOUT_REDIRECT_URL = 'api:home'
 
 REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',

@@ -10,14 +10,27 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/hcc.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
 
     <title>Harvester Control Center</title>
   </head>
   <body>
     <div class="page-header">
-      <h1><a href="/">Harvester Control Center</a></h1>
+      <h1>{% block title %}{% endblock %}</h1>
+      <div class="login">
+        {% if user.is_authenticated %}
+          <small>
+            Hej, {{ user.username }}.
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i></a>
+          </small>
+        {% else %}
+          <small><a href="{% url 'login' %}" class=""><span class="fas fa-sign-in-alt"></span></a>
+          log in.</small>
+        {% endif %}
+      </div>
     </div>
 
     {% block content %}

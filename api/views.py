@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
+#from django.contrib.auth.decorators import login_required
 from rest_framework import status, generics, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -27,6 +28,7 @@ def index(request):
     return HttpResponse('Chuck Norris will never have a heart attack. His heart \
                         isnt nearly foolish enough to attack him.')
 
+#@login_required
 def home(request):
     hs = Harvester.objects.all()
     return render(request, 'hcc/index.html', {'harvesters': hs})
