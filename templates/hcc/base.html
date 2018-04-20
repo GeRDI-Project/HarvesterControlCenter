@@ -1,6 +1,5 @@
 
 <!doctype html>
-
 <html lang="de">
   <head>
     <!-- Required meta tags -->
@@ -10,8 +9,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/hcc.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
 
@@ -19,27 +18,57 @@
   </head>
   <body>
     <div class="page-header">
-      <h1>{% block title %}{% endblock %}</h1>
       <div class="login">
         {% if user.is_authenticated %}
-          <small>
+
             Hej, {{ user.username }}.
-            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i></a>
-          </small>
+            <a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a>
+
         {% else %}
-          <small><a href="{% url 'login' %}" class=""><span class="fas fa-sign-in-alt"></span></a>
-          log in.</small>
+
+          <a href="{% url 'login' %}" class=""><i class="fa fa-sign-in fa-2x" aria-hidden="true"></i></a>
+          log in.
+
         {% endif %}
       </div>
+      <h1>{% block title %}{% endblock %}</h1>
     </div>
+
+    <div class="container">
+      {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          </div>
+          {% endfor %}
+      {% endif %}
+    <div class="container">
 
     {% block content %}
     {% endblock %}
 
+    <div id="form-modal" class="modal fade" tabindex="-1" role="dialog">
+     <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+             <h4 class="modal-title">Modal title</h4>
+         </div>
+         <div id="form-modal-body" class="modal-body">
+             <p>One fine body&hellip;</p>
+         </div>
+         <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         </div>
+       </div><!-- /.modal-content -->
+     </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script src="{% static 'js/hcc.js' %}"></script>
   </body>
 </html>

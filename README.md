@@ -8,7 +8,7 @@ A harvester Control Center REST api written in Django
 
 ## Installation
 * If you wish to run your own build, first ensure you have python globally installed in your computer. If not, you can get python [here](https://www.python.org").
-* After doing this, confirm that you have installed virtualenv globally as well. If not, run this:
+* After doing this, confirm that you have installed _virtualenv_ globally as well. If not, run this:
     ```bash
         $ pip install virtualenv
     ```
@@ -32,17 +32,27 @@ A harvester Control Center REST api written in Django
         ```bash
             $ pip install -r requirements.txt
         ```
-    4. Make those migrations work
+    4. (optional) Make those migrations work
         ```bash
             $ python manage.py makemigrations
             $ python manage.py migrate
         ```
+
+* #### There are two possible Authentication-Mechanisms
+    1. Basic Authentication via Username and Password
+    2. Token Authentication via Auth.-Token (see below)
 
 * #### Run It in Dev mode
     Fire up the server using this one simple command:
     ```bash
         $ python manage.py runserver
     ```
+
+    first, create a super-user
+    ```bash
+        $ python manage.py createsuperuser
+    ```
+
     You can now access the api service on your browser by using
     ```
         http://localhost:8000/docs/
@@ -50,7 +60,20 @@ A harvester Control Center REST api written in Django
         http://localhost:8000/v1/
     ```
 
-* #### Deploy a Docker Container for production with nginx as reverse proxy buildin
+    Get your _USER_TOKEN_ via POST-request to Resource /v1/get-token/
+    ```bash
+        $ curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{ \
+            "username": "username", \
+            "password": "password" \
+          }' 'http://localhost:8000/v1/get-token/'
+    ```
+
+    For instance getting all harvesters (_/v1/harvesters/_) via Token-Authentication:
+    ```bash
+        $ curl -X GET --header 'Accept: application/json' --header 'X-CSRFToken: AJcweNkQirt51Z2lg0c94FujhSNYFiu5grZLR2N4D8r1X2wrUaUlK8EOieEStFR9' --header 'Authorization: Basic [USER_TOKEN]' 'http://localhost:8000/v1/harvesters/'
+    ```
+
+* #### Deploy a Docker Container for production with nginx as buildin reverse proxy
     First build docker container
     ```bash
         $ docker build -t harvest/hccenter:1.0.0 .

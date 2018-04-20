@@ -37,7 +37,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('v1/', include(('api.urls'), namespace='v1')),
     path('docs/', schema_view),
-    path('auth/',
-         include('rest_framework.urls', namespace='rest_framework')),
+    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/', include('django.contrib.auth.urls')),
 ] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #dev settings remove for production and use nginx as reverse proxy

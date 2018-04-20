@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
 from django.views.decorators.http import require_http_methods
+from django.views.generic import FormView, TemplateView
+from django.urls import reverse_lazy
 #from django.contrib.auth.decorators import login_required
 from rest_framework import status, generics, permissions
 from rest_framework.permissions import IsAuthenticated
@@ -14,7 +17,10 @@ from .serializers import HarvesterSerializer, UserSerializer
 from .models import Harvester
 from .harvester_api import Harvester_API
 from .helpers import Helpers
+from .forms import HarvesterForm
+from .mixins import AjaxTemplateMixin
 import requests
+
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -116,3 +122,10 @@ class UserDetailsView(generics.RetrieveAPIView):
     authentication_classes = (BasicAuthentication, )
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView):
+    template_name = 'hcc/hreg_form.html'
+    form_class = HarvesterForm
+    success_url = reverse_lazy('api:home')
+    success_message = "%(name)s Harvester registered!"

@@ -6,32 +6,57 @@
 <div class="content container">
     {% if user.is_authenticated %}
     <div class="row">
-      {% for harvester in harvesters %}
         <div class="col-sm">
+            <div class="card">
+              <h3 class="card-header">Register new Harvester</h3>
 
-            <div class="harvester border rounded p-4">
-              <h1>
-                {% if harvester.enabled %}
-                  <button type="button" class="btn btn-success btn-sm">on</button>
-                {% else %}
-                  <button type="button" class="btn btn-secondary btn-sm">off</button>
-                {% endif %}
-                <a href="{% url 'api:harvester-detail' name=harvester.name %}">Harvester</a>
-                <span class="badge badge-secondary">
-                  {{ harvester.name }}
-                </span>
-              </h1>
-
-              <p>API: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
-              <button type="button" class="btn btn-success btn-sm">Status 1</button>
-              <button type="button" class="btn btn-warning btn-sm">Status 2</button>
-              <button type="button" class="btn btn-danger btn-sm">Status 3</button>
+              <div class="card-body">
+                <a href="" id="register-button"><i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i></a>
+              </div>
             </div>
-
         </div>
-        <br>
-      {% endfor %}
-    </div>
+        <div class="col-sm">
+            <div class="card">
+              <h3 class="card-header">Deploy new Harvester</h3>
+
+              <div class="card-body">
+                <a href="#"><i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i></a>
+              </div>
+            </div>
+        </div>
+      </div><br>
+      {% if harvesters|length > 0 %}
+      <div class="row">
+          {% for harvester in harvesters %}
+              <div class="col-sm">
+                  <div class="card">
+                    
+                    <h3 class="card-header">
+                      {% if harvester.enabled %}
+                        <button type="button" class="btn btn-success btn-sm">on</button>
+                      {% else %}
+                        <button type="button" class="btn btn-secondary btn-sm">off</button>
+                      {% endif %}
+
+                      <span class="badge badge-secondary">
+                        {{ harvester.name }}
+                      </span>
+                      <a href="{% url 'api:harvester-detail' name=harvester.name %}">Harvester</a>
+                    </h3>
+
+                    <div class="card-body">
+                      <p>Metadata: {{ harvester.metadataPrefix }}</p>
+                      <p>API: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
+                    </div>
+                  </div>
+              </div>
+              <br>
+          {% endfor %}
+      </div>
+      {% else %}
+          <div class="alert alert-info" role="info">Register a new Harvester via API.</div>
+      {% endif %}
+
     {% else %}
       <div class="alert alert-danger" role="alert">Login to see more...</div>
     {% endif %}

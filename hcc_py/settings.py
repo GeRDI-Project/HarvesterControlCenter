@@ -49,7 +49,10 @@ INSTALLED_APPS = [
     'api',
     'rest_framework.authtoken',
     'rest_framework_swagger',
+    'crispy_forms',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SWAGGER_SETTINGS = {}
 LOGIN_URL = 'rest_framework:login'
