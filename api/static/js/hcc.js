@@ -18,7 +18,7 @@ var formAjaxSubmit = {
     succFunc: function (xhr, ajaxOptions, thrownError) {
        if ( $(xhr).find('.has-error').length > 0 ) {
            $(modal).find('.modal-body').html(xhr);
-           formAjaxSubmit(form, modal);
+           formAjaxSubmit.init(form, modal);
        } else {
            $(modal).modal('toggle');
        }
@@ -36,7 +36,7 @@ var formButton = {
 
   toggleModal: function () {
       $('#form-modal').modal('toggle');
-      formAjaxSubmit('#form-modal-body form', '#form-modal');
+      formAjaxSubmit.init('#form-modal-body form', '#form-modal');
   }
 
 }

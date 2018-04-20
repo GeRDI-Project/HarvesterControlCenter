@@ -12,6 +12,7 @@
 
               <div class="card-body">
                 <a href="" id="register-button"><i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i></a>
+                <a data-toggle="modal" href="{% url 'api:hreg-form' %}" data-target="#form-modal">Register</a>
               </div>
             </div>
         </div>
@@ -30,7 +31,7 @@
           {% for harvester in harvesters %}
               <div class="col-sm">
                   <div class="card">
-                    
+
                     <h3 class="card-header">
                       {% if harvester.enabled %}
                         <button type="button" class="btn btn-success btn-sm">on</button>
@@ -60,5 +61,23 @@
     {% else %}
       <div class="alert alert-danger" role="alert">Login to see more...</div>
     {% endif %}
+
+    <div id="form-modal" class="modal fade" tabindex="-1" role="dialog">
+     <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+             <h4 class="modal-title">Modal title</h4>
+             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+         </div>
+         <div id="form-modal-body" class="modal-body">
+             <p>One fine body&hellip;</p>
+         </div>
+         <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         </div>
+       </div><!-- /.modal-content -->
+     </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
+<!--<script src="{% static 'js/hcc.js' %}"></script>-->
 {% endblock %}
