@@ -1,9 +1,9 @@
 {% extends 'hcc/base.html' %}
 
-{% block title %}<a href="/">Harvester Control Center</a>{% endblock %}
+{% block title %}<a href="/v1/">Harvester Control Center</a>{% endblock %}
 
 {% block content %}
-<div class="content container">
+<div class="container">
     {% if user.is_authenticated %}
     <div class="row">
         <div class="col-sm">
@@ -11,8 +11,8 @@
               <h3 class="card-header">Register new Harvester</h3>
 
               <div class="card-body">
-                <a href="" id="register-button"><i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i></a>
-                <a data-toggle="modal" href="{% url 'api:hreg-form' %}" data-target="#form-modal">Register</a>
+                <a href="{% url 'api:hreg-form' %}" id="reg-button"><i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i></a>
+                <a href="{% url 'api:hreg-form' %}" data-toggle="modal" data-target="#form-modal">Register</a>
               </div>
             </div>
         </div>
@@ -29,18 +29,20 @@
       {% if harvesters|length > 0 %}
       <div class="row">
           {% for harvester in harvesters %}
-              <div class="col-sm">
+              <div class="col-md-4">
                   <div class="card">
 
                     <h3 class="card-header">
                       {% if harvester.enabled %}
-                        <button type="button" class="btn btn-success btn-sm">on</button>
+                        <button type="button" class="btn btn-success btn-sm"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
                       {% else %}
-                        <button type="button" class="btn btn-secondary btn-sm">off</button>
+                        <button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>
                       {% endif %}
-
+                      <button href="{{ harvester.url }}/harvest/" type="button" class="btn btn-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off">
+                        <i class="fa fa-play-circle" aria-hidden="true"></i>
+                      </button>
                       <span class="badge badge-secondary">
-                        {{ harvester.name }}
+                        {{ harvester.name|lower|capfirst }}
                       </span>
                       <a href="{% url 'api:harvester-detail' name=harvester.name %}">Harvester</a>
                     </h3>
@@ -48,10 +50,12 @@
                     <div class="card-body">
                       <p>Metadata: {{ harvester.metadataPrefix }}</p>
                       <p>API: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
+                      <p>Status: </p>
+                      <p></p>
                     </div>
-                  </div>
+                  </div><br>
               </div>
-              <br>
+
           {% endfor %}
       </div>
       {% else %}
@@ -59,25 +63,27 @@
       {% endif %}
 
     {% else %}
-      <div class="alert alert-danger" role="alert">Login to see more...</div>
+      <div class="alert alert-warning" role="alert">You are not logged in ..</div>
     {% endif %}
 
-    <div id="form-modal" class="modal fade" tabindex="-1" role="dialog">
-     <div class="modal-dialog modal-dialog-centered" role="document">
-       <div class="modal-content">
-         <div class="modal-header">
-             <h4 class="modal-title">Modal title</h4>
-             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-         </div>
-         <div id="form-modal-body" class="modal-body">
-             <p>One fine body&hellip;</p>
-         </div>
-         <div class="modal-footer">
-             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-         </div>
-       </div><!-- /.modal-content -->
-     </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
 </div>
-<!--<script src="{% static 'js/hcc.js' %}"></script>-->
+
+<div id="form-modal" class="modal fade" tabindex="" role="dialog">
+ <div class="modal-dialog modal-dialog-centered" role="document">
+   <div class="modal-content">
+     <div class="modal-header">
+         <h4 class="modal-title">Modal title</h4>
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+     </div>
+     <div id="form-modal-body" class="modal-body">
+         ...
+     </div>
+     <div class="modal-footer">
+       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+       <button type="button" class="btn btn-primary">Save changes</button>
+     </div>
+   </div><!-- /.modal-content -->
+ </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {% endblock %}

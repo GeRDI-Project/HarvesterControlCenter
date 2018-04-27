@@ -13,12 +13,12 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.response import Response
 from requests.exceptions import ConnectionError
 from api.permissions import IsOwner
-from .serializers import HarvesterSerializer, UserSerializer
-from .models import Harvester
-from .harvester_api import Harvester_API
-from .helpers import Helpers
-from .forms import HarvesterForm
-from .mixins import AjaxTemplateMixin
+from api.serializers import HarvesterSerializer, UserSerializer
+from api.models import Harvester
+from api.harvester_api import Harvester_API
+from api.helpers import Helpers
+from api.forms import HarvesterForm
+from api.mixins import AjaxTemplateMixin
 import requests
 
 
@@ -34,13 +34,15 @@ def index(request):
     return HttpResponse('Chuck Norris will never have a heart attack. His heart \
                         isnt nearly foolish enough to attack him.')
 
+
 #@login_required
 def home(request):
     hs = Harvester.objects.all()
     return render(request, 'hcc/index.html', {'harvesters': hs})
 
-@api_view(["POST"])
-@authentication_classes((TokenAuthentication, BasicAuthentication))
+
+@api_view(['POST'])
+#@authentication_classes((TokenAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticated, ))
 def run_harvesters(request, format=None):
     """
@@ -61,9 +63,9 @@ def run_harvesters(request, format=None):
                     feedback.append(harvester.name + ' : ' + response.text)
 
             except ConnectionError as e:
-                feedback.append(harvester.name + ' has a Connection Error. Host probably down.')
+                feedback.append(harvester.name + ' : has a Connection Error. Host probably down.')
         else:
-            feedback.append(harvester.name + ' : disabled.')
+            feedback.append(harvester.name + ' : disabled')
 
     return Response(feedback, status=status.HTTP_200_OK)
 
@@ -75,7 +77,6 @@ def start_harvest(request, name, format=None):
     Start Harvest via POST request to a harvester url
     """
     harvester = Harvester.objects.get(name=name)
-
     return Helpers.harvester_response_wrapper(harvester, 'POST')
 
 
@@ -90,7 +91,9 @@ def get_harvester_state(request, name, format=None):
 
 
 class HarvesterCreateView(generics.ListCreateAPIView):
-    """This class handles the GET and POST requests of our Harvester-Controlcenter rest api."""
+    """
+    This class handles the GET and POST requests of our Harvester-Controlcenter rest api.
+    """
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     queryset = Harvester.objects.all()
     serializer_class = HarvesterSerializer
@@ -102,7 +105,9 @@ class HarvesterCreateView(generics.ListCreateAPIView):
 
 
 class HarvesterDetailsView(generics.RetrieveUpdateDestroyAPIView):
-    """This class handles GET, PUT, PATCH and DELETE requests."""
+    """
+    This class handles GET, PUT, PATCH and DELETE requests.
+    """
     authentication_classes = (BasicAuthentication, )
     lookup_field = 'name'
     queryset = Harvester.objects.all()
@@ -111,21 +116,36 @@ class HarvesterDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserView(generics.ListAPIView):
-    """View to list the user queryset."""
+    """
+    View to list the user queryset.
+    """
     authentication_classes = (BasicAuthentication, )
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class UserDetailsView(generics.RetrieveAPIView):
-    """View to retrieve a user instance."""
+    """
+    View to retrieve a user instance.
+    """
     authentication_classes = (BasicAuthentication, )
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView):
+    """
+    This class handles GUI Harvester registration.
+    """
     template_name = 'hcc/hreg_form.html'
     form_class = HarvesterForm
     success_url = reverse_lazy('api:home')
-    success_message = "%(name)s Harvester registered!"
+    success_message = "New Harvester (%(name)s) successfully registered!"
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        harv_w_user = Harvester(owner=self.request.user)
+        form = HarvesterForm(self.request.POST, instance=harv_w_user)
+        form.save()
+        return super().form_valid(form)

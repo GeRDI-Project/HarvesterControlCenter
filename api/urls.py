@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.authtoken.views import obtain_auth_token
 from . import views
-from .views import HarvesterCreateView, HarvesterDetailsView, UserView, UserDetailsView, RegisterHarvesterFormView
+from .views import run_harvesters, HarvesterCreateView, HarvesterDetailsView, UserView, UserDetailsView, RegisterHarvesterFormView
 
 
 __author__ = "Jan Frömberg"
@@ -18,8 +18,8 @@ urlpatterns = {
     path('', views.home, name='home'),
     path('harvesters/',
         HarvesterCreateView.as_view(), name="create"),
-    path('harvesters/go/',
-        views.run_harvesters, name="runharvesters"),
+    path('harvesters/start',
+        views.run_harvesters, name="run-harvesters"),
     path('harvesters/<str:name>/',
         HarvesterDetailsView.as_view(), name="harvester-detail"),
     path('harvesters/<str:name>/start/',
