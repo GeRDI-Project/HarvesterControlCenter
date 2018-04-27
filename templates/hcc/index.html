@@ -50,7 +50,11 @@
                     <div class="card-body">
                       <p>Metadata: {{ harvester.metadataPrefix }}</p>
                       <p>API: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
-                      <p>Status: </p>
+                      <p>Status:
+                        {% for k, state in status.items %}
+                          {% if k == harvester.name %} {{ state }} {% endif %}
+                        {% endfor %}
+                      </p>
                       <p></p>
                     </div>
                   </div><br>

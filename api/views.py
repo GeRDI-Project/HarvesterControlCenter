@@ -37,8 +37,29 @@ def index(request):
 
 #@login_required
 def home(request):
+    """
+    Home Entrypoint of GUI Web-Application
+    """
+    feedback = {}
     hs = Harvester.objects.all()
-    return render(request, 'hcc/index.html', {'harvesters': hs})
+    for harvester in hs:
+        #Helpers.harvester_response_wrapper(harvester, 'POST')
+        if harvester.enabled == True:
+            try:
+                response = Helpers.harvester_response_wrapper(harvester, 'GET')
+                if response.status_code == 200:
+                    feedback[harvester.name] = response.data
+                elif response.status_code == 404:
+                    feedback[harvester.name] = 'Resource on server not found. Check URL.'
+                else:
+                    feedback[harvester.name] = response.raw
+
+            except ConnectionError as e:
+                feedback[harvester.name] = 'has a Connection Error. Host probably down.'
+        else:
+            feedback[harvester.name] = 'disabled'
+
+    return render(request, 'hcc/index.html', {'harvesters': hs, 'status': feedback})
 
 
 @api_view(['POST'])
@@ -48,24 +69,24 @@ def run_harvesters(request, format=None):
     """
     Start all Harvesters via POST request
     """
-    feedback = []
+    feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         #Helpers.harvester_response_wrapper(harvester, 'POST')
         if harvester.enabled == True:
             try:
-                response = requests.post(Harvester_API.HTTP_PROTOCOL + harvester.url + Harvester_API.P_HARVEST, stream=True)
+                response = Helpers.harvester_response_wrapper(harvester, 'GET')
                 if response.status_code == 200:
-                    feedback.append(harvester.name + ' : ' + response.text)
+                    feedback[harvester.name] = response.text
                 elif response.status_code == 404:
-                    feedback.append(harvester.name + ' : Resource on server not found. Check URL.')
+                    feedback[harvester.name] = 'Resource on server not found. Check URL.'
                 else:
-                    feedback.append(harvester.name + ' : ' + response.text)
+                    feedback[harvester.name] = response.text
 
             except ConnectionError as e:
-                feedback.append(harvester.name + ' : has a Connection Error. Host probably down.')
+                feedback[harvester.name] = 'has a Connection Error. Host probably down.'
         else:
-            feedback.append(harvester.name + ' : disabled')
+            feedback[harvester.name] = 'disabled'
 
     return Response(feedback, status=status.HTTP_200_OK)
 
