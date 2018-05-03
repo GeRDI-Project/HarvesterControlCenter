@@ -39,4 +39,5 @@ urlpatterns = [
     path('docs/', schema_view),
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('harvester/toggle/<str:name>', views.toggle_harvester, name='toggle_harvester')
 ] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #dev settings remove for production and use nginx as reverse proxy

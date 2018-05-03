@@ -34,27 +34,42 @@
 
                     <h3 class="card-header">
                       {% if harvester.enabled %}
-                        <button type="button" class="btn btn-success btn-sm"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
+                        <a href="{% url 'toggle_harvester' name=harvester.name %}" type="button" class="btn btn-success btn-sm"><i class="fa fa-toggle-on" aria-hidden="true"></i></a>
+                        <span class="badge badge-success">
+                          {{ harvester.name|lower|capfirst }}
+                        </span>
                       {% else %}
-                        <button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>
+                        <a href="{% url 'toggle_harvester' name=harvester.name %}" type="button" class="btn btn-secondary btn-sm"><i class="fa fa-toggle-off" aria-hidden="true"></i></a>
+                        <span class="badge badge-secondary">
+                          {{ harvester.name|lower|capfirst }}
+                        </span>
                       {% endif %}
-                      <button href="{{ harvester.url }}/harvest/" type="button" class="btn btn-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off">
+                      <a href="{{ harvester.url }}/harvest/" type="button" class="btn btn-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off">
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
-                      </button>
-                      <span class="badge badge-secondary">
-                        {{ harvester.name|lower|capfirst }}
-                      </span>
+                      </a>
+
                       <a href="{% url 'api:harvester-detail' name=harvester.name %}">Harvester</a>
                     </h3>
 
                     <div class="card-body">
+                      {% for k, val in status.items %}
+                          {% if k == harvester.name %}
+                            {% if val.status == 'harvesting' %}
+                            <div class="progress">
+                              <div class="progress-bar w-{{ val.progress_cur }}" role="progressbar" aria-valuenow="{{ val.progress_cur }}" aria-valuemin="0" aria-valuemax="{{ val.progress_max }}"></div>
+                            </div>
+                            {% endif %}
+                          {% endif %}
+                      {% endfor %}
+
                       <p>Metadata: {{ harvester.metadataPrefix }}</p>
-                      <p>API: <a href="{{ harvester.url }}">{{ harvester.url }}</a></p>
+                      <p>API: <a href="{{ harvester.url }}/harvest">{{ harvester.url }}</a></p>
                       <p>Status:
-                        {% for k, state in status.items %}
-                          {% if k == harvester.name %} {{ state }} {% endif %}
-                        {% endfor %}
-                      </p>
+                        {% for k, val in status.items %}
+                            {% if k == harvester.name %}
+                            {{ val }}
+                            {% endif %}
+                        {% endfor %}</p>
                       <p></p>
                     </div>
                   </div><br>

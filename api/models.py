@@ -34,6 +34,10 @@ class Harvester(models.Model):
         self.enabled = True
         self.save()
 
+    def disable(self):
+        self.enabled = False
+        self.save()
+
     def __str__(self):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.name)

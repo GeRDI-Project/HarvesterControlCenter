@@ -5,7 +5,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.decorators.http import require_http_methods
 from django.views.generic import FormView, TemplateView
 from django.urls import reverse_lazy
-#from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 from rest_framework import status, generics, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -34,12 +34,23 @@ def index(request):
     return HttpResponse('Chuck Norris will never have a heart attack. His heart \
                         isnt nearly foolish enough to attack him.')
 
+@login_required
+def toggle_harvester(request, name):
+    harv = get_object_or_404(Harvester, name=name)
+    if harv.enabled == True:
+        harv.disable()
+    else:
+        harv.enable()
+    return home(request)
 
 #@login_required
 def home(request):
     """
     Home Entrypoint of GUI Web-Application
     """
+    #if request.method == "POST":
+
+
     feedback = {}
     hs = Harvester.objects.all()
     for harvester in hs:
@@ -48,14 +59,14 @@ def home(request):
             try:
                 response = Helpers.harvester_response_wrapper(harvester, 'GET')
                 if response.status_code == 200:
-                    feedback[harvester.name] = response.data
+                    feedback[harvester.name] = response.data[harvester.name]
                 elif response.status_code == 404:
                     feedback[harvester.name] = 'Resource on server not found. Check URL.'
                 else:
-                    feedback[harvester.name] = response.raw
+                    feedback[harvester.name] = response.data[harvester.name]
 
             except ConnectionError as e:
-                feedback[harvester.name] = 'has a Connection Error. Host probably down.'
+                feedback[harvester.name] = 'A Connection Error. Host probably down.'
         else:
             feedback[harvester.name] = 'disabled'
 
@@ -75,7 +86,7 @@ def run_harvesters(request, format=None):
         #Helpers.harvester_response_wrapper(harvester, 'POST')
         if harvester.enabled == True:
             try:
-                response = Helpers.harvester_response_wrapper(harvester, 'GET')
+                response = Helpers.harvester_response_wrapper(harvester, 'POST')
                 if response.status_code == 200:
                     feedback[harvester.name] = response.text
                 elif response.status_code == 404:
