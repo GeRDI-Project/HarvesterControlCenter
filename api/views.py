@@ -122,6 +122,26 @@ def get_harvester_state(request, name, format=None):
     return Helpers.harvester_response_wrapper(harvester, 'GET')
 
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def get_harvester_states(request, format=None):
+    """
+    View to show all Harvester states via GET Request
+    """
+    feedback = {}
+    harvesters = Harvester.objects.all()
+
+    for harvester in harvesters:
+        #Helpers.harvester_response_wrapper(harvester, 'POST')
+        if harvester.enabled == True:
+            response = Helpers.harvester_response_wrapper(harvester, 'GET')
+            feedback[harvester.name] = response.data[harvester.name]
+        else:
+            feedback[harvester.name] = 'disabled'
+
+    return Response(feedback, status=status.HTTP_200_OK)
+
+
 class HarvesterCreateView(generics.ListCreateAPIView):
     """
     This class handles the GET and POST requests of our Harvester-Controlcenter rest api.

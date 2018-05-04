@@ -26,6 +26,8 @@ urlpatterns = {
         views.start_harvest, name="startharvest"),
     path('harvesters/<str:name>/state/',
         views.get_harvester_state, name="harvesterstatus"),
+    path('harvesters/status/',
+        views.get_harvester_states, name="allhvstates"),
     path('harvesters/register',
         RegisterHarvesterFormView.as_view(), name="hreg-form"),
     path('users/',

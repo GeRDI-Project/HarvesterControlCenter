@@ -40,7 +40,7 @@ class Helpers():
                             feedback[harvester.name]['progress_max'] = int(response.text.split("/")[0])
                         else:
                             feedback[harvester.name]['progress_max'] = response.text.split("/")[1]
-                            feedback[harvester.name]['progress_cur'] = (response.text.split("/")[1] / int(response.text.split("/")[0])) + 100
+                            feedback[harvester.name]['progress_cur'] = int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
 
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline'
