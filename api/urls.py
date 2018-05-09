@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.authtoken.views import obtain_auth_token
 from . import views
-from .views import run_harvesters, HarvesterCreateView, HarvesterDetailsView, UserView, UserDetailsView, RegisterHarvesterFormView
+from .views import run_harvesters, HarvesterCreateView, HarvesterDetailsView, UserView, UserDetailsView
 
 
 __author__ = "Jan Frömberg"
@@ -15,7 +15,7 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 
 app_name = 'api'
 urlpatterns = {
-    path('', views.home, name='home'),
+    path('', views.index, name='home'),
     path('harvesters/',
         HarvesterCreateView.as_view(), name="create"),
     path('harvesters/start',
@@ -24,12 +24,12 @@ urlpatterns = {
         HarvesterDetailsView.as_view(), name="harvester-detail"),
     path('harvesters/<str:name>/start/',
         views.start_harvest, name="startharvest"),
-    path('harvesters/<str:name>/state/',
-        views.get_harvester_state, name="harvesterstatus"),
-    path('harvesters/status/',
-        views.get_harvester_states, name="allhvstates"),
-    path('harvesters/register',
-        RegisterHarvesterFormView.as_view(), name="hreg-form"),
+    path('harvesters/<str:name>/stop/',
+        views.stop_harvest, name="stopharvest"),
+    path('harvesters/<str:name>/status/',
+        views.get_harvester_state, name="harvester-status"),
+    path('harvesters/status',
+        views.get_harvester_states, name="all-harvester-status"),
     path('users/',
         UserView.as_view(), name="users"),
     path('users/<int:pk>/',

@@ -20,12 +20,19 @@ class Helpers():
         feedback = {}
         if harvester.enabled == True:
             try:
-                if request_type == 'GET':
+                if request_type == 'GET_STATUS':
                     feedback[harvester.name] = {}
                     response = requests.get(harvester.url + Harvester_API.G_STATUS, stream=True)
                     feedback[harvester.name]['status'] = response.text
                     response = requests.get(harvester.url + Harvester_API.G_HARVESTED_DOCS, stream=True)
                     feedback[harvester.name]['cached_docs'] = response.text
+
+                    # response = requests.get(harvester.url + Harvester_API.G_BOOLEAN_OUTDATED_DOCS, stream=True)
+                    # if response.status_code == status.HTTP_404_NOT_FOUND:
+                    #     feedback[harvester.name]['mdata_outdated'] = 'offline. Resource on server not found. Check URL.'
+                    # else:
+                    #     feedback[harvester.name]['mdata_outdated'] = bool(response.text)
+
                     response = requests.get(harvester.url + Harvester_API.G_DATA_PROVIDER, stream=True)
                     feedback[harvester.name]['data_pvd'] = response.text
                     response = requests.get(harvester.url + Harvester_API.G_MAX_DOCS, stream=True)
@@ -35,22 +42,28 @@ class Helpers():
                     response = requests.get(harvester.url + Harvester_API.G_PROGRESS, stream=True)
                     feedback[harvester.name]['progress'] = response.text
                     if "N" not in response.text:
-                        feedback[harvester.name]['progress_cur'] = 100 / int(response.text.split("/")[0])
+                        feedback[harvester.name]['progress_cur'] = feedback[harvester.name]['cached_docs']
                         if "/" not in response.text:
-                            feedback[harvester.name]['progress_max'] = int(response.text.split("/")[0])
+                            feedback[harvester.name]['progress_max'] = int(response.text)
                         else:
-                            feedback[harvester.name]['progress_max'] = response.text.split("/")[1]
+                            feedback[harvester.name]['progress_max'] = int(response.text.split("/")[1])
                             feedback[harvester.name]['progress_cur'] = int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
 
-                    if response.status_code == status.HTTP_404_NOT_FOUND:
-                        feedback[harvester.name] = 'offline'
-                elif request_type == 'POST':
+                elif request_type == 'POST_STARTH':
                     response = requests.post(harvester.url + Harvester_API.P_HARVEST, stream=True)
                     feedback[harvester.name] = response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:
-                        feedback[harvester.name] = 'offline'
+                        feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
+
+                elif request_type == 'POST_STOPH':
+                    response = requests.post(harvester.url + Harvester_API.P_HARVEST_ABORT, stream=True)
+                    feedback[harvester.name] = response.text
+                    if response.status_code == status.HTTP_404_NOT_FOUND:
+                        feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
+
                 else:
                     response = Response('no method given')
+
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down.", status=status.HTTP_408_REQUEST_TIMEOUT)
                 feedback[harvester.name] = response.status_text + '. ' + response.data

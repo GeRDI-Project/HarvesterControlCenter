@@ -33,6 +33,7 @@
       </div>
       <h1>{% block title %}{% endblock %}</h1>
     </div>
+
     <div class="container">
       {% if messages %}
           {% for message in messages %}
@@ -47,9 +48,15 @@
     {% block content %}
     {% endblock %}
 
+    <footer>
+      <div class="content text-center">
+        <i class="fa fa-copyright" aria-hidden="true"></i> GeRDI Project 2016 - ZIH TU Dresden - Impressum
+      </div>
+    </footer>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
     <script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/hcc.js" %}"></script>

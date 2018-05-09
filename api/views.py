@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.decorators.http import require_http_methods
@@ -21,7 +21,6 @@ from api.forms import HarvesterForm
 from api.mixins import AjaxTemplateMixin
 import requests
 
-
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
@@ -30,9 +29,11 @@ __version__ = "1.0.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
+
 def index(request):
     return HttpResponse('Chuck Norris will never have a heart attack. His heart \
                         isnt nearly foolish enough to attack him.')
+
 
 @login_required
 def toggle_harvester(request, name):
@@ -41,41 +42,25 @@ def toggle_harvester(request, name):
         harv.disable()
     else:
         harv.enable()
-    return home(request)
+    return HttpResponseRedirect('/hcc/')
 
-#@login_required
+
+# @login_required
 def home(request):
     """
     Home Entrypoint of GUI Web-Application
     """
-    #if request.method == "POST":
-
-
     feedback = {}
-    hs = Harvester.objects.all()
-    for harvester in hs:
-        #Helpers.harvester_response_wrapper(harvester, 'POST')
-        if harvester.enabled == True:
-            try:
-                response = Helpers.harvester_response_wrapper(harvester, 'GET')
-                if response.status_code == 200:
-                    feedback[harvester.name] = response.data[harvester.name]
-                elif response.status_code == 404:
-                    feedback[harvester.name] = 'Resource on server not found. Check URL.'
-                else:
-                    feedback[harvester.name] = response.data[harvester.name]
-
-            except ConnectionError as e:
-                feedback[harvester.name] = 'A Connection Error. Host probably down.'
-        else:
-            feedback[harvester.name] = 'disabled'
-
-    return render(request, 'hcc/index.html', {'harvesters': hs, 'status': feedback})
+    harvesters = Harvester.objects.all()
+    for harvester in harvesters:
+        response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS')
+        feedback[harvester.name] = response.data[harvester.name]
+    return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback})
 
 
 @api_view(['POST'])
-#@authentication_classes((TokenAuthentication, BasicAuthentication))
-@permission_classes((IsAuthenticated, ))
+# @authentication_classes((TokenAuthentication, BasicAuthentication))
+@permission_classes((IsAuthenticated,))
 def run_harvesters(request, format=None):
     """
     Start all Harvesters via POST request
@@ -83,62 +68,50 @@ def run_harvesters(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        #Helpers.harvester_response_wrapper(harvester, 'POST')
-        if harvester.enabled == True:
-            try:
-                response = Helpers.harvester_response_wrapper(harvester, 'POST')
-                if response.status_code == 200:
-                    feedback[harvester.name] = response.text
-                elif response.status_code == 404:
-                    feedback[harvester.name] = 'Resource on server not found. Check URL.'
-                else:
-                    feedback[harvester.name] = response.text
-
-            except ConnectionError as e:
-                feedback[harvester.name] = 'has a Connection Error. Host probably down.'
-        else:
-            feedback[harvester.name] = 'disabled'
-
+        response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
+        feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated, ))
+@permission_classes((IsAuthenticated,))
 def start_harvest(request, name, format=None):
     """
     Start Harvest via POST request to a harvester url
     """
     harvester = Harvester.objects.get(name=name)
-    return Helpers.harvester_response_wrapper(harvester, 'POST')
+    return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
 
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def stop_harvest(request, name, format=None):
+    """
+    Start Harvest via POST request to a harvester url
+    """
+    harvester = Harvester.objects.get(name=name)
+    return Helpers.harvester_response_wrapper(harvester, 'POST_STOPH')
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+@permission_classes((IsAuthenticated,))
 def get_harvester_state(request, name, format=None):
     """
     View to show a Harvester state via GET Request
     """
     harvester = get_object_or_404(Harvester, name=name)
-    return Helpers.harvester_response_wrapper(harvester, 'GET')
+    return Helpers.harvester_response_wrapper(harvester, 'GET_STATUS')
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+@permission_classes((IsAuthenticated,))
 def get_harvester_states(request, format=None):
     """
     View to show all Harvester states via GET Request
     """
     feedback = {}
     harvesters = Harvester.objects.all()
-
     for harvester in harvesters:
-        #Helpers.harvester_response_wrapper(harvester, 'POST')
-        if harvester.enabled == True:
-            response = Helpers.harvester_response_wrapper(harvester, 'GET')
-            feedback[harvester.name] = response.data[harvester.name]
-        else:
-            feedback[harvester.name] = 'disabled'
-
+        response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS')
+        feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
 
 
@@ -160,7 +133,7 @@ class HarvesterDetailsView(generics.RetrieveUpdateDestroyAPIView):
     """
     This class handles GET, PUT, PATCH and DELETE requests.
     """
-    authentication_classes = (BasicAuthentication, )
+    authentication_classes = (BasicAuthentication,)
     lookup_field = 'name'
     queryset = Harvester.objects.all()
     serializer_class = HarvesterSerializer
@@ -171,7 +144,7 @@ class UserView(generics.ListAPIView):
     """
     View to list the user queryset.
     """
-    authentication_classes = (BasicAuthentication, )
+    authentication_classes = (BasicAuthentication,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -180,7 +153,7 @@ class UserDetailsView(generics.RetrieveAPIView):
     """
     View to retrieve a user instance.
     """
-    authentication_classes = (BasicAuthentication, )
+    authentication_classes = (BasicAuthentication,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -191,7 +164,7 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView
     """
     template_name = 'hcc/hreg_form.html'
     form_class = HarvesterForm
-    success_url = reverse_lazy('api:home')
+    success_url = reverse_lazy('hcc_gui')
     success_message = "New Harvester (%(name)s) successfully registered!"
 
     def form_valid(self, form):

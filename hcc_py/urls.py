@@ -21,6 +21,7 @@ from django.urls import path, include
 # end here
 from rest_framework_swagger.views import get_swagger_view
 from api import views
+from api.views import RegisterHarvesterFormView
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -34,10 +35,12 @@ schema_view = get_swagger_view(title='Harvester ControlCenter API')
 
 urlpatterns = [
     path('', views.index, name='home'),
+    path('hcc/', views.home, name='hcc_gui'),
     path('admin/', admin.site.urls),
     path('v1/', include(('api.urls'), namespace='v1')),
     path('docs/', schema_view),
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('harvester/toggle/<str:name>', views.toggle_harvester, name='toggle_harvester')
+    path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle_harvester'),
+    path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),
 ] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #dev settings remove for production and use nginx as reverse proxy

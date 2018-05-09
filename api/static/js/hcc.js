@@ -1,6 +1,15 @@
 $( document ).ready( function(){
 
-  $('#register-button').click( formButton.regClick );
+  var formButton = {
+    regClick: function() {
+        $('#form-modal-body').load('/v1/harvesters/register #hreg-form-content', formButton.toggleModal);
+    },
+
+    toggleModal: function () {
+        $('#form-modal').modal('toggle');
+        formAjaxSubmit.init('#form-modal-body form', '#form-modal');
+    }
+  };
 
   var formAjaxSubmit = {
       init : function(form, modal) {
@@ -32,14 +41,42 @@ $( document ).ready( function(){
       }
   };
 
-  var formButton = {
-    regClick: function() {
-        $('#form-modal-body').load('/v1/harvesters/register #hreg-form-content', formButton.toggleModal);
-    },
+  $('#register-button').click( formButton.regClick );
 
-    toggleModal: function () {
-        $('#form-modal').modal('toggle');
-        formAjaxSubmit.init('#form-modal-body form', '#form-modal');
-    }
-  };
+  $('a#startharvester').on('click', function( event ) {
+
+    var url = $(this).attr( "title" );
+
+    $.post( url, function( result ) {
+      for (var key in result) {
+        alert(key + " Info: " + result[key]);
+      }
+    });
+
+  });
+
+  $('a#stopharvester').on('click', function( event ) {
+
+    var url = $(this).attr( "title" );
+
+    $.post( url, function( result ) {
+      for (var key in result) {
+        alert(key + " Info: " + result[key]);
+      }
+    });
+
+  });
+
+  $('#startallharvesters').on('click', function( event ) {
+
+    var url = '/v1/harvesters/start';
+
+    $.post( url, function( result ) {
+      for (var key in result) {
+        alert(key + " Info: " + result[key]);
+      }
+    });
+
+  });
+
 });

@@ -57,8 +57,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 SWAGGER_SETTINGS = {}
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
-LOGIN_REDIRECT_URL = 'api:home'
-LOGOUT_REDIRECT_URL = 'api:home'
+LOGIN_REDIRECT_URL = 'hcc_gui'
+LOGOUT_REDIRECT_URL = 'hcc_gui'
 
 REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
