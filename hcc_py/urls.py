@@ -14,13 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path, include
 # development settings for gunicorn!!
-#from django.conf import settings
-#from django.conf.urls.static import static
+# from django.conf import settings
+# from django.conf.urls.static import static
 # end here
 from rest_framework_swagger.views import get_swagger_view
 from api import views
+from api.forms import LoginForm
 from api.views import RegisterHarvesterFormView
 
 __author__ = "Jan Frömberg"
@@ -37,9 +39,10 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
     path('admin/', admin.site.urls),
-    path('v1/', include(('api.urls'), namespace='v1')),
+    path('v1/', include('api.urls', namespace='v1')),
     path('docs/', schema_view),
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('accounts/login/', auth_views.LoginView.as_view(authentication_form=LoginForm)),
     path('accounts/', include('django.contrib.auth.urls')),
     path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle_harvester'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),

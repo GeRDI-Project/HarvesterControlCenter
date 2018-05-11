@@ -38,7 +38,7 @@ def index(request):
 @login_required
 def toggle_harvester(request, name):
     harv = get_object_or_404(Harvester, name=name)
-    if harv.enabled == True:
+    if harv.enabled is True:
         harv.disable()
     else:
         harv.enable()
@@ -82,6 +82,7 @@ def start_harvest(request, name, format=None):
     harvester = Harvester.objects.get(name=name)
     return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
 
+
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def stop_harvest(request, name, format=None):
@@ -90,6 +91,7 @@ def stop_harvest(request, name, format=None):
     """
     harvester = Harvester.objects.get(name=name)
     return Helpers.harvester_response_wrapper(harvester, 'POST_STOPH')
+
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))

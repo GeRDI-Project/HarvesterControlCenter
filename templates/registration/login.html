@@ -1,41 +1,31 @@
 {% extends "hcc/base.html" %}
+{% load crispy_forms_tags %}
 
-{% block title %}<a href="/hcc">Harvester Control Center - Login</a>{% endblock %}
+{% block title %}<a href="{% url 'hcc_gui' %}">Harvester Control Center - Login</a>{% endblock %}
 
 {% block content %}
 
 <div class="content container">
+    <div class="row">
+    {% if form.errors %}
+      <div class="alert alert-dismissible alert-warning">
+          Your username and password didn't match. Please try again.
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      </div>
+    {% endif %}
 
-  {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
-  {% endif %}
+    {% if next %}
+        {% if user.is_authenticated %}
+            <p>Your account doesn't have access to this page. To proceed,
+            please login with an account that has access.</p>
+        {% else %}
+            <p>Please login to see this page.</p>
+        {% endif %}
+    {% endif %}
 
-  {% if next %}
-      {% if user.is_authenticated %}
-        <p>Your account doesn't have access to this page. To proceed,
-          please login with an account that has access.</p>
-      {% else %}
-        <p>Please login to see this page.</p>
-      {% endif %}
-  {% endif %}
+    {% crispy form %}
 
-  <form method="post" action="{% url 'login' %}">
-  {% csrf_token %}
-  <table>
-    <tr>
-        <td>{{ form.username.label_tag }}</td>
-        <td>{{ form.username }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.password.label_tag }}</td>
-        <td>{{ form.password }}</td>
-    </tr>
-  </table>
-
-  <input type="submit" value="login" />
-  <input type="hidden" name="next" value="{{ next }}" />
-  </form>
-
+    </div>
 </div>
 
 {% endblock %}

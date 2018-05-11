@@ -12,13 +12,18 @@ __version__ = "1.0.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
-class Helpers():
+
+class Helpers:
     """Custom helper class."""
 
+    @staticmethod
     def harvester_response_wrapper(harvester, request_type):
-        """Return a harvester response."""
+        """Return a harvester response.
+        :type harvester: a harvester
+        :type request_type: string indicating a request to be fullfilled
+        """
         feedback = {}
-        if harvester.enabled == True:
+        if harvester.enabled is True:
             try:
                 if request_type == 'GET_STATUS':
                     feedback[harvester.name] = {}
@@ -28,8 +33,9 @@ class Helpers():
                     feedback[harvester.name]['cached_docs'] = response.text
 
                     # response = requests.get(harvester.url + Harvester_API.G_BOOLEAN_OUTDATED_DOCS, stream=True)
-                    # if response.status_code == status.HTTP_404_NOT_FOUND:
-                    #     feedback[harvester.name]['mdata_outdated'] = 'offline. Resource on server not found. Check URL.'
+                    # if response.status_code is status.HTTP_404_NOT_FOUND:
+                    #     feedback[harvester.name]['mdata_outdated'] = \
+                    #          'offline. Resource on server not found. Check URL.'
                     # else:
                     #     feedback[harvester.name]['mdata_outdated'] = bool(response.text)
 
@@ -47,7 +53,8 @@ class Helpers():
                             feedback[harvester.name]['progress_max'] = int(response.text)
                         else:
                             feedback[harvester.name]['progress_max'] = int(response.text.split("/")[1])
-                            feedback[harvester.name]['progress_cur'] = int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
+                            feedback[harvester.name]['progress_cur'] = \
+                                int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
 
                 elif request_type == 'POST_STARTH':
                     response = requests.post(harvester.url + Harvester_API.P_HARVEST, stream=True)
@@ -66,7 +73,7 @@ class Helpers():
 
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down.", status=status.HTTP_408_REQUEST_TIMEOUT)
-                feedback[harvester.name] = response.status_text + '. ' + response.data
+                feedback[harvester.name] = response.status_text + '. ' + response.data + str(e.strerror)
             return Response(feedback, status=response.status_code)
         else:
-            return Response({harvester.name : 'disabled'}, status=status.HTTP_423_LOCKED)
+            return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
