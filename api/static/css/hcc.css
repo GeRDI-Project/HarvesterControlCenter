@@ -16,7 +16,24 @@ body {
 }
 
 a {
-  color: #FCA204;
+  color: #b730c9;
+}
+
+a:hover {
+  color: #bc6bc6;
+}
+
+.btn-primary,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+    background-color: #b730c9 !important;
+    border-color: #b730c9;
+}
+
+.btn-primary:hover {
+    background-color: #bc6bc6 !important;
+    border-color: #bc6bc6;
 }
 
 h1, h2, h3, h4 {
@@ -24,13 +41,13 @@ h1, h2, h3, h4 {
 }
 
 h1 a {
-    color: #FCA204;
+    color: #b730c9;
     font-family: 'Open Sans';
 }
 
 .login {
     float: right;
-    color: #ffffff;
+    color: #FFFFFF;
 }
 
 .save {

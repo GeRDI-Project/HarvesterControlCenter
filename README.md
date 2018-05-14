@@ -1,4 +1,4 @@
-# Harvester Control Center
+# Harvester Control Center v1.0.0
 A harvester Control Center REST api written in Django
 
 ## Technologies used
@@ -58,6 +58,11 @@ A harvester Control Center REST api written in Django
         http://localhost:8000/docs/
         http://localhost:8000/admin/
         http://localhost:8000/v1/
+    ```
+    
+    A GUI is accessible on your browser by using
+    ```
+        http://localhost:8000/hcc/
     ```
 
     Get your _USER_TOKEN_ via POST-request to Resource /v1/get-token/

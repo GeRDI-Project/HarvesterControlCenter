@@ -25,12 +25,14 @@
               </div>
             </div>
         </div>
-      </div><br>
+    </div><br>
 
-      <div class="btn-group" role="group" aria-label="ControlPanel">
-        <a href="#" id="startallharvesters" type="button" class="btn btn-primary">Start</a>
-        <button type="button" class="btn btn-warning">Abort</button>
-      </div>
+
+    <div class="btn-group" role="group" aria-label="ControlPanel">
+        <button id="startallharvesters" type="button" class="btn btn-primary">Start</button>
+        <button id="stopallharvesters" type="button" class="btn btn-danger">Abort</button>
+    </div>
+    <br>
 
       {% if harvesters|length > 0 %}
 
@@ -89,17 +91,19 @@
                   <p class="card-text">API: <a href="{{ harvester.url }}/harvest">{{ harvester.url }}</a></p>
                   <p class="card-text">
                       <ul class="list-group">
-                      <li class="list-group-item">Status <button class="btn btn-sm btn btn-outline-info button-form " title="Make a POST request on the Harvester Status resource" data-toggle="modal" data-target="#infoModal">Info</button></li>
-                      {% for k, val in status.items %}
-                        {% if k == harvester.name %}
-                            <li class="list-group-item list-group-item-primary">{{ val }}</li>
-                        {% endif %}
-                      {% endfor %}</ul></p>
+                        <li class="list-group-item">Status <button class="btn btn-sm btn btn-outline-info button-form " title="Make a POST request on the Harvester Status resource" data-toggle="modal" data-target="#infoModal">Info</button></li>
+                        {% for k, val in status.items %}
+                            {% if k == harvester.name %}
+                        <li class="list-group-item list-group-item-primary">{{ val }}</li>
+                            {% endif %}
+                        {% endfor %}
+                      </ul>
+                  </p>
                       <div class="input-group input-group-sm mb-3">
                         <div class="input-group-prepend">
                           <span class="input-group-text" id="inputGroup-sizing-sm">Crontab (daily=0 0 * 0 0)</span>
                         </div>
-                        <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                        <input title="crontab" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                       </div>
                 </div>
               </div>
@@ -178,7 +182,7 @@
         </div>
 
       {% else %}
-          <div class="alert alert-info" role="info">Register a new Harvester via API or Controlcenter.</div>
+          <div class="alert alert-info" role="alert">Register a new Harvester via API or Controlcenter.</div>
       {% endif %}
 
     {% else %}

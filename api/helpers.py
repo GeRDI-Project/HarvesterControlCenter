@@ -2,12 +2,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from requests.exceptions import ConnectionError
 import requests
-from .harvester_api import Harvester_API
+from .harvesterapi import HarvesterApi
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
-__license__ = "Apache"
+__license__ = "Apache 2.0"
 __version__ = "1.0.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
@@ -27,9 +27,9 @@ class Helpers:
             try:
                 if request_type == 'GET_STATUS':
                     feedback[harvester.name] = {}
-                    response = requests.get(harvester.url + Harvester_API.G_STATUS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApi.G_STATUS, stream=True)
                     feedback[harvester.name]['status'] = response.text
-                    response = requests.get(harvester.url + Harvester_API.G_HARVESTED_DOCS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApi.G_HARVESTED_DOCS, stream=True)
                     feedback[harvester.name]['cached_docs'] = response.text
 
                     # response = requests.get(harvester.url + Harvester_API.G_BOOLEAN_OUTDATED_DOCS, stream=True)
@@ -39,13 +39,13 @@ class Helpers:
                     # else:
                     #     feedback[harvester.name]['mdata_outdated'] = bool(response.text)
 
-                    response = requests.get(harvester.url + Harvester_API.G_DATA_PROVIDER, stream=True)
+                    response = requests.get(harvester.url + HarvesterApi.G_DATA_PROVIDER, stream=True)
                     feedback[harvester.name]['data_pvd'] = response.text
-                    response = requests.get(harvester.url + Harvester_API.G_MAX_DOCS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApi.G_MAX_DOCS, stream=True)
                     feedback[harvester.name]['max_docs'] = response.text
-                    response = requests.get(harvester.url + Harvester_API.G_HEALTH, stream=True)
+                    response = requests.get(harvester.url + HarvesterApi.G_HEALTH, stream=True)
                     feedback[harvester.name]['health'] = response.text
-                    response = requests.get(harvester.url + Harvester_API.G_PROGRESS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApi.G_PROGRESS, stream=True)
                     feedback[harvester.name]['progress'] = response.text
                     if "N" not in response.text:
                         feedback[harvester.name]['progress_cur'] = feedback[harvester.name]['cached_docs']
@@ -57,13 +57,25 @@ class Helpers:
                                 int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
 
                 elif request_type == 'POST_STARTH':
-                    response = requests.post(harvester.url + Harvester_API.P_HARVEST, stream=True)
+                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST, stream=True)
                     feedback[harvester.name] = response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
 
                 elif request_type == 'POST_STOPH':
-                    response = requests.post(harvester.url + Harvester_API.P_HARVEST_ABORT, stream=True)
+                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST_ABORT, stream=True)
+                    feedback[harvester.name] = response.text
+                    if response.status_code == status.HTTP_404_NOT_FOUND:
+                        feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
+
+                elif request_type == 'POST_CRON':
+                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST_CRON, stream=True)
+                    feedback[harvester.name] = response.text
+                    if response.status_code == status.HTTP_404_NOT_FOUND:
+                        feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
+
+                elif request_type == 'GET_SCHEDULE':
+                    response = requests.get(harvester.url + HarvesterApi.G_HARVEST_CRON, stream=True)
                     feedback[harvester.name] = response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
