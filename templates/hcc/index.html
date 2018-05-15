@@ -9,7 +9,6 @@
         <div class="col-sm">
             <div class="card">
               <h3 class="card-header">Register new Harvester</h3>
-
               <div class="card-body">
                 <a href="{% url 'hreg-form' %}" id="reg-button"><i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i></a>
                 <!-- <a id="register-button" href="{% url 'hreg-form' %}" data-toggle="modal" data-target="#form-modal">Register</a> -->
@@ -27,7 +26,6 @@
         </div>
     </div><br>
 
-
     <div class="btn-group" role="group" aria-label="ControlPanel">
         <button id="startallharvesters" type="button" class="btn btn-primary">Start</button>
         <button id="stopallharvesters" type="button" class="btn btn-danger">Abort</button>
@@ -35,10 +33,9 @@
     <br>
 
       {% if harvesters|length > 0 %}
-
-      <div class="accordion" id="accordionExample">
+          <div class="accordion" id="harvesterAccordion">
         <div class="card">
-          <div class="card-header" id="headingOne">
+            <div class="card-header" id="headingEnabled">
             <h5 class="mb-0">
               <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                 Enabled Harvesters
@@ -46,7 +43,7 @@
             </h5>
           </div>
           <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionDisabled">
-            <div class="card-body">
+              <div class="card-body">
               <div class="container">
               <div class="row">
               {% for harvester in harvesters %}
@@ -114,9 +111,7 @@
             </div>
           </div>
           </div>
-
-        </div><br>
-
+        </div>
         <div class="card">
           <div class="card-header" id="headingDisabled">
             <h5 class="mb-0">
@@ -178,21 +173,20 @@
             </div>
           </div>
           </div>
-        </div><br>
         </div>
-
+          </div>
       {% else %}
-          <div class="alert alert-info" role="alert">Register a new Harvester via API or Controlcenter.</div>
+          <div class="alert alert-info" role="alert">Register a new Harvester via API or the Control Center.</div>
       {% endif %}
 
     {% else %}
-      <div class="alert alert-warning" role="alert">You are not logged in ..</div>
+        <div class="alert alert-warning" role="alert">You are not logged in ..</div>
     {% endif %}
-
 </div>
 
 <!-- Info Modal -->
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="info-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">

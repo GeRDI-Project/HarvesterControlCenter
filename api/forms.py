@@ -16,6 +16,11 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 
 
 class HarvesterForm(forms.ModelForm):
+    """
+    This class represents a HarvesterRegistration Form.
+    It smoothly integrates into bootstrap design via crispy-forms framework.
+    The helper property comes from crispy forms and configures thew form.
+    """
     class Meta:
         model = Harvester
         fields = ['name', 'repository', 'url']
@@ -31,6 +36,10 @@ class HarvesterForm(forms.ModelForm):
 
 
 class LoginForm(AuthenticationForm):
+    """
+    This class represents a Login Form used with crispy forms.
+    A helper property had to  be called in order to use crispy forms styling.
+    """
     username = forms.CharField(label="", required=True)
     password = forms.CharField(label="", required=True, widget=forms.PasswordInput)
 

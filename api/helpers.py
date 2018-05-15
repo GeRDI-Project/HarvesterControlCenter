@@ -1,7 +1,8 @@
-from rest_framework.response import Response
-from rest_framework import status
-from requests.exceptions import ConnectionError
 import requests
+from requests.exceptions import ConnectionError
+from rest_framework import status
+from rest_framework.response import Response
+
 from .harvesterapi import HarvesterApi
 
 __author__ = "Jan Frömberg"
@@ -14,7 +15,7 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 
 
 class Helpers:
-    """Custom helper class."""
+    """Custom helper class to handle all the post and get requests via a request_type attribute."""
 
     @staticmethod
     def harvester_response_wrapper(harvester, request_type):

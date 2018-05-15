@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
-from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
+
 from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 __author__ = "Jan Frömberg"
@@ -14,9 +15,8 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
 
-# A Harvester model which is also used for serialization
 class Harvester(models.Model):
-    """This class represents the Harvester model."""
+    """This class represents the Harvester model which is also used for serialization."""
     name = models.CharField(max_length=255, blank=False, unique=True)
     metadataPrefix = models.CharField(max_length=255, blank=True)
     repository = models.CharField(max_length=255, blank=True)

@@ -1,9 +1,10 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import include, path, reverse, resolve
-from django.contrib.auth.models import User
-from rest_framework.test import APITestCase, URLPatternsTestCase, APIClient
-from rest_framework.authtoken.models import Token
 from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APITestCase, URLPatternsTestCase, APIClient
+
 from .models import Harvester
 
 __author__ = "Jan Frömberg"
@@ -64,12 +65,14 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             self.harvester_data,
             format="json")
 
-    def test_startharvesters_view_status_code(self):
+    def test_start_harvesters_view_status_code(self):
+        """Test the API command start all harvesters with reverse lookup of the resource."""
         url = reverse('api:run-harvesters')
         response = self.client.post(url)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
 
-    def test_harvestersgo_url_resolves_run_harvesters_view(self):
+    def test_harvesters_go_url_resolves_run_harvesters_view(self):
+        """Check if the harvester API command <<start all harvesters>> resolves to the correct view."""
         view = resolve('/v1/harvesters/start')
         self.assertEquals(view.url_name, 'run-harvesters')
 

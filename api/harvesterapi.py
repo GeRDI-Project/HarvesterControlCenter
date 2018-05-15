@@ -8,8 +8,14 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 
 
 class HarvesterApi:
+    """
+
+     This Class holds a list of Harvester API constants which will be updated accordingly to the Harvester-BaseLibrary.
+
+    """
     P_HARVEST = "/harvest"
     P_HARVEST_ABORT = "/harvest/abort"
+    P_HARVEST_RESET = "/harvest/reset"
     P_HARVEST_SUBMIT = "/harvest/submit"
     P_HARVEST_SAVE = "/harvest/save"
     P_HARVEST_CRON = "/harvest/schedule?cron="

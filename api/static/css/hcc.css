@@ -7,6 +7,7 @@ body {
     margin-top: 0;
     margin-bottom: 20px;
     padding: 20px 20px 20px 40px;
+    box-shadow: 0px 5px 10px #7a5193;
 }
 
 .page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
@@ -67,7 +68,9 @@ h1 a {
 }
 
 footer {
-  background-color: #5d3a9e;
-  color: #ffffff;
-  padding: 10px 10px 10px 10px;
+    background-color: #5d3a9e;
+    color: #ffffff;
+    padding: 10px 10px 10px 10px;
+    margin-top: 10px;
+    box-shadow: 0 0 0 #7a5193, 0px -5px 10px #7a5193;
 }

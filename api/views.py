@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
@@ -28,24 +29,38 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 
 
 def index(request):
+    """
+    Index to show something meaningful instead of an empty page.
+    :param request:
+    :return: a HttpResponse
+    """
     return HttpResponse('Chuck Norris will never have a heart attack. His heart \
                         isn\'t nearly foolish enough to attack him.')
 
 
 @login_required
 def toggle_harvester(request, name):
+    """
+    This function toggles the enabled and disabled stratus of an harvester.
+
+    :param request: the request
+    :param name: name of the harvester
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
     harv = get_object_or_404(Harvester, name=name)
     if harv.enabled is True:
         harv.disable()
+        messages.add_message(request, messages.SUCCESS, name + ' harvester disabled.')
     else:
         harv.enable()
+        messages.add_message(request, messages.SUCCESS, name + ' harvester enabled.')
     return HttpResponseRedirect('/hcc/')
 
 
 # @login_required
 def home(request):
     """
-    Home Entrypoint of GUI Web-Application
+    Home entry point of GUI Web-Application
     """
     feedback = {}
     harvesters = Harvester.objects.all()
@@ -67,6 +82,7 @@ def run_harvesters(request, format=None):
     for harvester in harvesters:
         response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
         feedback[harvester.name] = response.data[harvester.name]
+    # messages.add_message(request, messages.INFO, 'Start all harvester triggered.')
     return Response(feedback, status=status.HTTP_200_OK)
 
 
@@ -77,6 +93,7 @@ def start_harvest(request, name, format=None):
     Start Harvest via POST request to a harvester url
     """
     harvester = Harvester.objects.get(name=name)
+    # messages.add_message(request, messages.INFO, name + ' start triggered.')
     return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
 
 
@@ -87,6 +104,7 @@ def stop_harvest(request, name, format=None):
     Stop Harvest via POST request to a harvester url
     """
     harvester = Harvester.objects.get(name=name)
+    # messages.add_message(request, messages.INFO, name + ' stop triggered.')
     return Helpers.harvester_response_wrapper(harvester, 'POST_STOPH')
 
 
