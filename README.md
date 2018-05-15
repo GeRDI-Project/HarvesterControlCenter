@@ -75,7 +75,7 @@ A harvester Control Center REST api written in Django
 
     For instance getting all harvesters (_/v1/harvesters/_) via Token-Authentication:
     ```bash
-        $ curl -X GET --header 'Accept: application/json' --header 'X-CSRFToken: AJcweNkQirt51Z2lg0c94FujhSNYFiu5grZLR2N4D8r1X2wrUaUlK8EOieEStFR9' --header 'Authorization: Basic [USER_TOKEN]' 'http://localhost:8000/v1/harvesters/'
+        $ curl -X GET --header 'Accept: application/json' --header 'X-CSRFToken: AJcweNkQirt51Z2lg0c94FujhSNYFiu5grZLR2N4D8r1X2wrUaUlK8EOieEStFR9' --header 'Authorization: Token [USER_TOKEN]' 'http://localhost:8000/v1/harvesters/'
     ```
 
 * #### Deploy a Docker Container for production with nginx as buildin reverse proxy
