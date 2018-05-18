@@ -15,7 +15,7 @@ import os
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
-__license__ = "Apache"
+__license__ = "Apache 2.0"
 __version__ = "1.0.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
@@ -49,7 +49,16 @@ INSTALLED_APPS = [
     'api',
     'rest_framework.authtoken',
     'rest_framework_swagger',
+    'crispy_forms',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+SWAGGER_SETTINGS = {}
+LOGIN_URL = 'rest_framework:login'
+LOGOUT_URL = 'rest_framework:logout'
+LOGIN_REDIRECT_URL = 'hcc_gui'
+LOGOUT_REDIRECT_URL = 'hcc_gui'
 
 REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
@@ -128,7 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'de-ch'
 
 TIME_ZONE = 'Europe/Berlin'
 
@@ -143,3 +152,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")

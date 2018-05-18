@@ -1,0 +1,239 @@
+{% extends 'hcc/base.html' %}
+
+{% block title %}<a href="/hcc/">Harvester Control Center</a>{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if user.is_authenticated %}
+            <div class="row">
+                <div class="col-sm">
+                    <div class="card">
+                        <h3 class="card-header">Register new Harvester</h3>
+                        <div class="card-body">
+                            <a href="{% url 'hreg-form' %}" id="reg-button"><i class="fa fa-plus-circle fa-5x"
+                                                                               aria-hidden="true"></i></a>
+                            <!-- <a id="register-button" href="{% url 'hreg-form' %}" data-toggle="modal" data-target="#form-modal">Register</a> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="card">
+                        <h3 class="card-header">Deploy new Harvester</h3>
+
+                        <div class="card-body">
+                            <a href="#"><i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div><br>
+
+            <div class="btn-group" role="group" aria-label="ControlPanel">
+                <button id="startallharvesters" type="button" class="btn btn-primary">Start</button>
+                <button id="stopallharvesters" type="button" class="btn btn-warning">Abort</button>
+            </div>
+            <br>
+
+            {% if harvesters|length > 0 %}
+                <div class="accordion" id="harvesterAccordion">
+                    <div class="card">
+                        <div class="card-header" id="headingEnabled">
+                            <h5 class="mb-0">
+                                <button class="btn btn-outline-info" type="button" data-toggle="collapse"
+                                        data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Enabled Harvesters
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+                             data-parent="#accordionDisabled">
+                            <div class="card-body">
+                                <div class="container">
+                                    <div class="row">
+                                        {% for harvester in harvesters %}
+                                            {% if harvester.enabled %}
+                                                <div class="col-4">
+                                                    <div class="card">
+                                                        <h3 class="card-header">
+                                                            <a href="{% url 'toggle_harvester' name=harvester.name %}"
+                                                               type="button" class="btn btn-success btn-sm"><i
+                                                                    class="fa fa-toggle-on" aria-hidden="true"></i></a>
+                                                            <span class="badge badge-success">{{ harvester.name|lower|capfirst }}</span>
+                                                            <a id="startharvester"
+                                                               title="{% url 'api:startharvest' name=harvester.name %}"
+                                                               href="#" type="button" class="btn btn-primary btn-sm">
+                                                                <i class="fa fa-play-circle" aria-hidden="true"></i>
+                                                            </a>
+                                                            <a id="stopharvester"
+                                                               title="{% url 'api:stopharvest' name=harvester.name %}"
+                                                               href="#" type="button" class="btn btn-primary btn-sm">
+                                                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                                            </a>
+                                                        </h3>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title"><a
+                                                                    href="{% url 'api:harvester-detail' name=harvester.name %}">HCC
+                                                                API Details</a></h5>
+                                                            {% for k, val in status.items %}
+                                                                {% if k == harvester.name %}
+                                                                    {% if val.status == 'harvesting' or val.status == 'saving' %}
+                                                                        <div class="progress">
+                                                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success w-{{ val.progress_cur }}"
+                                                                                 role="progressbar"
+                                                                                 aria-valuenow="{{ val.progress_cur }}"
+                                                                                 aria-valuemin="0"
+                                                                                 aria-valuemax="{{ val.progress_max }}">{{ val.progress_cur }}%
+                                                                            </div>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            <p class="card-text">
+                                                                Metadata: {{ harvester.metadataPrefix }}</p>
+                                                            <p class="card-text">API: <a
+                                                                    href="{{ harvester.url }}/harvest">{{ harvester.url }}</a>
+                                                            </p>
+                                                            <div class="card-text">
+                                                                <ul class="list-group">
+                                                                    <li class="list-group-item">Status
+                                                                        <button class="btn btn-sm btn btn-outline-info button-form "
+                                                                                title="Make a POST request on the Harvester Status resource"
+                                                                                data-toggle="modal"
+                                                                                data-target="#infoModal">Info
+                                                                        </button>
+                                                                    </li>
+                                                                    {% for k, val in status.items %}
+                                                                        {% if k == harvester.name %}
+                                                                            <li class="list-group-item list-group-item-primary">{{ val }}</li>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                            <div class="input-group input-group-sm mb-3">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text"
+                                                                          id="inputGroup-sizing-sm">Crontab (daily=0 0 * 0 0)</span>
+                                                                </div>
+                                                                <input title="crontab" type="text" class="form-control"
+                                                                       aria-label="Small"
+                                                                       aria-describedby="inputGroup-sizing-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" id="headingDisabled">
+                            <h5 class="mb-0">
+                                <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse"
+                                        data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Disabled Harvesters
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo"
+                             data-parent="#accordionDisabled">
+                            <div class="card-body">
+                                <div class="container">
+                                    <div class="row">
+                                        {% for harvester in harvesters %}
+                                            {% if harvester.enabled is not True %}
+                                                <div class="col-3">
+                                                    <div class="card">
+                                                        <h3 class="card-header">
+                                                            <a href="{% url 'toggle_harvester' name=harvester.name %}"
+                                                               type="button" class="btn btn-secondary btn-sm"><i
+                                                                    class="fa fa-toggle-off" aria-hidden="true"></i></a>
+                                                            <span class="badge badge-secondary">{{ harvester.name|lower|capfirst }}</span>
+                                                        </h3>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title"><a
+                                                                    href="{% url 'api:harvester-detail' name=harvester.name %}">HCC
+                                                                API Details</a></h5>
+                                                            {% for k, val in status.items %}
+                                                                {% if k == harvester.name %}
+                                                                    {% if val.status == 'harvesting' or val.status == 'saving' %}
+                                                                        <div class="progress">
+                                                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success w-{{ val.progress_cur }}"
+                                                                                 role="progressbar"
+                                                                                 aria-valuenow="{{ val.progress_cur }}"
+                                                                                 aria-valuemin="0"
+                                                                                 aria-valuemax="{{ val.progress_max }}">{{ val.progress_cur }}%
+                                                                            </div>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
+
+                                                            <p class="card-text">
+                                                                Metadata: {{ harvester.metadataPrefix }}</p>
+                                                            <p class="card-text">API: <a
+                                                                    href="{{ harvester.url }}/harvest">{{ harvester.url }}</a>
+                                                            </p>
+                                                            <p class="card-text">Status:
+                                                                {% for k, val in status.items %}
+                                                                    {% if k == harvester.name %}
+                                                                        {{ val }}
+                                                                    {% endif %}
+                                                                {% endfor %}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">Register a new Harvester via API or the Control Center.</div>
+            {% endif %}
+
+        {% else %}
+            <div class="alert alert-warning" role="alert">You are not logged in ..</div>
+        {% endif %}
+    </div>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h4 class="text-center">API-Call - get all Harvester status...</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <form class="button-form" action="/v1/harvesters/status" data-method="POST">
+                        <button class="btn btn-danger">POST</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="form-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal title</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div id="form-modal-body" class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+{% endblock %}

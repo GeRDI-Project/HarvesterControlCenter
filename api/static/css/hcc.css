@@ -1,0 +1,91 @@
+body {
+    background-color: #cac6c1;
+    color: #454545;
+    height: 100%;
+    padding-top: 150px;
+    padding-bottom: 100px;
+}
+
+.page-header {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 1000;
+    width: 100%;
+    background-color: #eeeeee;
+    color: #454545;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding: 20px 20px 20px 40px;
+    box-shadow: 0 5px 10px #b1a698;
+}
+
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    color: #454545;
+    font-size: 36pt;
+    text-decoration: none;
+}
+
+a {
+    color: #ba2744;
+}
+
+a:hover {
+    color: #d64f68;
+}
+
+.btn-primary,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+    background-color: #ba2744 !important;
+    border-color: #ba2744;
+}
+
+.btn-primary:hover {
+    background-color: #d64f68 !important;
+    border-color: #d64f68;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1 a {
+    color: #ba2744;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.login {
+    float: right;
+    color: #454545;
+}
+
+.save {
+    float: right;
+}
+
+.harvester-form textarea, .harvester-form input {
+    width: 100%;
+}
+
+.harvester {
+    margin-bottom: 35px;
+}
+
+.harvester h1 a, .harvester h1 a:visited {
+    color: #000000;
+}
+
+footer {
+    background-color: #eeeeee;
+    color: #454545;
+    padding: 10px 10px 10px 10px;
+    margin-top: 10px;
+    box-shadow: 0 0 0 #b1a698, 0 -5px 10px #b1a698;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+}
