@@ -28,7 +28,9 @@ class Harvester(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     # TODO: Preparation for future Harvester registration
-    # harvester_token = models.CharField(max_length=255, blank=False)
+    # harvester_token = models.CharField(max_length=255, blank=True)
+    # harvester_user = models.CharField(max_length=255, blank=True)
+    # harvester_pass = models.CharField(max_length=255, blank=True)
 
     class Meta:
         ordering = ['name']

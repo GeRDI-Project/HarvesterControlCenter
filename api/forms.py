@@ -28,10 +28,17 @@ class HarvesterForm(forms.ModelForm):
     @property
     def helper(self):
         helper = FormHelper()
-        helper.form_tag = False  # don't render form DOM element
+        helper.form_method = 'POST'
+        helper.form_class = 'form-horizontal'
+        helper.form_tag = True  # render form DOM element
         helper.render_unmentioned_fields = True  # render all fields
-        helper.label_class = 'col-md-2'
+        helper.label_class = 'col-md-5'
         helper.field_class = 'col-md-10'
+        helper.layout = Layout(
+            FormActions(
+                Submit('hreg-form', 'Register', css_class="btn-primary")
+            )
+        )
         return helper
 
 
@@ -50,9 +57,9 @@ class LoginForm(AuthenticationForm):
         helper.form_class = 'form-horizontal'
         helper.layout = Layout(
             PrependedText('username', '<i class="fa fa-user" aria-hidden="true"></i>',
-                          css_class='form-control-sm', placeholder='Username'),
+                          css_class='form-control', placeholder='Username'),
             PrependedText('password', '<i class="fa fa-unlock" aria-hidden="true"></i>',
-                          css_class='form-control-sm', placeholder='Password'),
+                          css_class='form-control', placeholder='Password'),
             FormActions(
                 Submit('login', 'login', css_class="btn-primary")
             )

@@ -1,3 +1,5 @@
+# import base64
+
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
@@ -29,3 +31,7 @@ class HarvesterApi:
     G_BOOLEAN_OUTDATED_DOCS = "/harvest/outdated"
     D_HARVEST_CRON = "/harvest/schedule?cron="
     D_HARVEST_ALLCRONS = "/harvest/schedule"
+
+    # HARVESTER_USER = ""
+    # HARVESTER_PASS = ""
+    # credentials = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
