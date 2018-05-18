@@ -27,6 +27,7 @@ class Harvester(models.Model):
     url = models.URLField(max_length=255, blank=False, unique=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+
     # TODO: Preparation for future Harvester registration
     # harvester_token = models.CharField(max_length=255, blank=True)
     # harvester_user = models.CharField(max_length=255, blank=True)

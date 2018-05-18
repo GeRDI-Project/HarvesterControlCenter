@@ -48,7 +48,7 @@ def toggle_harvester(request, name):
     :return: an HttpResponseRedirect to the Main HCC page
     """
     harv = get_object_or_404(Harvester, name=name)
-    if harv.enabled is True:
+    if harv.enabled:
         harv.disable()
         messages.add_message(request, messages.SUCCESS, name + ' harvester disabled.')
     else:

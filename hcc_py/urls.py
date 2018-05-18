@@ -47,4 +47,4 @@ urlpatterns = [
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/login/', auth_views.LoginView.as_view(authentication_form=LoginForm)),
     path('accounts/', include('django.contrib.auth.urls')),
-] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #dev settings remove for production and use nginx as reverse proxy
+]  # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #dev settings remove for production and use nginx as reverse proxy

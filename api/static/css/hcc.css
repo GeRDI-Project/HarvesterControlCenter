@@ -7,10 +7,10 @@ body {
 }
 
 .page-header {
-    position:fixed;
-    top:0px;
-    left:0px;
-    z-index:1000;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 1000;
     width: 100%;
     background-color: #eeeeee;
     color: #454545;
@@ -27,11 +27,11 @@ body {
 }
 
 a {
-  color: #ba2744;
+    color: #ba2744;
 }
 
 a:hover {
-  color: #d64f68;
+    color: #d64f68;
 }
 
 .btn-primary,
@@ -84,8 +84,8 @@ footer {
     margin-top: 10px;
     box-shadow: 0 0 0 #b1a698, 0 -5px 10px #b1a698;
     width: 100%;
-    position:fixed;
-    bottom:0;
-    left:0;
-    z-index:1000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
 }

@@ -21,6 +21,7 @@ class HarvesterForm(forms.ModelForm):
     It smoothly integrates into bootstrap design via crispy-forms framework.
     The helper property comes from crispy forms and configures thew form.
     """
+
     class Meta:
         model = Harvester
         fields = ['name', 'repository', 'url']
