@@ -35,6 +35,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['10.222.21.22']
 
+# Setup support for proxy headers
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
