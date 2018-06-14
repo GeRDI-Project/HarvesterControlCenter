@@ -27,13 +27,13 @@
                 </div>
             </div><br>
 
-            <div class="btn-group" role="group" aria-label="ControlPanel">
-                <button id="startallharvesters" type="button" class="btn btn-primary">Start</button>
-                <button id="stopallharvesters" type="button" class="btn btn-warning">Abort</button>
-            </div>
-            <br>
-
             {% if harvesters|length > 0 %}
+
+                <div class="btn-group" role="group" aria-label="ControlPanel">
+                    <button id="startallharvesters" type="button" class="btn btn-primary">Start</button>
+                    <button id="stopallharvesters" type="button" class="btn btn-warning">Abort</button>
+                </div>
+                <br>
                 <div class="accordion" id="harvesterAccordion">
                     <div class="card">
                         <div class="card-header" id="headingEnabled">
@@ -72,7 +72,7 @@
                                                         <div class="card-body">
                                                             <h5 class="card-title"><a
                                                                     href="{% url 'api:harvester-detail' name=harvester.name %}">HCC
-                                                                API Details</a></h5>
+                                                                API for {{ harvester.name }}</a></h5>
                                                             {% for k, val in status.items %}
                                                                 {% if k == harvester.name %}
                                                                     {% if val.status == 'harvesting' or val.status == 'saving' %}
@@ -154,7 +154,7 @@
                                                         <div class="card-body">
                                                             <h5 class="card-title"><a
                                                                     href="{% url 'api:harvester-detail' name=harvester.name %}">HCC
-                                                                API Details</a></h5>
+                                                                API for {{ harvester.name }}</a></h5>
                                                             {% for k, val in status.items %}
                                                                 {% if k == harvester.name %}
                                                                     {% if val.status == 'harvesting' or val.status == 'saving' %}
