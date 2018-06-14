@@ -85,7 +85,19 @@ footer {
     box-shadow: 0 0 0 #b1a698, 0 -5px 10px #b1a698;
     width: 100%;
     position: fixed;
+    text-align: center;
     bottom: 0;
     left: 0;
     z-index: 1000;
+}
+
+.footer a {
+  border-left-style: solid;
+  border-width: 1px;
+  padding-left: 4px;
+  color: #454545;
+}
+
+.footer-links a:first-child {
+    border-left-style: none;
 }

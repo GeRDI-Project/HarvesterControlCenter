@@ -1,7 +1,6 @@
-
 <!doctype html>
 <html lang="de">
-  <head>
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,10 +14,11 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
 
     <title>Harvester Control Center</title>
-  </head>
-  <body>
-    <div class="page-header">
-      <div class="login">
+</head>
+<body>
+
+<div class="page-header">
+    <div class="login">
         {% if user.is_authenticated %}
 
             Hej, {{ user.username|lower|capfirst }}.
@@ -26,39 +26,37 @@
 
         {% else %}
 
-          <a href="{% url 'login' %}" class=""><i class="fa fa-sign-in fa-2x" aria-hidden="true"></i></a>
-          log in.
+            <a href="{% url 'login' %}" class=""><i class="fa fa-sign-in fa-2x" aria-hidden="true"></i></a>
+            log in.
 
         {% endif %}
-      </div>
-      <h1>{% block title %}{% endblock %}</h1>
     </div>
+    <h1>{% block title %}{% endblock %}</h1>
+</div>
 
-    <div class="container">
-      {% if messages %}
-          {% for message in messages %}
-          <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
-              {{ message }}
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-          </div>
-          {% endfor %}
-      {% endif %}
-    </div>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
 
-    {% block content %}
-    {% endblock %}
+{% block content %}
+{% endblock %}
 
-    <footer>
-      <div class="content text-center">
-        <i class="fa fa-copyright" aria-hidden="true"></i> GeRDI Project 2016 - ZIH TU Dresden - Impressum
-      </div>
-    </footer>
+{% block footer %}
+    {% include 'hcc/footer.html' %}
+{% endblock %}
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
-    <script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
-    <script src="{% static "js/bootstrap.min.js" %}"></script>
-    <script src="{% static "js/hcc.js" %}"></script>
-  </body>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
+<script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
+<script src="{% static "js/bootstrap.min.js" %}"></script>
+<script src="{% static "js/hcc.js" %}"></script>
+</body>
 </html>
