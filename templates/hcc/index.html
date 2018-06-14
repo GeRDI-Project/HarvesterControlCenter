@@ -54,17 +54,17 @@
                                                 <div class="col-4">
                                                     <div class="card">
                                                         <h3 class="card-header">
-                                                            <a href="{% url 'toggle_harvester' name=harvester.name %}"
+                                                            <a href="{% url 'toggle-harvester' name=harvester.name %}"
                                                                type="button" class="btn btn-success btn-sm"><i
                                                                     class="fa fa-toggle-on" aria-hidden="true"></i></a>
                                                             <span class="badge badge-success">{{ harvester.name|lower|capfirst }}</span>
                                                             <a id="startharvester"
-                                                               title="{% url 'api:startharvest' name=harvester.name %}"
+                                                               title="{% url 'api:start-harvest' name=harvester.name %}"
                                                                href="#" type="button" class="btn btn-primary btn-sm">
                                                                 <i class="fa fa-play-circle" aria-hidden="true"></i>
                                                             </a>
                                                             <a id="stopharvester"
-                                                               title="{% url 'api:stopharvest' name=harvester.name %}"
+                                                               title="{% url 'api:stop-harvest' name=harvester.name %}"
                                                                href="#" type="button" class="btn btn-primary btn-sm">
                                                                 <i class="fa fa-ban" aria-hidden="true"></i>
                                                             </a>
@@ -146,7 +146,7 @@
                                                 <div class="col-3">
                                                     <div class="card">
                                                         <h3 class="card-header">
-                                                            <a href="{% url 'toggle_harvester' name=harvester.name %}"
+                                                            <a href="{% url 'toggle-harvester' name=harvester.name %}"
                                                                type="button" class="btn btn-secondary btn-sm"><i
                                                                     class="fa fa-toggle-off" aria-hidden="true"></i></a>
                                                             <span class="badge badge-secondary">{{ harvester.name|lower|capfirst }}</span>
