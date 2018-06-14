@@ -41,7 +41,7 @@ def index(request):
 @login_required
 def toggle_harvester(request, name):
     """
-    This function toggles the enabled and disabled stratus of an harvester.
+    This function toggles the enabled and disabled status of an harvester.
 
     :param request: the request
     :param name: name of the harvester
