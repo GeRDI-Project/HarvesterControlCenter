@@ -16,8 +16,9 @@ COPY . .
 # COPY startup script into container
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-# Install Nginx (later this will be outsourced to another docker container)
-RUN apk add -f --progress --no-cache nginx
+# Install Nginx (later this maybe will be outsourced to another docker container)
+# Install Bash
+RUN apk add -f --progress --no-cache nginx bash
 # Remove the default Nginx configuration file
 RUN rm -v /etc/nginx/nginx.conf
 # Copy a configuration file from the current directory
@@ -29,6 +30,11 @@ ADD nginx/nginx.conf /etc/nginx/
 # Expose ports
 #EXPOSE 8000
 EXPOSE 80
+
+# Migrate Django DB
+RUN python3 manage.py migrate
+
+# TODO: create an initial django superuser
 
 # test nginx config and collect static files for production
 RUN nginx -t && python3 manage.py collectstatic --no-input
