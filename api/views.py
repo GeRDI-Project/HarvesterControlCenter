@@ -19,6 +19,8 @@ from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
 
+import logging
+
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
@@ -26,6 +28,10 @@ __license__ = "Apache 2.0"
 __version__ = "1.0.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -94,6 +100,7 @@ def start_harvest(request, name, format=None):
     """
     harvester = Harvester.objects.get(name=name)
     # messages.add_message(request, messages.INFO, name + ' start triggered.')
+    logger.info('Starting Harvester ' + harvester.name + '(' + str(harvester.owner) + ')')
     return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
 
 
