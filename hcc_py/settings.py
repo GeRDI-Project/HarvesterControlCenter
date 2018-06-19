@@ -33,7 +33,7 @@ SECRET_KEY = '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False")
 
-ALLOWED_HOSTS = ['localhost', '10.222.21.22']
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "")
 
 # Logging configuration
 # LOGGING = {
@@ -56,8 +56,8 @@ ALLOWED_HOSTS = ['localhost', '10.222.21.22']
 # }
 
 # Setup support for proxy headers
-USE_X_FORWARDED_HOST = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", "")
+SECURE_PROXY_SSL_HEADER = os.environ.get("SECURE_PROXY_SSL_HEADER", "")
 
 # Application definition
 
