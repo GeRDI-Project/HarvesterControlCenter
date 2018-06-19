@@ -59,7 +59,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 # e.g. True
 USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', '')
 # e.g. a tuple with ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_PROXY_SSL_HEADER = (os.environ.get('SECURE_PROXY_SSL_HEADER', ''), )
+SECURE_PROXY_SSL_HEADER = (os.environ.get('SECURE_PROXY_SSL_HEADER', ''), '')
 
 # Application definition
 
