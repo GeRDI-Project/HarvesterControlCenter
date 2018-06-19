@@ -28,7 +28,7 @@ ADD nginx/nginx.conf /etc/nginx/
 # RUN echo "daemon on;" >> /etc/nginx/nginx.conf
 
 # Expose ports
-EXPOSE 8080
+EXPOSE 80
 
 # Migrate Django DB and load initial auth data with user:gerdi pw:gerdigerdi
 RUN python3 manage.py makemigrations --noinput && python3 manage.py migrate
