@@ -31,9 +31,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "False")
+DEBUG = os.environ.get('DEBUG', 'False')
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 # Logging configuration
 # LOGGING = {
@@ -56,8 +56,8 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "")
 # }
 
 # Setup support for proxy headers
-USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", "")
-SECURE_PROXY_SSL_HEADER = os.environ.get("SECURE_PROXY_SSL_HEADER", "")
+USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', '')
+SECURE_PROXY_SSL_HEADER = os.environ.get('SECURE_PROXY_SSL_HEADER', '')
 
 # Application definition
 
