@@ -35,29 +35,12 @@ DEBUG = os.environ.get('DEBUG', 'False')
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-# Logging configuration
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': '/var/log/django/debug.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
+# Setup support for proxy headerm
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Setup support for proxy headers
-USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', '')
-SECURE_PROXY_SSL_HEADER = os.environ.get('SECURE_PROXY_SSL_HEADER', '')
+# Configure Django to run in subpath
+FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')
 
 # Application definition
 
@@ -174,5 +157,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '%s/static/' % FORCE_SCRIPT_NAME
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
