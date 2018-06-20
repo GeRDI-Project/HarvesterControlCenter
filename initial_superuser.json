@@ -1,0 +1,28 @@
+[
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$1fMAnvZ8FdAO$n3typhpeLqJTCCiFh9nQbCPAAB0y35UunSdtHguX968=",
+    "last_login": "2018-06-18T08:45:21Z",
+    "is_superuser": true,
+    "username": "gerdi",
+    "first_name": "admin",
+    "last_name": "user",
+    "email": "support@gerdi.org",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2016-03-23T12:01:34Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dv2fpnb5vmss7b077fbxvlrb44x9a576",
+  "fields": {
+    "session_data": "YTQ2YTExNWMxZTg0ZWMwNjdmYzk2ODMwOTA3NmEwMmJlOTU2MDNhYzp7Il9hdXRoX3VzZXJfaWQiOiIyIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIyNTQ5NjQ2MjhmYTI1ZTYwNTgwNmY1MzJiYzE2MmRlZWFlNGQwMGU1In0=",
+    "expire_date": "2018-06-28T13:52:56.104Z"
+  }
+}
+]

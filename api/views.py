@@ -19,6 +19,8 @@ from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
 
+import logging
+
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
@@ -28,14 +30,17 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+
 def index(request):
     """
     Index to show something meaningful instead of an empty page.
     :param request:
     :return: a HttpResponse
     """
-    return HttpResponse('Chuck Norris will never have a heart attack. His heart \
-                        isn\'t nearly foolish enough to attack him.')
+    return HttpResponseRedirect('/docs/')
 
 
 @login_required
@@ -94,6 +99,7 @@ def start_harvest(request, name, format=None):
     """
     harvester = Harvester.objects.get(name=name)
     # messages.add_message(request, messages.INFO, name + ' start triggered.')
+    logger.info('Starting Harvester ' + harvester.name + '(' + str(harvester.owner) + ')')
     return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
 
 

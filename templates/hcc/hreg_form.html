@@ -1,6 +1,6 @@
 {% extends 'hcc/base.html' %}
 
-{% block title %}<a href="/hcc/">Harvester Control Center - Register a new Harvester</a>{% endblock %}
+{% block title %}<a href="{% url 'hcc_gui' %}">Harvester Control Center - Register a new Harvester</a>{% endblock %}
 
 {% block content %}
   {% include 'hcc/hreg_form_inner.html' %}
