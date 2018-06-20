@@ -40,8 +40,7 @@ def index(request):
     :param request:
     :return: a HttpResponse
     """
-    return HttpResponse('Chuck Norris will never have a heart attack. His heart \
-                        isn\'t nearly foolish enough to attack him.')
+    return HttpResponseRedirect('/docs/')
 
 
 @login_required

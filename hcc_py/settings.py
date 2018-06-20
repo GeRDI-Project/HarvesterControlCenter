@@ -38,6 +38,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 # Configure Django to run in subpath
+# https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-FORCE_SCRIPT_NAME
 FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')
 
 # Setup support for proxy headers
@@ -45,6 +46,7 @@ FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')
 USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', '')
 # e.g. a tuple with ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_PROXY_SSL_HEADER = (os.environ.get('SECURE_PROXY_SSL_HEADER', ''), '')
+
 
 # Application definition
 
