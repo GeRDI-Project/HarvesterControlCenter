@@ -32,8 +32,10 @@ SECRET_KEY = '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False')
+
 # A list/array of IPs and FQDNs
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 # Configure Django to run in subpath
 FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')
