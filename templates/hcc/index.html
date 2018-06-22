@@ -1,6 +1,6 @@
 {% extends 'hcc/base.html' %}
 
-{% block title %}<a href="/hcc/">Harvester Control Center</a>{% endblock %}
+{% block title %}<a href="{% url 'hcc_gui' %}">Harvester Control Center</a>{% endblock %}
 
 {% block content %}
     <div class="container">
@@ -90,16 +90,16 @@
                                                             <p class="card-text">
                                                                 Metadata: {{ harvester.metadataPrefix }}</p>
                                                             <p class="card-text">API: <a
-                                                                    href="{{ harvester.url }}/harvest">{{ harvester.url }}</a>
+                                                                    href="{{ harvester.url }}">{{ harvester.url }}</a>
                                                             </p>
                                                             <div class="card-text">
                                                                 <ul class="list-group">
                                                                     <li class="list-group-item">Status
-                                                                        <button class="btn btn-sm btn btn-outline-info button-form "
+                                                                        <!-- <button class="btn btn-sm btn btn-outline-info button-form "
                                                                                 title="Make a POST request on the Harvester Status resource"
                                                                                 data-toggle="modal"
                                                                                 data-target="#infoModal">Info
-                                                                        </button>
+                                                                        </button> -->
                                                                     </li>
                                                                     {% for k, val in status.items %}
                                                                         {% if k == harvester.name %}
@@ -173,7 +173,7 @@
                                                             <p class="card-text">
                                                                 Metadata: {{ harvester.metadataPrefix }}</p>
                                                             <p class="card-text">API: <a
-                                                                    href="{{ harvester.url }}/harvest">{{ harvester.url }}</a>
+                                                                    href="{{ harvester.url }}">{{ harvester.url }}</a>
                                                             </p>
                                                             <p class="card-text">Status:
                                                                 {% for k, val in status.items %}
