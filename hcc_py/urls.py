@@ -43,7 +43,7 @@ urlpatterns = [
     path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls', namespace='v1')),
-    path('docs/', schema_view),
+    path('docs/', schema_view, name='swagger-docs'),
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/login/', auth_views.LoginView.as_view(authentication_form=LoginForm)),
     path('accounts/', include('django.contrib.auth.urls')),

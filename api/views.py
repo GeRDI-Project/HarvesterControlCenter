@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView
 from rest_framework import status, generics, permissions
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -40,7 +40,7 @@ def index(request):
     :param request:
     :return: a HttpResponse
     """
-    return HttpResponseRedirect('/docs/')
+    return HttpResponseRedirect(reverse('swagger-docs'))
 
 
 @login_required
