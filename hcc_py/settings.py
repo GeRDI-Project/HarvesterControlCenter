@@ -37,6 +37,26 @@ DEBUG = os.environ.get('DEBUG', 'False')
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
+# Logging configuration
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': '/var/log/django/debug.log',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
+
 # Configure Django to run in subpath
 # https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-FORCE_SCRIPT_NAME
 FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')

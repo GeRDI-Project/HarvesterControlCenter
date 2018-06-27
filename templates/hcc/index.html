@@ -75,7 +75,7 @@
                                                                 API for {{ harvester.name }}</a></h5>
                                                             {% for k, val in status.items %}
                                                                 {% if k == harvester.name %}
-                                                                    {% if val.status == 'harvesting' or val.status == 'saving' %}
+                                                                    {% if val.status == 'harvesting' or val.status == 'saving' or val.status == 'submitting' %}
                                                                         <div class="progress">
                                                                             <div class="progress-bar progress-bar-striped progress-bar-animated bg-success w-{{ val.progress_cur }}"
                                                                                  role="progressbar"
@@ -111,11 +111,19 @@
                                                             <div class="input-group input-group-sm mb-3">
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text"
-                                                                          id="inputGroup-sizing-sm">Crontab (daily=0 0 * 0 0)</span>
+                                                                          id="inputGroup-sizing-sm">Crontab</span>
                                                                 </div>
-                                                                <input title="crontab" type="text" class="form-control"
+                                                                <input title="cron" id="crontab" type="text" class="form-control"
+                                                                       {% for k, val in status.items %}
+                                                                           {% if k == harvester.name %}
+                                                                               value="{{ val.cron }}"
+                                                                           {% endif %}
+                                                                       {% endfor %}
                                                                        aria-label="Small"
                                                                        aria-describedby="inputGroup-sizing-sm">
+                                                                <div class="input-group-append">
+                                                                    <button id="setcrontab" title="{{ harvester.url }}" class="btn btn-outline-secondary" type="button">Set!</button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>

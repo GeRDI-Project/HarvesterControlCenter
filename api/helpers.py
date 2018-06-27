@@ -56,6 +56,10 @@ class Helpers:
                             feedback[harvester.name]['progress_max'] = int(response.text.split("/")[1])
                             feedback[harvester.name]['progress_cur'] = \
                                 int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
+                    response = requests.get(harvester.url + HarvesterApi.G_HARVEST_CRON, stream=True)
+                    crontab = "Schedules:"
+                    cron = response.text.find(crontab)
+                    feedback[harvester.name]['cron'] = response.text[cron+11:cron+11+9]
 
                 elif request_type == 'POST_STARTH':
                     response = requests.post(harvester.url + HarvesterApi.P_HARVEST, stream=True)
@@ -70,7 +74,19 @@ class Helpers:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
 
                 elif request_type == 'POST_CRON':
-                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST_CRON, stream=True)
+                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST_CRON + '0 0 0 0 0', stream=True)
+                    feedback[harvester.name] = response.text
+                    if response.status_code == status.HTTP_404_NOT_FOUND:
+                        feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
+
+                elif request_type == 'DELETE_CRON':
+                    response = requests.delete(harvester.url + HarvesterApi.D_CRON + '0 0 0 0 0', stream=True)
+                    feedback[harvester.name] = response.text
+                    if response.status_code == status.HTTP_404_NOT_FOUND:
+                        feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
+
+                elif request_type == 'DELETE_ALL_CRON':
+                    response = requests.delete(harvester.url + HarvesterApi.D_ALL_CRONS, stream=True)
                     feedback[harvester.name] = response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'

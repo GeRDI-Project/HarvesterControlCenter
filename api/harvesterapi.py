@@ -29,8 +29,8 @@ class HarvesterApi:
     G_DATA_PROVIDER = "/status/data-provider"
     G_HARVESTED_DOCS = "/status/harvested-documents"
     G_BOOLEAN_OUTDATED_DOCS = "/outdated"
-    D_HARVEST_CRON = "/schedule?cron="
-    D_HARVEST_ALLCRONS = "/schedule"
+    D_CRON = "/schedule?cron="
+    D_ALL_CRONS = "/schedule"
 
     # HARVESTER_USER = ""
     # HARVESTER_PASS = ""

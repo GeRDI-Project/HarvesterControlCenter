@@ -120,4 +120,30 @@ $(document).ready(function () {
 
     });
 
+    $('button#setcrontab').on('click', function (event) {
+
+        var setcron = $(this).attr("title") + '/schedule?cron=' + $('input#crontab').attr("value");
+        var deletecron = $(this).attr("title") + '/schedule';
+
+        $.ajax({
+            url: deletecron,
+            type: 'DELETE',
+            success: function(result) {
+            for (var key in result) {
+                alert(key + " Info: " + result[key]);
+                }
+            }
+        });
+
+        $.post(setcron, function (result) {
+            for (var key in result) {
+                alert(key + " Info: " + result[key]);
+            }
+        }).fail(function (response) {
+            alert('Error: ' + response.responseText);
+        });
+        ;
+
+    });
+
 });
