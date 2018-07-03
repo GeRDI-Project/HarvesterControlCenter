@@ -91,7 +91,7 @@ class Helpers:
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
 
-                elif request_type == 'GET_SCHEDULE':
+                elif request_type == 'GET_CRON':
                     response = requests.get(harvester.url + HarvesterApi.G_HARVEST_CRON, stream=True)
                     feedback[harvester.name] = response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:

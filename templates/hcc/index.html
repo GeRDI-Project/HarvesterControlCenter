@@ -122,7 +122,8 @@
                                                                        aria-label="Small"
                                                                        aria-describedby="inputGroup-sizing-sm">
                                                                 <div class="input-group-append">
-                                                                    <button id="setcrontab" title="{{ harvester.url }}" class="btn btn-outline-secondary" type="button">Set!</button>
+                                                                    <a href="{% url 'api:harvester-cron' name=harvester.name %}" id="cron-button" class="btn btn-outline-secondary" type="button">set!</a>
+                                                                    <!-- <button id="" title="{% url 'api:harvester-cron' name=harvester.name %}" class="btn btn-outline-secondary" type="button">Set!</button> -->
                                                                 </div>
                                                             </div>
                                                         </div>
