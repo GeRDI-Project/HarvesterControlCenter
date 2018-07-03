@@ -69,12 +69,12 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         """Test the API command start all harvesters with reverse lookup of the resource."""
         url = reverse('api:run-harvesters')
         response = self.client.post(url)
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_harvesters_go_url_resolves_run_harvesters_view(self):
         """Check if the harvester API command <<start all harvesters>> resolves to the correct view."""
         view = resolve('/v1/harvesters/start')
-        self.assertEquals(view.url_name, 'run-harvesters')
+        self.assertEqual(view.url_name, 'run-harvesters')
 
     def test_api_can_create_a_harvester(self):
         """Test the api has harvester creation capability."""
@@ -120,4 +120,4 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             format='json',
             follow=True)
 
-        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
