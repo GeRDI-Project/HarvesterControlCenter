@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView
+from django.views import View
 from rest_framework import status, generics, permissions
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view, permission_classes
@@ -59,7 +60,7 @@ def toggle_harvester(request, name):
     else:
         harv.enable()
         messages.add_message(request, messages.SUCCESS, name + ' harvester enabled.')
-    return HttpResponseRedirect('/hcc/')
+    return HttpResponseRedirect(reverse('hcc_gui'))
 
 
 # @login_required
@@ -211,3 +212,23 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView
         form = HarvesterForm(self.request.POST, instance=harv_w_user)
         form.save()
         return super().form_valid(form)
+
+
+class ScheduleHarvesterView(View):
+    """
+
+    This class handles GET, DELETE and PUT request to control the scheduling of harvesters.
+
+    """
+    @staticmethod
+    def get(self, name):
+        harvester = get_object_or_404(Harvester, name=name)
+        return Helpers.harvester_response_wrapper(harvester, 'GET_CRON')
+
+    def post(self, request, name):
+        harvester = get_object_or_404(Harvester, name=name)
+        return Helpers.harvester_response_wrapper(harvester, 'POST_CRON')
+
+    def delete(self, name):
+        harvester = get_object_or_404(Harvester, name=name)
+        return Helpers.harvester_response_wrapper(harvester, 'DELETE_ALL_CRON')
