@@ -5,8 +5,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.views.generic import FormView
-from django.views import View
+from django.views.generic import FormView, RedirectView
 from rest_framework import status, generics, permissions
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view, permission_classes
@@ -71,7 +70,7 @@ def home(request):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS')
+        response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
         feedback[harvester.name] = response.data[harvester.name]
     return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback})
 
@@ -86,7 +85,7 @@ def run_harvesters(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
+        response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
         feedback[harvester.name] = response.data[harvester.name]
     # messages.add_message(request, messages.INFO, 'Start all harvester triggered.')
     return Response(feedback, status=status.HTTP_200_OK)
@@ -101,7 +100,7 @@ def start_harvest(request, name, format=None):
     harvester = Harvester.objects.get(name=name)
     # messages.add_message(request, messages.INFO, name + ' start triggered.')
     logger.info('Starting Harvester ' + harvester.name + '(' + str(harvester.owner) + ')')
-    return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH')
+    return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
 
 
 @api_view(['POST'])
@@ -112,7 +111,7 @@ def stop_harvest(request, name, format=None):
     """
     harvester = Harvester.objects.get(name=name)
     # messages.add_message(request, messages.INFO, name + ' stop triggered.')
-    return Helpers.harvester_response_wrapper(harvester, 'POST_STOPH')
+    return Helpers.harvester_response_wrapper(harvester, 'POST_STOPH', request)
 
 
 @api_view(['POST'])
@@ -124,7 +123,7 @@ def stop_harvesters(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        response = Helpers.harvester_response_wrapper(harvester, 'POST_STOPH')
+        response = Helpers.harvester_response_wrapper(harvester, 'POST_STOPH', request)
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
 
@@ -136,7 +135,7 @@ def get_harvester_state(request, name, format=None):
     View to show a Harvester state via GET Request
     """
     harvester = get_object_or_404(Harvester, name=name)
-    return Helpers.harvester_response_wrapper(harvester, 'GET_STATUS')
+    return Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
 
 
 @api_view(['GET'])
@@ -148,7 +147,7 @@ def get_harvester_states(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS')
+        response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
 
@@ -214,21 +213,26 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView
         return super().form_valid(form)
 
 
-class ScheduleHarvesterView(View):
+class ScheduleHarvesterView(RedirectView):
     """
 
-    This class handles GET, DELETE and PUT request to control the scheduling of harvesters.
+    This class handles GET, DELETE and POST requests to control the scheduling of harvesters.
 
     """
     @staticmethod
-    def get(self, name):
+    def get(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
-        return Helpers.harvester_response_wrapper(harvester, 'GET_CRON')
+        return Helpers.harvester_response_wrapper(harvester, 'GET_CRON', request)
 
     def post(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
-        return Helpers.harvester_response_wrapper(harvester, 'POST_CRON')
+        if request.POST['crontab']:
+            response = Helpers.harvester_response_wrapper(harvester, 'POST_CRON', request)
+        else:
+            response = Helpers.harvester_response_wrapper(harvester, 'DELETE_ALL_CRON', request)
+        messages.add_message(request, messages.INFO, response.data[name])
+        return HttpResponseRedirect(reverse('hcc_gui'))
 
-    def delete(self, name):
+    def delete(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
-        return Helpers.harvester_response_wrapper(harvester, 'DELETE_ALL_CRON')
+        return Helpers.harvester_response_wrapper(harvester, 'DELETE_ALL_CRON', request)

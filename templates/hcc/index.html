@@ -113,7 +113,9 @@
                                                                     <span class="input-group-text"
                                                                           id="inputGroup-sizing-sm">Crontab</span>
                                                                 </div>
-                                                                <input title="cron" id="crontab" type="text" class="form-control"
+                                                                <form action="{% url 'api:harvester-cron' name=harvester.name %}" method="post">
+                                                                {% csrf_token %}
+                                                                <input title="cron" name="crontab" type="text" class="form-control"
                                                                        {% for k, val in status.items %}
                                                                            {% if k == harvester.name %}
                                                                                value="{{ val.cron }}"
@@ -122,9 +124,10 @@
                                                                        aria-label="Small"
                                                                        aria-describedby="inputGroup-sizing-sm">
                                                                 <div class="input-group-append">
-                                                                    <a href="{% url 'api:harvester-cron' name=harvester.name %}" id="cron-button" class="btn btn-outline-secondary" type="button">set!</a>
-                                                                    <!-- <button id="" title="{% url 'api:harvester-cron' name=harvester.name %}" class="btn btn-outline-secondary" type="button">Set!</button> -->
+                                                                    <!-- <input type="submit" value="set!" class="btn btn-outline-secondary" /> -->
+                                                                    <button class="btn btn-outline-secondary" type="submit">Set!</button>
                                                                 </div>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>
