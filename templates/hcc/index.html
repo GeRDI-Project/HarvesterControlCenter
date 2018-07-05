@@ -58,17 +58,44 @@
                                                             <a href="{% url 'toggle-harvester' name=harvester.name %}"
                                                                type="button" class="btn btn-success btn-sm"><i
                                                                     class="fa fa-toggle-on" aria-hidden="true"></i></a>
-                                                            <span class="badge badge-success">{{ harvester.name|lower|capfirst }}</span>
-                                                            <a id="startharvester"
-                                                               title="{% url 'api:start-harvest' name=harvester.name %}"
-                                                               href="#" type="button" class="btn btn-primary btn-sm">
-                                                                <i class="fa fa-play-circle" aria-hidden="true"></i>
-                                                            </a>
-                                                            <a id="stopharvester"
-                                                               title="{% url 'api:stop-harvest' name=harvester.name %}"
-                                                               href="#" type="button" class="btn btn-primary btn-sm">
-                                                                <i class="fa fa-ban" aria-hidden="true"></i>
-                                                            </a>
+                                                            <span class="badge badge-success" data-toggle="tooltip"
+                                                                  data-placement="top"
+                                                                    {% for k, val in status.items %}
+                                                                        {% if k == harvester.name %}
+                                                                  title="Harvested and Cached Documents: {{ val.cached_docs }}"
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                            >{{ harvester.name|lower|capfirst }}</span>
+                                                            {% for k, val in status.items %}
+                                                                {% if k == harvester.name %}
+                                                                    {% if val.status == 'harvesting' %}
+                                                                        <a id="stopharvester"
+                                                                           title="{% url 'api:stop-harvest' name=harvester.name %}"
+                                                                           href="#" type="button"
+                                                                           class="btn btn-primary btn-sm">
+                                                                            <i class="fa fa-ban" aria-hidden="true"></i>
+                                                                        </a>
+                                                                    {% else %}
+                                                                        <a id="startharvester"
+                                                                           title="{% url 'api:start-harvest' name=harvester.name %}"
+                                                                           href="#" type="button"
+                                                                           class="btn btn-primary btn-sm">
+                                                                            <i class="fa fa-play-circle"
+                                                                               aria-hidden="true"></i>
+                                                                        </a>
+                                                                    {% endif %}
+                                                                    {% if val.health != 'OK' %}
+                                                                        <i class="fa fa-exclamation-triangle"
+                                                                           style="color: #ffc107;" data-toggle="tooltip"
+                                                                           data-placement="top" title="{{ val.health }}"
+                                                                           aria-hidden="true"></i>
+                                                                    {% else %}
+                                                                        <i class="fa fa-check-circle"
+                                                                           aria-hidden="true"></i>
+                                                                    {% endif %}
+                                                                    <div>{{ val.status }} ...</div>
+                                                                {% endif %}
+                                                            {% endfor %}
                                                         </h3>
                                                         <div class="card-body">
                                                             <h5 class="card-title"><a
