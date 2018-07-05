@@ -17,6 +17,10 @@ limitations under the License.
 
 $(document).ready(function () {
 
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
     var formButton = {
         regClick: function () {
             $('#form-modal-body').load('/v1/harvesters/register #hreg-form-content', formButton.toggleModal);
@@ -128,9 +132,9 @@ $(document).ready(function () {
         $.ajax({
             url: deletecron,
             type: 'DELETE',
-            success: function(result) {
-            for (var key in result) {
-                alert(key + " Info: " + result[key]);
+            success: function (result) {
+                for (var key in result) {
+                    alert(key + " Info: " + result[key]);
                 }
             }
         });
