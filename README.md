@@ -5,7 +5,8 @@ A Harvester Control Center GUI with REST-API written in Django
 * [Django](https://www.djangoproject.com/): The web framework for perfectionists with deadlines (Django builds better web apps with less code).
 * [DRF](https://www.django-rest-framework.org/): A powerful and flexible toolkit for building Web APIs
 * [Python3](http://www.python.org): Python is a highly flexible and versatile programming language supporting a vast of use cases like web dev, GUI dev, scientific and numeric, software dev and sys admin
-
+* [FontAwesome](https://fontawesome.com/v4.7.0/icons/): Fontawesome Version 4.7
+* [Bootstrap](https://getbootstrap.com/docs/4.1/getting-started/introduction/): Bootstrap 4
 
 ## Installation
 * If you wish to run your own build, first ensure you have python globally installed in your computer. If not, you can get python [here](https://www.python.org").
