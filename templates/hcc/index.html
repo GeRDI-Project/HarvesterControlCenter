@@ -113,20 +113,23 @@
                                                                     <span class="input-group-text"
                                                                           id="inputGroup-sizing-sm">Crontab</span>
                                                                 </div>
-                                                                <form action="{% url 'api:harvester-cron' name=harvester.name %}" method="post">
-                                                                {% csrf_token %}
-                                                                <input title="cron" name="crontab" type="text" class="form-control"
-                                                                       {% for k, val in status.items %}
-                                                                           {% if k == harvester.name %}
-                                                                               value="{{ val.cron }}"
-                                                                           {% endif %}
-                                                                       {% endfor %}
-                                                                       aria-label="Small"
-                                                                       aria-describedby="inputGroup-sizing-sm">
-                                                                <div class="input-group-append">
-                                                                    <!-- <input type="submit" value="set!" class="btn btn-outline-secondary" /> -->
-                                                                    <button class="btn btn-outline-secondary" type="submit">Set!</button>
-                                                                </div>
+                                                                <form action="{% url 'api:harvester-cron' name=harvester.name %}"
+                                                                      method="post">
+                                                                    {% csrf_token %}
+                                                                    <input title="cron" name="crontab" type="text"
+                                                                           class="form-control"
+                                                                            {% for k, val in status.items %}
+                                                                                {% if k == harvester.name %}
+                                                                           value="{{ val.cron }}"
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                           aria-label="Small"
+                                                                           aria-describedby="inputGroup-sizing-sm">
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                                type="submit">set!
+                                                                        </button>
+                                                                    </div>
                                                                 </form>
                                                             </div>
                                                         </div>

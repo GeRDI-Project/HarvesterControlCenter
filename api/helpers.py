@@ -43,10 +43,13 @@ class Helpers:
 
                     response = requests.get(harvester.url + HarvesterApi.G_DATA_PROVIDER, stream=True)
                     feedback[harvester.name]['data_pvd'] = response.text
+
                     response = requests.get(harvester.url + HarvesterApi.G_MAX_DOCS, stream=True)
                     feedback[harvester.name]['max_docs'] = response.text
+
                     response = requests.get(harvester.url + HarvesterApi.G_HEALTH, stream=True)
                     feedback[harvester.name]['health'] = response.text
+
                     response = requests.get(harvester.url + HarvesterApi.G_PROGRESS, stream=True)
                     feedback[harvester.name]['progress'] = response.text
                     if "N" not in response.text:
@@ -57,10 +60,14 @@ class Helpers:
                             feedback[harvester.name]['progress_max'] = int(response.text.split("/")[1])
                             feedback[harvester.name]['progress_cur'] = \
                                 int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
+
                     response = requests.get(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
                     crontab = "Schedules:"
                     cron = response.text.find(crontab)
-                    feedback[harvester.name]['cron'] = response.text[cron+11:cron+11+9]
+                    cronstr = response.text[cron+11:cron+11+9]
+                    if cronstr[0] == '-':
+                        cronstr = 'no crontab defined yet'
+                    feedback[harvester.name]['cron'] = cronstr
 
                 elif request_type == 'POST_STARTH':
                     response = requests.post(harvester.url + HarvesterApi.P_HARVEST, stream=True)
@@ -75,9 +82,9 @@ class Helpers:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
 
                 elif request_type == 'POST_CRON':
-                    delresponse = requests.delete(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
+                    del_response = requests.delete(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
                     response = requests.post(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['crontab'], stream=True)
-                    feedback[harvester.name] = delresponse.text + ', ' + response.text
+                    feedback[harvester.name] = del_response.text + ', ' + response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
 
@@ -102,7 +109,7 @@ class Helpers:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
 
                 else:
-                    response = Response('no method given')
+                    response = Response('no request_type given')
 
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down.", status=status.HTTP_408_REQUEST_TIMEOUT)

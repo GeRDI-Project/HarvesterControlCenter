@@ -66,3 +66,24 @@ class LoginForm(AuthenticationForm):
             )
         )
         return helper
+
+
+class SchedulerForm(forms.Form):
+    """
+    This class represents a Scheduling Form used with crispy forms.
+    A helper property had to  be called in order to use crispy forms styling.
+    """
+    schedule = forms.CharField(label="", required=True)
+
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_method = 'POST'
+        helper.form_class = 'form-horizontal'
+        helper.layout = Layout(
+            PrependedText('schedule', 'crontab', css_class='form-control', placeholder='0 0 24 12 *'),
+            FormActions(
+                Submit('hcc_gui', 'set!', css_class="btn-primary")
+            )
+        )
+        return helper
