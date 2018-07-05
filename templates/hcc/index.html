@@ -78,7 +78,8 @@
                                                                 {% if k == harvester.name %}
                                                                     {% if val.status == 'harvesting' or val.status == 'saving' or val.status == 'submitting' %}
                                                                         <div class="progress">
-                                                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success w-{{ val.progress_cur }}"
+                                                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                                                                 style="width: {{ val.progress_cur }}%"
                                                                                  role="progressbar"
                                                                                  aria-valuenow="{{ val.progress_cur }}"
                                                                                  aria-valuemin="0"
