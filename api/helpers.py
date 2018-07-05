@@ -83,13 +83,13 @@ class Helpers:
 
                 elif request_type == 'POST_CRON':
                     del_response = requests.delete(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
-                    response = requests.post(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['crontab'], stream=True)
+                    response = requests.post(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['schedule'], stream=True)
                     feedback[harvester.name] = del_response.text + ', ' + response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'
 
                 elif request_type == 'DELETE_CRON':
-                    response = requests.delete(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['crontab'], stream=True)
+                    response = requests.delete(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['schedule'], stream=True)
                     feedback[harvester.name] = response.text
                     if response.status_code == status.HTTP_404_NOT_FOUND:
                         feedback[harvester.name] = 'offline. Resource on server not found. Check URL.'

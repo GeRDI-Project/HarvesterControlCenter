@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.forms import HarvesterForm
+from api.forms import HarvesterForm, SchedulerForm
 from api.helpers import Helpers
 from api.mixins import AjaxTemplateMixin
 from api.models import Harvester
@@ -72,7 +72,17 @@ def home(request):
     for harvester in harvesters:
         response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
         feedback[harvester.name] = response.data[harvester.name]
-    return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback})
+
+    if request.method == 'POST':
+        form = SchedulerForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('hcc_gui'))
+
+    # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every hour
+    else:
+        form = SchedulerForm({'schedule': '0 * * * 0'})
+
+    return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form})
 
 
 @api_view(['POST'])
@@ -226,11 +236,11 @@ class ScheduleHarvesterView(RedirectView):
 
     def post(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
-        if request.POST['crontab']:
+        if request.POST['schedule']:
             response = Helpers.harvester_response_wrapper(harvester, 'POST_CRON', request)
         else:
             response = Helpers.harvester_response_wrapper(harvester, 'DELETE_ALL_CRON', request)
-        messages.add_message(request, messages.INFO, response.data[name])
+        messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
         return HttpResponseRedirect(reverse('hcc_gui'))
 
     def delete(self, request, name):
