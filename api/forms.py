@@ -80,6 +80,6 @@ class SchedulerForm(forms.Form):
         helper = FormHelper()
         helper.form_tag = False
         helper.layout = Layout(
-            FieldWithButtons('schedule', Submit('submit_cron', 'set!', css_class="btn-default"))
+            FieldWithButtons('schedule', Submit('submit_cron', 'set!', css_class="btn-default btn-sm"))
         )
         return helper

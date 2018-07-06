@@ -12,9 +12,13 @@
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/hcc.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+    {% block bootstrap_theme %}
+        <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css" type="text/css">
+    {% endblock %}
 
     <title>Harvester Control Center</title>
 </head>
+
 <body>
 
 <div class="page-header">
@@ -31,7 +35,7 @@
 
         {% endif %}
     </div>
-    <h1>{% block title %}{% endblock %}</h1>
+    <h2>{% block title %}{% endblock %}</h2>
 </div>
 
 <div class="container">

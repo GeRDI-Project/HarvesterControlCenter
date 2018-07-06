@@ -38,13 +38,13 @@ a:hover {
 .btn-primary:active,
 .btn-primary:visited,
 .btn-primary:focus {
-    background-color: #ba2744 !important;
-    border-color: #ba2744;
+    #background-color: #ba2744 !important;
+    #border-color: #ba2744;
 }
 
 .btn-primary:hover {
-    background-color: #d64f68 !important;
-    border-color: #d64f68;
+    #background-color: #d64f68 !important;
+    #border-color: #d64f68;
 }
 
 h1, h2, h3, h4 {
