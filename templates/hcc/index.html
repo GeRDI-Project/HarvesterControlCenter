@@ -66,7 +66,7 @@
                                                                     <span class="badge badge-{{ val.gui_status }}"
                                                                           data-toggle="tooltip"
                                                                           data-placement="top"
-                                                                          title="Harvested and Cached Documents: {{ val.cached_docs }}"
+                                                                          title="{{ val.data_pvd }} Harvested and Cached Documents: {{ val.cached_docs }} of {{ val.max_docs }}"
                                                                 {% endif %}
                                                             {% endfor %}
                                                             >{{ harvester.name|lower|capfirst }}</span>
