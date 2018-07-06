@@ -50,6 +50,18 @@ class Helpers:
                     response = requests.get(harvester.url + HarvesterApi.G_HEALTH, stream=True)
                     feedback[harvester.name]['health'] = response.text
 
+                    if feedback[harvester.name]['health'] == 'OK' and feedback[harvester.name]['status'] == 'idling':
+                        feedback[harvester.name]['gui_status'] = 'success'
+
+                    elif feedback[harvester.name]['health'] != 'OK':
+                        feedback[harvester.name]['gui_status'] = 'warning'
+
+                    elif feedback[harvester.name]['status'].lower() == 'initialization':
+                        feedback[harvester.name]['gui_status'] = 'primary'
+
+                    else:
+                        feedback[harvester.name]['gui_status'] = 'info'
+
                     response = requests.get(harvester.url + HarvesterApi.G_PROGRESS, stream=True)
                     feedback[harvester.name]['progress'] = response.text
                     if "N" not in response.text:
