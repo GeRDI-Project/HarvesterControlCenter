@@ -34,10 +34,11 @@
                     Hello, {{ user.username|lower|capfirst }}.
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownLogin">
-                    <a class="dropdown-item" href="{% url 'logout' %}">Logout <i class="fa fa-sign-out "
-                                                                                 aria-hidden="true"></i></a>
                     <a class="dropdown-item" href="{% url 'swagger-docs' %}">API Documentation</a>
                     <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Interface</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout <i class="fa fa-sign-out "
+                                                                                 aria-hidden="true"></i></a>
                 </div>
             </div>
 
