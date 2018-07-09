@@ -40,6 +40,8 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
     path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle-harvester'),
+    path('hcc/<str:name>/stop', views.stop_harvester, name='stop-harvester'),
+    path('hcc/<str:name>/start', views.start_harvester, name='start-harvester'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls', namespace='v1')),

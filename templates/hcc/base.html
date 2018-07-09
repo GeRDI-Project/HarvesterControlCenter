@@ -22,16 +22,28 @@
 <body>
 
 <div class="page-header">
+
     <div class="login">
         {% if user.is_authenticated %}
 
-            Hej, {{ user.username|lower|capfirst }}.
-            <a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a>
+
+            <div class="dropdown">
+                <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownLogin"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    Hello, {{ user.username|lower|capfirst }}.
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownLogin">
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout <i class="fa fa-sign-out "
+                                                                                 aria-hidden="true"></i></a>
+                    <a class="dropdown-item" href="{% url 'swagger-docs' %}">API Documentation</a>
+                    <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Interface</a>
+                </div>
+            </div>
 
         {% else %}
 
-            <a href="{% url 'login' %}" class=""><i class="fa fa-sign-in fa-2x" aria-hidden="true"></i></a>
-            log in.
+            <a href="{% url 'login' %}" class=""><i class="fa fa-sign-in" aria-hidden="true"></i> log in.</a>
 
         {% endif %}
     </div>

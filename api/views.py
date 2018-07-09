@@ -62,6 +62,36 @@ def toggle_harvester(request, name):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
+@login_required
+def stop_harvester(request, name):
+    """
+    This function stops an harvester.
+
+    :param request: the request
+    :param name: name of the harvester
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+    harv = get_object_or_404(Harvester, name=name)
+    response = Helpers.harvester_response_wrapper(harv, 'POST_STOPH', request)
+    messages.add_message(request, messages.INFO, name + ' ' + response.data[name])
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
+
+@login_required
+def start_harvester(request, name):
+    """
+    This function starts an harvester.
+
+    :param request: the request
+    :param name: name of the harvester
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+    harv = get_object_or_404(Harvester, name=name)
+    response = Helpers.harvester_response_wrapper(harv, 'POST_STARTH', request)
+    messages.add_message(request, messages.INFO, name + ' ' + response.data[name])
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
+
 # @login_required
 def home(request):
     """
