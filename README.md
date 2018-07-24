@@ -47,21 +47,21 @@ A Harvester Control Center GUI with REST-API written in Django
 ### Test the code
    To use Django Testing Environment fire the following command in your Terminal
    ```bash
-       $ python manage.py tests
+       $ python manage.py test
    ```
 
 ### Running in dev mode
+   first, create a super-user
+   ```bash
+      $ python manage.py createsuperuser
+   ```
    Fire up the server using this one simple command:
    ```bash
        $ python manage.py runserver
    ```
 
-   first, create a super-user
-   ```bash
-      $ python manage.py createsuperuser
-   ```
-
-   You can now access the api service on your browser by using
+   You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. 
+   /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
    ```
        http://localhost:8000/docs/
        http://localhost:8000/admin/
