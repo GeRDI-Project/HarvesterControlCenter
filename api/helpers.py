@@ -124,7 +124,7 @@ class Helpers:
                     response = Response('no request_type given')
 
             except ConnectionError as e:
-                response = Response("A Connection Error. Host probably down.", status=status.HTTP_408_REQUEST_TIMEOUT)
+                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
                 feedback[harvester.name] = response.status_text + '. ' + response.data + str(e.strerror)
             return Response(feedback, status=response.status_code)
         else:
