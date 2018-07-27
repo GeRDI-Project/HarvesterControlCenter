@@ -1,7 +1,6 @@
-
 <!doctype html>
 <html lang="de">
-  <head>
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -13,52 +12,68 @@
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/hcc.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+    {% block bootstrap_theme %}
+        <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css" type="text/css">
+    {% endblock %}
 
     <title>Harvester Control Center</title>
-  </head>
-  <body>
-    <div class="page-header">
-      <div class="login">
+</head>
+
+<body>
+
+<div class="page-header">
+
+    <div class="login">
         {% if user.is_authenticated %}
 
-            Hej, {{ user.username|lower|capfirst }}.
-            <a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a>
+
+            <div class="dropdown">
+                <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownLogin"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    Hello, {{ user.username|lower|capfirst }}.
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownLogin">
+                    <a class="dropdown-item" href="{% url 'swagger-docs' %}">API Documentation</a>
+                    <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Interface</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout <i class="fa fa-sign-out "
+                                                                                 aria-hidden="true"></i></a>
+                </div>
+            </div>
 
         {% else %}
 
-          <a href="{% url 'login' %}" class=""><i class="fa fa-sign-in fa-2x" aria-hidden="true"></i></a>
-          log in.
+            <a href="{% url 'login' %}" class=""><i class="fa fa-sign-in" aria-hidden="true"></i> log in.</a>
 
         {% endif %}
-      </div>
-      <h1>{% block title %}{% endblock %}</h1>
     </div>
+    <h2>{% block title %}{% endblock %}</h2>
+</div>
 
-    <div class="container">
-      {% if messages %}
-          {% for message in messages %}
-          <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
-              {{ message }}
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-          </div>
-          {% endfor %}
-      {% endif %}
-    </div>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
 
-    {% block content %}
-    {% endblock %}
+{% block content %}
+{% endblock %}
 
-    <footer>
-      <div class="content text-center">
-        <i class="fa fa-copyright" aria-hidden="true"></i> GeRDI Project 2016 - ZIH TU Dresden - Impressum
-      </div>
-    </footer>
+{% block footer %}
+    {% include 'hcc/footer.html' %}
+{% endblock %}
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
-    <script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
-    <script src="{% static "js/bootstrap.min.js" %}"></script>
-    <script src="{% static "js/hcc.js" %}"></script>
-  </body>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
+<script src="{% static "js/popper.min.js" %}"></script>
+<script src="{% static "js/bootstrap.min.js" %}"></script>
+<script src="{% static "js/hcc.js" %}"></script>
+</body>
 </html>

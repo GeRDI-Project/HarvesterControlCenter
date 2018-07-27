@@ -1,4 +1,4 @@
-from crispy_forms.bootstrap import FormActions, PrependedText
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from django import forms
@@ -64,5 +64,22 @@ class LoginForm(AuthenticationForm):
             FormActions(
                 Submit('login', 'login', css_class="btn-primary")
             )
+        )
+        return helper
+
+
+class SchedulerForm(forms.Form):
+    """
+    This class represents a Scheduling Form used with crispy forms.
+    A helper property had to  be called in order to use crispy forms styling.
+    """
+    schedule = forms.CharField(label="Scheduling Plan:", required=False)
+
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_tag = False
+        helper.layout = Layout(
+            FieldWithButtons('schedule', Submit('submit_cron', 'set!', css_class="btn-default btn-sm"))
         )
         return helper

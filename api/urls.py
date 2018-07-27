@@ -3,7 +3,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
-from .views import HarvesterCreateView, HarvesterDetailsView, UserView, UserDetailsView
+from .views import HarvesterCreateView, HarvesterDetailsView, UserView, UserDetailsView, ScheduleHarvesterView
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -25,13 +25,15 @@ urlpatterns = {
     path('harvesters/<str:name>/',
          HarvesterDetailsView.as_view(), name="harvester-detail"),
     path('harvesters/<str:name>/start/',
-         views.start_harvest, name="startharvest"),
+         views.start_harvest, name="start-harvest"),
     path('harvesters/<str:name>/stop/',
-         views.stop_harvest, name="stopharvest"),
+         views.stop_harvest, name="stop-harvest"),
     path('harvesters/<str:name>/status/',
          views.get_harvester_state, name="harvester-status"),
     path('harvesters/status',
          views.get_harvester_states, name="all-harvester-status"),
+    path('harvesters/<str:name>/schedule/',
+         ScheduleHarvesterView.as_view(), name="harvester-cron"),
     path('users/',
          UserView.as_view(), name="users"),
     path('users/<int:pk>/',
