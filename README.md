@@ -23,7 +23,7 @@ A Harvester Control Center GUI with REST-API written in Django
 * #### Dependencies
     1. Cd into the cloned repo as such:
         ```bash
-            $ cd hcc_py
+            $ cd {{your_repo_path}}
         ```
     2. Create and fire up your virtual environment:
         ```bash
