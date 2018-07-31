@@ -15,14 +15,15 @@
 # limitations under the License.
 
 branch=$(git rev-parse --abbrev-ref HEAD)
+tag=$(awk -F= '/__version__/ { print $2 }' hcc_py/settings.py)
 if [ "$branch" = "master" ]
 then
     dockerRegistry="docker-registry.gerdi.research.lrz.de:5043"
     imageName="harvest/hccenter"
     imageUrl="${dockerRegistry}/${imageName}"
 
-    docker build -t "${imageUrl}:2.1.0" .
-    docker push "${imageUrl}:2.1.0"
+    docker build -t "${imageUrl}:$tag" .
+    docker push "${imageUrl}:$tag"
 
     gittags=$(git tag -l --points-at HEAD)
     if [ ! -z "$gittags" ]
