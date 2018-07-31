@@ -21,8 +21,8 @@ then
     imageName="harvest/hccenter"
     imageUrl="${dockerRegistry}/${imageName}"
 
-    docker build -t "${imageUrl}:latest" .
-    docker push "${imageUrl}:latest"
+    docker build -t "${imageUrl}:2.1.0" .
+    docker push "${imageUrl}:2.1.0"
 
     gittags=$(git tag -l --points-at HEAD)
     if [ ! -z "$gittags" ]
