@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v1.1.0
+# Harvester Control Center (HCC) v2.1.0
 A Harvester Control Center GUI with REST-API written in Django
 
 ## Technologies used
@@ -91,7 +91,7 @@ A Docker Container for production with nginx as buildin reverse proxy.
 
 First build the docker container...
    ```bash
-       $ docker build -t harvest/hccenter:1.0.0 .
+       $ docker build -t harvest/hccenter:latest .
    ````
 ### Environment variable configuration
 There are seven ENV variables which could be used to configure for production use. 
