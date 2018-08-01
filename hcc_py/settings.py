@@ -61,9 +61,9 @@ CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 # https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-FORCE_SCRIPT_NAME
 FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')
 
-# Setup support for proxy headers
-# e.g. True
+# Setup support for proxy headers, e.g. True
 USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', '')
+
 # e.g. a tuple with ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_PROXY_SSL_HEADER = (os.environ.get('SECURE_PROXY_SSL_HEADER', ''), '')
 
