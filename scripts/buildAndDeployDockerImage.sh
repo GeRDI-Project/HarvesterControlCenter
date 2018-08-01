@@ -23,7 +23,13 @@ then
     imageUrl="${dockerRegistry}/${imageName}"
 
     docker build -t "${imageUrl}:$tag" .
-    docker push "${imageUrl}:$tag"
+
+    if [[ "$(docker images -q ${imageUrl}:${tag} 2> /dev/null)" == "" ]]; then
+        docker push "${imageUrl}:${tag}"
+    else
+        echo "Dockerimage with tag $tag already existing in registry. Please change tag in project_path/setting.py."
+    fi
+   
 
     gittags=$(git tag -l --points-at HEAD)
     if [ ! -z "$gittags" ]
