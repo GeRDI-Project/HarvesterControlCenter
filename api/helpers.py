@@ -64,7 +64,7 @@ class Helpers:
 
                     response = requests.get(harvester.url + HarvesterApi.G_PROGRESS, stream=True)
                     feedback[harvester.name]['progress'] = response.text
-                    if "N" not in response.text:
+                    if "N" not in response.text or response.status_code != 500:
                         feedback[harvester.name]['progress_cur'] = feedback[harvester.name]['cached_docs']
                         if "/" not in response.text:
                             feedback[harvester.name]['progress_max'] = int(response.text)
