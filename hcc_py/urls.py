@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
+
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
@@ -30,11 +32,10 @@ __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "1.0.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
-schema_view = get_swagger_view(title='Harvester ControlCenter API')
+schema_view = get_swagger_view(title='Harvester Control Center API', url=os.environ.get('FORCE_SCRIPT_NAME', ''))
 
 urlpatterns = [
     path('', views.index, name='home'),
