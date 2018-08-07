@@ -94,16 +94,15 @@ First build the docker container...
        $ docker build -t harvest/hccenter:latest .
    ````
 ### Environment variable configuration
-There are seven ENV variables which could be used to configure for production use. 
+There are six ENV variables which could be used to configure for production use. 
 Feel free to set them as needed when starting the docker container.
 
     name: "DEBUG" value: "False"
     name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
-    name: "HTTP_X_FORWARDED_PROTO" value: "True"
     name: "USE_X_FORWARDED_HOST" value: "True"
     name: "SECURE_PROXY_SSL_HEADER" value: "HTTP_X_FORWARDED_PROTO,https"
     name: "FORCE_SCRIPT_NAME" value: "/path/to/desired/endpoint"
-    name: "SECRET_KEY" value: "a 50bit or longer string"
+    name: "SECRET_KEY" value: "a 50bit string"
    
    Now run that container.
    ```bash
