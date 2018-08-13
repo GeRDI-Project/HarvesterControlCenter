@@ -17,6 +17,10 @@ limitations under the License.
 
 $(document).ready(function () {
 
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
     var formButton = {
         regClick: function () {
             $('#form-modal-body').load('/v1/harvesters/register #hreg-form-content', formButton.toggleModal);
@@ -110,6 +114,32 @@ $(document).ready(function () {
         var url = '/v1/harvesters/stop';
 
         $.post(url, function (result) {
+            for (var key in result) {
+                alert(key + " Info: " + result[key]);
+            }
+        }).fail(function (response) {
+            alert('Error: ' + response.responseText);
+        });
+        ;
+
+    });
+
+    $('button#setcrontab').on('click', function (event) {
+
+        var setcron = $(this).attr("title") + '/schedule?cron=' + $('input#crontab').val();
+        var deletecron = $(this).attr("title") + '/schedule';
+
+        $.ajax({
+            url: deletecron,
+            type: 'DELETE',
+            success: function (result) {
+                for (var key in result) {
+                    alert(key + " Info: " + result[key]);
+                }
+            }
+        });
+
+        $.post(setcron, function (result) {
             for (var key in result) {
                 alert(key + " Info: " + result[key]);
             }

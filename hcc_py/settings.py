@@ -16,7 +16,7 @@ __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "1.0.0"
+__version__ = "2.1.2"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
@@ -28,22 +28,42 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj'
+SECRET_KEY = os.environ.get('SECRET_KEY', '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False')
 
 # A list/array of IPs and FQDNs
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+
+# Logging configuration
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': '/var/log/django/debug.log',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
 
 # Configure Django to run in subpath
 # https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-FORCE_SCRIPT_NAME
 FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')
 
-# Setup support for proxy headers
-# e.g. True
+# Setup support for proxy headers, e.g. True
 USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', '')
+
 # e.g. a tuple with ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_PROXY_SSL_HEADER = (os.environ.get('SECURE_PROXY_SSL_HEADER', ''), '')
 

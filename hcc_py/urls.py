@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
+
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
@@ -30,20 +32,21 @@ __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "1.0.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
-schema_view = get_swagger_view(title='Harvester ControlCenter API')
+schema_view = get_swagger_view(title='Harvester Control Center API', url=os.environ.get('FORCE_SCRIPT_NAME', ''))
 
 urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
-    path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle_harvester'),
+    path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle-harvester'),
+    path('hcc/<str:name>/stop', views.stop_harvester, name='stop-harvester'),
+    path('hcc/<str:name>/start', views.start_harvester, name='start-harvester'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls', namespace='v1')),
-    path('docs/', schema_view),
+    path('docs/', schema_view, name='swagger-docs'),
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/login/', auth_views.LoginView.as_view(authentication_form=LoginForm)),
     path('accounts/', include('django.contrib.auth.urls')),
