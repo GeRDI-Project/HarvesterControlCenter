@@ -19,7 +19,8 @@ COPY . .
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 # Install Nginx (later this maybe will be outsourced to another docker container)
-RUN apk update && apk add -f --progress --no-cache nginx
+RUN apk update && apk upgrade
+RUN apk add -f --progress --no-cache nginx
 # Remove the default Nginx configuration file
 RUN rm -v /etc/nginx/nginx.conf
 # Copy a configuration file from the current directory
