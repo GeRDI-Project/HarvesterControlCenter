@@ -94,7 +94,7 @@ def start_harvester(request, name):
 # @login_required
 def home(request):
     """
-    Home entry point of GUI Web-Application
+    Home entry point of Web-Application GUI
     """
     feedback = {}
     harvesters = Harvester.objects.all()
@@ -107,9 +107,9 @@ def home(request):
         if form.is_valid():
             return HttpResponseRedirect(reverse('hcc_gui'))
 
-    # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every hour
+    # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every day 00:00
     else:
-        form = SchedulerForm({'schedule': '0 * * * 0'})
+        form = SchedulerForm({'schedule': '0 0 * * *'})
 
     return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form})
 
@@ -193,7 +193,7 @@ def get_harvester_states(request, format=None):
 
 class HarvesterCreateView(generics.ListCreateAPIView):
     """
-    This class handles the GET and POST requests of our Harvester-Controlcenter rest api.
+    This class handles the GET and POST requests of our Harvester Control Center REST-API.
     """
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     queryset = Harvester.objects.all()
