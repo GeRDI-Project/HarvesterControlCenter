@@ -100,6 +100,10 @@ class Helpers:
                     response = requests.post(harvester.url + HarvesterApi.P_HARVEST_ABORT, stream=True)
                     feedback[harvester.name] = response.text
 
+                elif request_type == 'P_HARVEST_SUBMIT':
+                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST_SUBMIT, stream=True)
+                    feedback[harvester.name] = response.text
+
                 elif request_type == 'POST_CRON':
                     del_response = requests.delete(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
                     response = requests.post(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['schedule'],

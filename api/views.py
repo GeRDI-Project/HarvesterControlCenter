@@ -144,6 +144,18 @@ def start_harvest(request, name, format=None):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
+def start_submit(request, name, format=None):
+    """
+    Start submitting of documents via POST request to a harvester url
+    """
+    harvester = Harvester.objects.get(name=name)
+    # messages.add_message(request, messages.INFO, name + ' start triggered.')
+    logger.info('Submitting of Harvester data ' + harvester.name + '(' + str(harvester.owner) + ')')
+    return Helpers.harvester_response_wrapper(harvester, 'P_HARVEST_SUBMIT', request)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
 def stop_harvest(request, name, format=None):
     """
     Stop Harvest via POST request to a harvester url
