@@ -25,6 +25,8 @@ urlpatterns = {
          HarvesterDetailsView.as_view(), name="harvester-detail"),
     path('harvesters/<str:name>/start/',
          views.start_harvest, name="start-harvest"),
+    path('harvesters/<str:name>/submit/',
+         views.start_submit, name="start-submit"),
     path('harvesters/<str:name>/stop/',
          views.stop_harvest, name="stop-harvest"),
     path('harvesters/<str:name>/status/',

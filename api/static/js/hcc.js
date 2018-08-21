@@ -79,6 +79,21 @@ $(document).ready(function () {
 
     });
 
+    $('a#submitharvester').on('click', function (event) {
+
+        var url = $(this).attr("title");
+
+        $.post(url, function (result) {
+            for (var key in result) {
+                alert(key + " Info: " + result[key]);
+            }
+        }).fail(function (response) {
+            alert('Error: ' + response.responseText);
+        });
+        ;
+
+    });
+
     $('a#stopharvester').on('click', function (event) {
 
         var url = $(this).attr("title");
