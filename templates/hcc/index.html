@@ -41,9 +41,8 @@
                                     Enabled Harvesters
                                 </button>
                                 <div class="btn-group" role="group" aria-label="ControlPanel">
-                                    <button id="startallharvesters" type="button" class="btn btn-primary">start all
-                                    </button>
-                                    <button id="stopallharvesters" type="button" class="btn btn-dark">abort all</button>
+                                    <a id="" href="{% url 'start-harvesters' %}" title="{% url 'start-harvesters' %}" role="button" type="button" class="btn btn-primary">start all</a>
+                                    <a id="" href="{% url 'abort-harvesters' %}" title="{% url 'abort-harvesters' %}" role="button" type="button" class="btn btn-dark">abort all</a>
                                 </div>
                             </h5>
                         </div>
@@ -53,10 +52,9 @@
                             <div class="card-body">
                                 <div class="container">
                                     <div class="row">
-                                        <div class="card-deck">
-                                            {% for harvester in harvesters %}
+                                        {% for harvester in harvesters %}
                                                 {% if harvester.enabled %}
-                                                    <div class="col-sm-4"><br><br>
+                                                    <div class="col-sm-4"><br>
                                                         <div class="card">
                                                             <h4 class="card-header">
                                                                 <div class="clearfix">
@@ -73,7 +71,7 @@
                                                                                         data-toggle="tooltip"
                                                                                         data-placement="top"
                                                                                 {% if val.max_docs %}
-                                                                                        title="{{ val.data_pvd }} Harvested and Cached Documents: {{ val.cached_docs }} of {{ val.max_docs }}"
+                                                                                        title="{{ val.data_pvd }} harvested and cached Documents: {{ val.cached_docs }} of {{ val.max_docs }}"
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         {% endfor %}
@@ -82,34 +80,34 @@
                                                                     {% for k, val in status.items %}
                                                                         {% if k == harvester.name %}
                                                                             {% if val.status == 'harvesting' %}
-                                                                                <a id="stopharvester"
+                                                                                <a id=""
                                                                                    title="{% url 'api:stop-harvest' name=harvester.name %}"
-                                                                                   href="#" role="button"
+                                                                                   href="{% url 'stop-harvester' name=harvester.name %}" role="button"
                                                                                    class="btn btn-primary btn-sm">
                                                                                     <i class="fa fa-ban"
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% else %}
-                                                                                <a id="startharvester"
+                                                                                <a id=""
                                                                                    title="{% url 'api:start-harvest' name=harvester.name %}"
-                                                                                   href="#" role="button"
+                                                                                   href="{% url 'start-harvester' name=harvester.name %}" role="button"
                                                                                    class="btn btn-primary btn-sm">
                                                                                     <i class="fa fa-play-circle"
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
                                                                             {% if val.status == 'submitting' %}
-                                                                                <a id="stopharvester"
+                                                                                <a id=""
                                                                                    title="{% url 'api:stop-harvest' name=harvester.name %}"
-                                                                                   href="#" role="button"
+                                                                                   href="{% url 'stop-harvester' name=harvester.name %}" role="button"
                                                                                    class="btn btn-primary btn-sm">
                                                                                     <i class="fa fa-ban"
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% else %}
-                                                                                <a id="submitharvester"
+                                                                                <a id=""
                                                                                    title="{% url 'api:start-submit' name=harvester.name %}"
-                                                                                   href="#" role="button"
+                                                                                   href="{% url 'submit-harvest' name=harvester.name %}" role="button"
                                                                                    class="btn btn-primary btn-sm">
                                                                                     <i class="fa fa-cloud-upload"
                                                                                        aria-hidden="true"></i>
@@ -191,7 +189,6 @@
                                                     </div>
                                                 {% endif %}
                                             {% endfor %}
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -213,7 +210,7 @@
                                     <div class="row">
                                         {% for harvester in harvesters %}
                                             {% if harvester.enabled is not True %}
-                                                <div class="col-sm-4">
+                                                <div class="col-sm-4"><br>
                                                     <div class="card">
                                                         <h3 class="card-header">
                                                             <a href="{% url 'toggle-harvester' name=harvester.name %}"
@@ -229,7 +226,7 @@
                                                             <p class="card-text">
                                                                 Metadata: {{ harvester.metadataPrefix }}</p>
                                                             <p class="card-text">API: <a
-                                                                    href="{{ harvester.url }}">{{ harvester.url }}</a>
+                                                                    href="{{ harvester.url }}">{{ harvester.url|slice:":30"|add:"..." }}</a>
                                                             </p>
                                                             <p class="card-text">Status:
                                                                 {% for k, val in status.items %}
