@@ -23,7 +23,6 @@ from django.urls import path, include
 # from django.conf.urls.static import static
 # end here
 from rest_framework_swagger.views import get_swagger_view
-from rest_framework.documentation import include_docs_urls
 
 from api import views
 from api.forms import LoginForm
@@ -42,18 +41,13 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
     path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle-harvester'),
-    path('hcc/<str:name>/submit', views.submit_harvest, name='submit-harvest'),
     path('hcc/<str:name>/stop', views.stop_harvester, name='stop-harvester'),
     path('hcc/<str:name>/start', views.start_harvester, name='start-harvester'),
-    path('hcc/startall', views.start_all_harvesters, name='start-harvesters'),
-    path('hcc/abortall', views.abort_all_harvesters, name='abort-harvesters'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls', namespace='v1')),
-    path('docs2/', schema_view, name='swagger-docs'),
-    path('docs/', include_docs_urls(title='HCC API Documentation',
-         schema_url=os.environ.get('FORCE_SCRIPT_NAME', ''))),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('docs/', schema_view, name='swagger-docs'),
+    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/login/', auth_views.LoginView.as_view(authentication_form=LoginForm)),
     path('accounts/', include('django.contrib.auth.urls')),
 ]  # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #dev settings remove for production and use nginx as reverse proxy
