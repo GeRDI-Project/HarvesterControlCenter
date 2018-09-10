@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v2.2.5
+# Harvester Control Center (HCC) v2.3.5
 A Harvester Control Center GUI with REST-API written in Django
 
 ## Technologies used
@@ -100,7 +100,7 @@ Feel free to set them as needed when starting the docker container.
     name: "DEBUG" value: "False"
     name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
     name: "USE_X_FORWARDED_HOST" value: "True"
-    name: "SECURE_PROXY_SSL_HEADER" value: "HTTP_X_FORWARDED_PROTO,https"
+    name: "SECURE_PROXY_SSL_HEADER" value: "https"
     name: "FORCE_SCRIPT_NAME" value: "/path/to/desired/endpoint"
     name: "SECRET_KEY" value: "a 50bit string"
    

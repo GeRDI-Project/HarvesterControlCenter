@@ -130,7 +130,7 @@ class Helpers:
 
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
-                feedback[harvester.name]['health'] = response.status_text + '. ' + response.data + str(e.strerror)
+                feedback[harvester.name]['health'] = response.status_text + '. ' + response.data
                 feedback[harvester.name]['gui_status'] = 'warning'
             return Response(feedback, status=response.status_code)
         else:
