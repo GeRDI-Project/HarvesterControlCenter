@@ -64,39 +64,9 @@ $(document).ready(function () {
 
     $('#register-button').click(formButton.regClick);
 
-    $('a#startharvester').on('click', function (event) {
+    $('a#postharvester').on('click', function (event) {
 
         var url = $(this).attr("title");
-
-        $.post(url, function (result) {
-            for (var key in result) {
-                alert(key + " Info: " + result[key]);
-            }
-        }).fail(function (response) {
-            alert('Error: ' + response.responseText);
-        });
-        ;
-
-    });
-
-    $('a#stopharvester').on('click', function (event) {
-
-        var url = $(this).attr("title");
-
-        $.post(url, function (result) {
-            for (var key in result) {
-                alert(key + " Info: " + result[key]);
-            }
-        }).fail(function (response) {
-            alert('Error: ' + response.responseText);
-        });
-        ;
-
-    });
-
-    $('#startallharvesters').on('click', function (event) {
-
-        var url = '/v1/harvesters/start';
 
         $.post(url, function (result) {
             for (var key in result) {
