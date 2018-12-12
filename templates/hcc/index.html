@@ -66,27 +66,37 @@
                                 <div class="container">
                                     <div class="row">
                                         {% for harvester in harvesters %}
+                                            {% if forloop.first %}
+                                            {% if vt == 'list' %}
+                                                <div class="col-sm-2">
+                                                <ul class="list-group">
+                                            {% endif %}
+                                            {% endif %}
 
                                             {% if harvester.enabled %}
                                                 {% if vt == 'list' %}
-                                                {% if forloop.counter == 1 %}
-                                                    <div class="col-sm-2">
-                                                    <ul class="list-group">
-                                                {% endif %}
+
                                                 {% for k, val in status.items %}
                                                     {% if k == harvester.name %}
                                                         <li class="list-group-item list-group-item-{{ val.gui_status }}"
                                                             data-toggle="tooltip"
                                                             data-placement="right"
                                                             title="{{ val.health }}"><a
-                                                                href="{{ harvester.url }}">{{ harvester.name }}</a><br>
-                                                        {{ val.status }}
+                                                                href="{{ harvester.url }}">{{ harvester.name }}</a> {{ val.status }}
                                                         </li>
                                                     {% endif %}
                                                 {% endfor %}
-                                                {% if forloop.counter == forloop.last %}
-                                                    </ul></div>
+
+                                                {% if forloop.counter|divisibleby:1 %}
+                                                    {% if forloop.last %}
+                                                      </ul><br></div>
+                                                    {% else %}
+                                                      </ul><br></div>
+                                                      <div class="col-sm-2">
+                                                        <ul class="list-group">
+                                                    {% endif %}
                                                 {% endif %}
+
                                                 {% else %}
 
                                                     <div class="col-sm-4"><br>
@@ -149,16 +159,9 @@
                                                                                     <i class="fa fa-ban"
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
-                                                                            {% else %}
-                                                                                <a id=""
-                                                                                   title="{% url 'api:start-submit' name=harvester.name %}"
-                                                                                   href="{% url 'submit-harvest' name=harvester.name %}"
-                                                                                   role="button"
-                                                                                   class="btn btn-primary btn-sm">
-                                                                                    <i class="fa fa-cloud-upload"
-                                                                                       aria-hidden="true"></i>
-                                                                                </a>
+
                                                                             {% endif %}
+                                                                            <small>{{ val.status }}</small>
                                                                             {% if val.health != 'OK' %}
                                                                                 <i class="fa fa-exclamation-triangle float-right"
                                                                                    style="color: #ffc107;"
@@ -167,7 +170,7 @@
                                                                                    title="{{ val.health }}"
                                                                                    aria-hidden="true"></i>
                                                                             {% endif %}
-                                                                            <div>{{ val.status }}</div>
+
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </div>
@@ -196,7 +199,7 @@
                                                                 </div>
                                                                 <ul class="list-group list-group-flush">
                                                                     <li class="list-group-item">
-                                                                        Metadata: {{ harvester.metadataPrefix }}</li>
+                                                                        Notes: {{ harvester.notes }}</li>
                                                                     <li class="list-group-item">API access: <a
                                                                             href="{{ harvester.url }}">{{ harvester.name }}</a>
                                                                     </li>
