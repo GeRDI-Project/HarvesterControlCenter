@@ -18,7 +18,7 @@ class Harvester(models.Model):
     """This class represents the Harvester model which is also used for serialization."""
     name = models.CharField(max_length=255, blank=False, unique=True)
     metadataPrefix = models.CharField(max_length=255, blank=True)
-    repository = models.CharField(max_length=255, blank=True)
+    notes = models.CharField(max_length=255, blank=True)
     enabled = models.BooleanField(default=False)
     owner = models.ForeignKey(
         'auth.User',
