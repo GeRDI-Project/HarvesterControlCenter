@@ -31,10 +31,6 @@ ADD nginx/nginx.conf /etc/nginx/
 # Expose ports
 EXPOSE 80
 
-# Migrate Django DB and load initial auth data with user:gerdi pw:gerdigerdi
-RUN python3 manage.py makemigrations --noinput && python3 manage.py migrate
-RUN python3 manage.py loaddata initial_superuser.json
-
 # test nginx config and collect static files for production
 RUN nginx -t && python3 manage.py collectstatic --no-input
 #RUN python3 manage.py collectstatic --no-input
