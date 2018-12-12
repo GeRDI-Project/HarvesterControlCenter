@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# Migrate Django DB and load initial auth data with user:gerdi pw:gerdigerdi
+# Migrate Django DB
 python3 manage.py makemigrations --noinput && python3 manage.py migrate
+
+#load initial auth data with user:gerdi pw:gerdigerdi
 python3 manage.py loaddata initial_superuser.json
 
 # service nginx start & Start Gunicorn processes
