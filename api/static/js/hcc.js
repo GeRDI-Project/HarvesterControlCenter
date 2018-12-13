@@ -120,4 +120,20 @@ $(document).ready(function () {
 
     });
 
+    var myVar = setInterval(myTimer, 1000);
+    function myTimer() {
+
+      var progress_cur = $("#progresshv").val();
+
+      $.ajax({
+        url: 'localhost:8083/oaipmh/harvest/status/progress',
+        data: {},
+        dataType: 'json',
+        success: function (data) {
+            document.getElementById("progresshv").css("width", data);
+            document.getElementById("progresshv").innerHTML = data;
+        }
+      });
+    }
+
 });
