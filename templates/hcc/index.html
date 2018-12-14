@@ -186,6 +186,7 @@
                                                                             {% if val.status == 'harvesting' or val.status == 'saving' or val.status == 'submitting' %}
                                                                                 <div class="progress">
                                                                                     <div id="progresshv" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                                                                         title="{% url 'api:harvester-status' name=harvester.name %}"
                                                                                          style="width: {{ val.progress_cur }}%"
                                                                                          role="progressbar"
                                                                                          aria-valuenow="{{ val.progress_cur }}"

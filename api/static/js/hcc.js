@@ -120,20 +120,43 @@ $(document).ready(function () {
 
     });
 
-    var myVar = setInterval(myTimer, 1000);
-    function myTimer() {
+    $('#progresshv').on('click', function (event) {
 
-      var progress_cur = $("#progresshv").val();
+      var url = $(this).attr("title")
+      var bar = document.getElementById("progresshv");
+      var width = 99;
+      var id = setInterval(getTick, 2000);
 
-      $.ajax({
-        url: 'localhost:8083/oaipmh/harvest/status/progress',
-        data: {},
-        dataType: 'json',
-        success: function (data) {
-            document.getElementById("progresshv").css("width", data);
-            document.getElementById("progresshv").innerHTML = data;
-        }
-      });
-    }
+      function getTick() {
+          if (!(width >= 100 || width === 'undefined')) {
+              var request = $.ajax({
+                  url: url,
+                  headers: {"Access-Control-Allow-Origin": "*"},
+                  xhrFields: {
+                      withCredentials: true
+                  },
+                  dataType: 'json',
+                  method: 'GET'
+              });
+
+              request.done(function (data) {
+
+                  $.each(data, function (index, element) {
+                      $.each(element, function (i, e) {
+                          if (i === 'progress_cur') {
+                              width = e;
+
+                          }
+                      });
+                  });
+              });
+              bar.style.width = width + '%';
+              bar.innerHTML = width + '%';
+
+          } else {
+              clearInterval(id);
+          }
+      }
+    });
 
 });
