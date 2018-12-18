@@ -40,8 +40,8 @@ class HarvesterApi:
     def __init__(self, strategy):
         self._strategy = strategy
 
-    def HarvesterApi_interface(self):
-        self._strategy.getHarvest_interface()
+    def getHarvest_interface(self):
+        self._strategy.algorithm_interface()
 
 
 class Strategy(metaclass=abc.ABCMeta):
@@ -52,28 +52,28 @@ class Strategy(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def getHarvest_interface(self):
+    def algorithm_interface(self):
         pass
 
 
-class VersionBased6(Strategy):
+class VersionBased6Strategy(Strategy):
     """
     Implement the algorithm using the Strategy interface.
     """
 
-    def getHarvest_interface(self):
+    def algorithm_interface(self):
         pass
 
 
-class VersionBased7(Strategy):
+class VersionBased7Strategy(Strategy):
     """
     Implement the algorithm using the Strategy interface.
     """
 
-    def getHarvest_interface(self):
+    def algorithm_interface(self):
         pass
 
 # usage
-    v7 = VersionBased7()
+    v7 = VersionBased7Strategy()
     context = HarvesterApi(v7)
     context.getHarvest_interface()
