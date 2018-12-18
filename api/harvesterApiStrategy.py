@@ -1,4 +1,5 @@
 # import base64
+import abc
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -8,7 +9,7 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
 
-class HarvesterApi:
+class HarvesterApiConstants:
     """
 
      This Class holds a list of Harvester API constants which will be updated accordingly to the Harvester-BaseLibrary.
@@ -29,3 +30,50 @@ class HarvesterApi:
     # HARVESTER_USER = ""
     # HARVESTER_PASS = ""
     # credentials = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
+
+class HarvesterApi:
+    """
+    Define the interface of interest to clients.
+    Maintain a reference to a Strategy object.
+    """
+
+    def __init__(self, strategy):
+        self._strategy = strategy
+
+    def HarvesterApi_interface(self):
+        self._strategy.getHarvest_interface()
+
+
+class Strategy(metaclass=abc.ABCMeta):
+    """
+    Declare an interface common to all supported algorithms. HarvesterApi
+    uses this interface to call the algorithm defined by a
+    ConcreteStrategy.
+    """
+
+    @abc.abstractmethod
+    def getHarvest_interface(self):
+        pass
+
+
+class VersionBased6(Strategy):
+    """
+    Implement the algorithm using the Strategy interface.
+    """
+
+    def getHarvest_interface(self):
+        pass
+
+
+class VersionBased7(Strategy):
+    """
+    Implement the algorithm using the Strategy interface.
+    """
+
+    def getHarvest_interface(self):
+        pass
+
+# usage
+    v7 = VersionBased7()
+    context = HarvesterApi(v7)
+    context.getHarvest_interface()
