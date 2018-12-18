@@ -123,7 +123,8 @@ $(document).ready(function () {
     $('#progresshv').on('click', function (event) {
 
       var url = $(this).attr("title")
-      var bar = document.getElementById("progresshv");
+      //var bar = document.getElementById("progresshv");
+      var bar = this;
       var width = 99;
       var id = setInterval(getTick, 2000);
 

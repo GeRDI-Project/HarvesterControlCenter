@@ -171,18 +171,7 @@
                                                                                    aria-hidden="true"></i>
                                                                             {% endif %}
 
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </h4>
-                                                            <div class="collapse"
-                                                                 id="collapseHarvester-{{ forloop.counter }}">
-                                                                <div class="card-body">
-                                                                    Control Center API:
-                                                                    <a class="card-title"
-                                                                       href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a>
-                                                                    {% for k, val in status.items %}
-                                                                        {% if k == harvester.name %}
+
                                                                             {% if val.status == 'harvesting' or val.status == 'saving' or val.status == 'submitting' %}
                                                                                 <div class="progress">
                                                                                     <div id="progresshv" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
@@ -195,8 +184,18 @@
                                                                                     </div>
                                                                                 </div>
                                                                             {% endif %}
+
+
                                                                         {% endif %}
                                                                     {% endfor %}
+                                                                </div>
+                                                            </h4>
+                                                            <div class="collapse"
+                                                                 id="collapseHarvester-{{ forloop.counter }}">
+                                                                <div class="card-body">
+                                                                    Control Center API:
+                                                                    <a class="card-title"
+                                                                       href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a>
                                                                 </div>
                                                                 <ul class="list-group list-group-flush">
                                                                     <li class="list-group-item">
