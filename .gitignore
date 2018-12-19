@@ -271,3 +271,5 @@ Temporary Items
 
 
 # End of https://www.gitignore.io/api/macos,django,eclipse,intellij
+.vscode/settings.json
+.vscode/launch.json

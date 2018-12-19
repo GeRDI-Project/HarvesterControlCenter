@@ -18,11 +18,11 @@ class HarvesterSerializer(serializers.ModelSerializer):
     class Meta:
         """Map this serializer to a model and their fields."""
         model = Harvester
-        fields = ('id', 'name', 'owner', 'metadataPrefix', 'repository',
+        fields = ('id', 'name', 'owner', 'metadataPrefix', 'notes',
                   'enabled', 'url', 'date_created', 'date_modified')
         read_only_fields = ('date_created', 'date_modified')
 
-        
+
 class UserSerializer(serializers.ModelSerializer):
     """A user serializer to aid in authentication and authorization."""
 

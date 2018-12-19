@@ -23,7 +23,7 @@ class HarvesterForm(forms.ModelForm):
 
     class Meta:
         model = Harvester
-        fields = ['name', 'repository', 'url']
+        fields = ['name', 'notes', 'url']
 
     @property
     def helper(self):

@@ -1,3 +1,4 @@
+# import schedule
 # import time
 
 __author__ = "Jan Frömberg"
@@ -9,7 +10,7 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 
 
 def job():
-    print("go on harvesting...")
+    print("poll the harvester api...")
 
 
 # schedule.every(10).minutes.do(job)

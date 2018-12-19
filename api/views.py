@@ -72,7 +72,7 @@ def stop_harvester(request, name):
     """
     harv = get_object_or_404(Harvester, name=name)
     response = Helpers.harvester_response_wrapper(harv, 'POST_STOPH', request)
-    messages.add_message(request, messages.INFO, name + ' ' + response.data[name])
+    messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -87,7 +87,7 @@ def start_harvester(request, name):
     """
     harv = get_object_or_404(Harvester, name=name)
     response = Helpers.harvester_response_wrapper(harv, 'POST_STARTH', request)
-    messages.add_message(request, messages.INFO, name + ' ' + response.data[name])
+    messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -107,7 +107,7 @@ def start_all_harvesters(request):
                 messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name]['health'])
             else:
                 messages.add_message(request, messages.INFO,
-                                     harvester.name + ' ' + str(response.data[harvester.name]))
+                                     harvester.name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -127,7 +127,7 @@ def abort_all_harvesters(request):
                 messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name]['health'])
             else:
                 messages.add_message(request, messages.INFO,
-                                     harvester.name + ' ' + str(response.data[harvester.name]))
+                                     harvester.name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -152,6 +152,11 @@ def home(request):
     Home entry point of Web-Application GUI
     """
     feedback = {}
+    if 'viewtype' in request.GET:
+        view_type = request.GET['viewtype']
+    else:
+        view_type = False
+
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
@@ -166,7 +171,7 @@ def home(request):
     else:
         form = SchedulerForm({'schedule': '0 0 * * *'})
     messages.debug(request, feedback)
-    return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form})
+    return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form, 'vt': view_type})
 
 
 @api_view(['POST'])

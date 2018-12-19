@@ -120,4 +120,44 @@ $(document).ready(function () {
 
     });
 
+    $('#progresshv').on('click', function (event) {
+
+      var url = $(this).attr("title")
+      //var bar = document.getElementById("progresshv");
+      var bar = this;
+      var width = 99;
+      var id = setInterval(getTick, 2000);
+
+      function getTick() {
+          if (!(width >= 100 || width === 'undefined')) {
+              var request = $.ajax({
+                  url: url,
+                  headers: {"Access-Control-Allow-Origin": "*"},
+                  xhrFields: {
+                      withCredentials: true
+                  },
+                  dataType: 'json',
+                  method: 'GET'
+              });
+
+              request.done(function (data) {
+
+                  $.each(data, function (index, element) {
+                      $.each(element, function (i, e) {
+                          if (i === 'progress_cur') {
+                              width = e;
+
+                          }
+                      });
+                  });
+              });
+              bar.style.width = width + '%';
+              bar.innerHTML = width + '%';
+
+          } else {
+              clearInterval(id);
+          }
+      }
+    });
+
 });
