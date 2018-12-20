@@ -3,7 +3,7 @@ from requests.exceptions import ConnectionError
 from rest_framework import status
 from rest_framework.response import Response
 
-from .harvesterapi import HarvesterApi
+from .harvesterapi import HarvesterApiConstantsV6
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -27,7 +27,7 @@ class Helpers:
         if harvester.enabled is True:
             try:
                 feedback[harvester.name] = {}
-                response = requests.get(harvester.url + HarvesterApi.G_STATUS, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_STATUS, stream=True)
                 if response.status_code == status.HTTP_401_UNAUTHORIZED:
                     feedback[harvester.name]['health'] = 'Authentication required.'
                     feedback[harvester.name]['gui_status'] = 'warning'
@@ -39,9 +39,9 @@ class Helpers:
 
                 if request_type == 'GET_STATUS':
                     feedback[harvester.name] = {}
-                    response = requests.get(harvester.url + HarvesterApi.G_STATUS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.G_STATUS, stream=True)
                     feedback[harvester.name]['status'] = response.text
-                    response = requests.get(harvester.url + HarvesterApi.G_HARVESTED_DOCS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HARVESTED_DOCS, stream=True)
                     feedback[harvester.name]['cached_docs'] = response.text
 
                     # response = requests.get(harvester.url + Harvester_API.G_BOOLEAN_OUTDATED_DOCS, stream=True)
@@ -51,13 +51,13 @@ class Helpers:
                     # else:
                     #     feedback[harvester.name]['mdata_outdated'] = bool(response.text)
 
-                    response = requests.get(harvester.url + HarvesterApi.G_DATA_PROVIDER, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.G_DATA_PROVIDER, stream=True)
                     feedback[harvester.name]['data_pvd'] = response.text
 
-                    response = requests.get(harvester.url + HarvesterApi.G_MAX_DOCS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.G_MAX_DOCS, stream=True)
                     feedback[harvester.name]['max_docs'] = response.text
 
-                    response = requests.get(harvester.url + HarvesterApi.G_HEALTH, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HEALTH, stream=True)
                     feedback[harvester.name]['health'] = response.text
 
                     if feedback[harvester.name]['health'] == 'OK' and feedback[harvester.name]['status'] == 'idling':
@@ -72,7 +72,7 @@ class Helpers:
                     else:
                         feedback[harvester.name]['gui_status'] = 'info'
 
-                    response = requests.get(harvester.url + HarvesterApi.G_PROGRESS, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.G_PROGRESS, stream=True)
                     feedback[harvester.name]['progress'] = response.text
                     if response.status_code != status.HTTP_500_INTERNAL_SERVER_ERROR \
                             and response.status_code != status.HTTP_400_BAD_REQUEST:
@@ -84,7 +84,7 @@ class Helpers:
                             feedback[harvester.name]['progress_cur'] = \
                                 int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
 
-                    response = requests.get(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
                     crontab = "Schedules:"
                     cron = response.text.find(crontab)
                     cronstring = response.text[cron + 11:cron + 11 + 9]
@@ -93,34 +93,34 @@ class Helpers:
                     feedback[harvester.name]['cron'] = cronstring
 
                 elif request_type == 'POST_STARTH':
-                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST, stream=True)
+                    response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST, stream=True)
                     feedback[harvester.name] = response.text
 
                 elif request_type == 'POST_STOPH':
-                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST_ABORT, stream=True)
+                    response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_ABORT, stream=True)
                     feedback[harvester.name] = response.text
 
                 elif request_type == 'P_HARVEST_SUBMIT':
-                    response = requests.post(harvester.url + HarvesterApi.P_HARVEST_SUBMIT, stream=True)
+                    response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_SUBMIT, stream=True)
                     feedback[harvester.name] = response.text
 
                 elif request_type == 'POST_CRON':
-                    del_response = requests.delete(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
-                    response = requests.post(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['schedule'],
+                    del_response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
+                    response = requests.post(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON + request.POST['schedule'],
                                              stream=True)
                     feedback[harvester.name] = del_response.text + ', ' + response.text
 
                 elif request_type == 'DELETE_CRON':
-                    response = requests.delete(harvester.url + HarvesterApi.PD_HARVEST_CRON + request.POST['schedule'],
+                    response = requests.delete(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON + request.POST['schedule'],
                                                stream=True)
                     feedback[harvester.name] = response.text
 
                 elif request_type == 'DELETE_ALL_CRON':
-                    response = requests.delete(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
+                    response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
                     feedback[harvester.name] = response.text
 
                 elif request_type == 'GET_CRON':
-                    response = requests.get(harvester.url + HarvesterApi.GD_HARVEST_CRON, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
                     crontab = "Schedules:"
                     cron = response.text.find(crontab)
                     feedback[harvester.name] = response.text[cron + 11:cron + 11 + 9]

@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v2.3.5
+# Harvester Control Center (HCC) v2.4.0
 A Harvester Control Center GUI with REST-API written in Django
 
 ## Technologies used
@@ -88,6 +88,9 @@ A Harvester Control Center GUI with REST-API written in Django
 
 ## Deployment
 A Docker Container for production with nginx as buildin reverse proxy.
+If you do not have a SSL Configuration, please remove the line
+"proxy_set_header X-Forwarded-Proto https;" from the nginx configuration
+in folder nginx/nginx.conf.
 
 First build the docker container...
    ```bash

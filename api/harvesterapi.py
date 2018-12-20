@@ -8,7 +8,7 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
 
-class HarvesterApi:
+class HarvesterApiConstantsV6:
     """
 
      This Class holds a list of Harvester API constants which will be updated accordingly to the Harvester-BaseLibrary.

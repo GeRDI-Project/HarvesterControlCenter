@@ -18,6 +18,7 @@ from api.mixins import AjaxTemplateMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
+from api.harvesterApiStrategy import HarvesterApi, VersionBased6Strategy, VersionBased7Strategy
 
 import logging
 
@@ -159,7 +160,10 @@ def home(request):
 
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
+        v6 = VersionBased6Strategy()
+        baseLibraryV6 = HarvesterApi(v6)
+        response = baseLibraryV6.getStausOfHarvester(harvester)
+        # response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
         feedback[harvester.name] = response.data[harvester.name]
 
     if request.method == 'POST':
@@ -184,7 +188,10 @@ def run_harvesters(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
+        v6 = VersionBased6Strategy()
+        baseLibraryV6 = HarvesterApi(v6)
+        response = baseLibraryV6.startHarvest(harvester)
+        # response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
 
@@ -198,7 +205,11 @@ def start_harvest(request, name, format=None):
     harvester = Harvester.objects.get(name=name)
     # messages.add_message(request, messages.INFO, name + ' start triggered.')
     logger.info('Starting Harvester ' + harvester.name + '(' + str(harvester.owner) + ')')
-    return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
+    # usage of API strategy
+    v6 = VersionBased6Strategy()
+    baseLibraryV6 = HarvesterApi(v6)
+    return baseLibraryV6.startHarvest(harvester)
+    # return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
 
 
 @api_view(['POST'])
