@@ -40,7 +40,7 @@ def index(request):
     :param request:
     :return: a HttpResponse
     """
-    return HttpResponseRedirect(reverse('doc'))
+    return HttpResponseRedirect(reverse('swagger-docs'))
 
 
 @login_required

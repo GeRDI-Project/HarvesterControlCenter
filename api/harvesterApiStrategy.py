@@ -15,28 +15,6 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
 
-class HarvesterApiConstantsV7:
-    """
-
-     This Class holds a list of Harvester API constants which will be updated accordingly to the Harvester-BaseLibrary.
-     Current version is 7.x.x See: https://wiki.gerdi-project.de/display/GeRDI/Harvester+Library+7.x.x
-     
-    """
-    PG_HARVEST = "/"
-    P_HARVEST_ABORT = "/abort"
-    P_HARVEST_RESET = "/reset"
-    G_HARVEST_LOG = "/log"
-    P_HARVEST_CRON = "/harvest/schedule/_add" #E.g. {"cronTab" : "0 0 * * *"}
-    G_HARVEST_CRON = "/harvest/schedule"
-    D_HARVEST_CRON = "/harvest/schedule/_delete" #E.g. {"cronTab" : "0 0 * * *"}
-    DALL_HARVEST_CRON = "/harvest/schedule/_deleteAll"
-    G_HEALTH = "/health"
-    G_BOOLEAN_OUTDATED = "/outdated"
-
-    # HARVESTER_USER = ""
-    # HARVESTER_PASS = ""
-    # credentials = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
-
 class HarvesterApi:
     """
     Define the interface of interest to clients.
@@ -161,9 +139,9 @@ class VersionBased6Strategy(Strategy):
 
 class VersionBased7Strategy(Strategy):
     """
-    Implement the algorithm using the Strategy interface.
+    Implement the algorithm for the harvester lib v7.x.x using the Strategy interface.
     """
 
-    def getHarvest(self):
+    def getStatusHarvest(self, harvester):
         pass
 
