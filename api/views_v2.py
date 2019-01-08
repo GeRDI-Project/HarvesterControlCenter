@@ -18,7 +18,8 @@ from api.mixins import AjaxTemplateMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
-from api.harvesterApiStrategy import HarvesterApi, VersionBased6Strategy, VersionBased7Strategy
+from api.harvesterApiStrategy import HarvesterApi, VersionBased7Strategy, VersionBased7Strategy
+from api.constants import HCCJSONConstants as HCCJC
 
 import logging
 
@@ -72,9 +73,9 @@ def stop_harvester(request, name):
     :return: an HttpResponseRedirect to the Main HCC page
     """
     harvester = get_object_or_404(Harvester, name=name)
-    v6 = VersionBased6Strategy()
-    baseLibraryV6 = HarvesterApi(harvester, v6)
-    response = baseLibraryV6.stopHarvest()
+    v7 = VersionBased7Strategy()
+    baseLibraryv7 = HarvesterApi(harvester, v7)
+    response = baseLibraryv7.stopHarvest()
     #response = Helpers.harvester_response_wrapper(harv, 'POST_STOPH', request)
     messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
     return HttpResponseRedirect(reverse('hcc_gui'))
@@ -90,9 +91,9 @@ def start_harvester(request, name):
     :return: an HttpResponseRedirect to the Main HCC page
     """
     harvester = get_object_or_404(Harvester, name=name)
-    v6 = VersionBased6Strategy()
-    baseLibraryV6 = HarvesterApi(harvester, v6)
-    response = baseLibraryV6.startHarvest()
+    v7 = VersionBased7Strategy()
+    baseLibraryv7 = HarvesterApi(harvester, v7)
+    response = baseLibraryv7.startHarvest()
     #response = Helpers.harvester_response_wrapper(harv, 'POST_STARTH', request)
     messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
     return HttpResponseRedirect(reverse('hcc_gui'))
@@ -110,11 +111,11 @@ def start_all_harvesters(request):
     for harvester in harvesters:
         if harvester.enabled:
             #response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
-            v6 = VersionBased6Strategy()
-            baseLibraryV6 = HarvesterApi(harvester, v6)
-            response = baseLibraryV6.startHarvest()
-            if 'health' in response.data[harvester.name]:
-                messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name]['health'])
+            v7 = VersionBased7Strategy()
+            baseLibraryv7 = HarvesterApi(harvester, v7)
+            response = baseLibraryv7.startHarvest()
+            if HCCJC.HEALTH in response.data[harvester.name]:
+                messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
             else:
                 messages.add_message(request, messages.INFO,
                                      harvester.name + ': ' + str(response.data[harvester.name]))
@@ -133,11 +134,11 @@ def abort_all_harvesters(request):
     for harvester in harvesters:
         if harvester.enabled:
             #response = Helpers.harvester_response_wrapper(harvester, 'POST_STOPH', request)
-            v6 = VersionBased6Strategy()
-            baseLibraryV6 = HarvesterApi(harvester, v6)
-            response = baseLibraryV6.stopHarvest()
-            if 'health' in response.data[harvester.name]:
-                messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name]['health'])
+            v7 = VersionBased7Strategy()
+            baseLibraryv7 = HarvesterApi(harvester, v7)
+            response = baseLibraryv7.stopHarvest()
+            if HCCJC.HEALTH in response.data[harvester.name]:
+                messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
             else:
                 messages.add_message(request, messages.INFO,
                                      harvester.name + ': ' + str(response.data[harvester.name]))
@@ -185,16 +186,16 @@ def home(request):
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
-            v6 = VersionBased6Strategy()
-            baseLibraryV6 = HarvesterApi(harvester, v6)
-            response = baseLibraryV6.getStausOfHarvester()
+            v7 = VersionBased7Strategy()
+            baseLibraryv7 = HarvesterApi(harvester, v7)
+            response = baseLibraryv7.getStausOfHarvester()
             # response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
             if response:
                 feedback[harvester.name] = response.data[harvester.name]
             else:
                 feedback[harvester.name] = {}
-                feedback[harvester.name]['gui_status'] = 'warning'
-                feedback[harvester.name]['health'] = 'Error : response object is NULL'
+                feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
+                feedback[harvester.name][HCCJC.HEALTH] = 'Error : response object is NULL'
         return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form, 'vt': view_type})
 
     messages.debug(request, feedback)
@@ -211,9 +212,9 @@ def run_harvesters(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        v6 = VersionBased6Strategy()
-        baseLibraryV6 = HarvesterApi(harvester, v6)
-        response = baseLibraryV6.startHarvest()
+        v7 = VersionBased7Strategy()
+        baseLibraryv7 = HarvesterApi(harvester, v7)
+        response = baseLibraryv7.startHarvest()
         # response = Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
@@ -229,9 +230,9 @@ def start_harvest(request, name, format=None):
     # messages.add_message(request, messages.INFO, name + ' start triggered.')
     logger.info('Starting Harvester ' + harvester.name + '(' + str(harvester.owner) + ')')
     # usage of API strategy
-    v6 = VersionBased6Strategy()
-    baseLibraryV6 = HarvesterApi(harvester, v6)
-    return baseLibraryV6.startHarvest()
+    v7 = VersionBased7Strategy()
+    baseLibraryv7 = HarvesterApi(harvester, v7)
+    return baseLibraryv7.startHarvest()
     # return Helpers.harvester_response_wrapper(harvester, 'POST_STARTH', request)
 
 
@@ -254,9 +255,9 @@ def stop_harvest(request, name, format=None):
     Stop Harvest via POST request to a harvester url
     """
     harvester = Harvester.objects.get(name=name)
-    v6 = VersionBased6Strategy()
-    baseLibraryV6 = HarvesterApi(harvester, v6)
-    return baseLibraryV6.stopHarvest()
+    v7 = VersionBased7Strategy()
+    baseLibraryv7 = HarvesterApi(harvester, v7)
+    return baseLibraryv7.stopHarvest()
     # messages.add_message(request, messages.INFO, name + ' stop triggered.')
     # return Helpers.harvester_response_wrapper(harvester, 'POST_STOPH', request)
 
@@ -271,9 +272,9 @@ def stop_harvesters(request, format=None):
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         #response = Helpers.harvester_response_wrapper(harvester, 'POST_STOPH', request)
-        v6 = VersionBased6Strategy()
-        baseLibraryV6 = HarvesterApi(harvester, v6)
-        response = baseLibraryV6.stopHarvest()
+        v7 = VersionBased7Strategy()
+        baseLibraryv7 = HarvesterApi(harvester, v7)
+        response = baseLibraryv7.stopHarvest()
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
 
@@ -285,9 +286,9 @@ def get_harvester_state(request, name, format=None):
     View to show a Harvester state via GET Request
     """
     harvester = get_object_or_404(Harvester, name=name)
-    v6 = VersionBased6Strategy()
-    baseLibraryV6 = HarvesterApi(harvester, v6)
-    return baseLibraryV6.getStausOfHarvester()
+    v7 = VersionBased7Strategy()
+    baseLibraryv7 = HarvesterApi(harvester, v7)
+    return baseLibraryv7.getStausOfHarvester()
     #return Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
 
 
@@ -300,9 +301,9 @@ def get_harvester_states(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        v6 = VersionBased6Strategy()
-        baseLibraryV6 = HarvesterApi(harvester, v6)
-        response = baseLibraryV6.getStausOfHarvester()
+        v7 = VersionBased7Strategy()
+        baseLibraryv7 = HarvesterApi(harvester, v7)
+        response = baseLibraryv7.getStausOfHarvester()
         #response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
