@@ -77,7 +77,7 @@ def stop_harvester(request, name):
     baseLibraryv7 = HarvesterApi(harvester, v7)
     response = baseLibraryv7.stopHarvest()
     #response = Helpers.harvester_response_wrapper(harv, 'POST_STOPH', request)
-    messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
+    messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -95,7 +95,7 @@ def start_harvester(request, name):
     baseLibraryv7 = HarvesterApi(harvester, v7)
     response = baseLibraryv7.startHarvest()
     #response = Helpers.harvester_response_wrapper(harv, 'POST_STARTH', request)
-    messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
+    messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 

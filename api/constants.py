@@ -17,11 +17,20 @@ class HCCJSONConstants:
     HEALTH = "health"
     GUI_STATUS = "gui_status"
     STATUS = "status"
+    STATE = "state"
     CACHED_DOCS = "cached_docs"
     DATA_PROVIDER = "data_pvd"
     MAX_DOCUMENTS = "max_docs"
+    MAX_DOCUMENT_COUNT = "maxDocumentCount"
     PROGRESS = "progress"
     PROGRESS_MAX = "progress_max"
     PROGRESS_CURRENT = "progress_cur"
     CRONTAB = "cron"
+
+    OK = "OK"
+
+    WARNING = "warning"
+    SUCCESS = "success"
+    PRIMARY = "primary"
+    INFO = "info"
 

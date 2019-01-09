@@ -2,6 +2,7 @@
 import abc
 import requests
 import logging
+import json
 from requests.exceptions import ConnectionError
 from rest_framework import status
 from rest_framework.response import Response
@@ -35,6 +36,7 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def post_stopHarvest(self, harvester):
         pass
+
 
 class HarvesterApi:
     """
@@ -168,7 +170,6 @@ class VersionBased6Strategy(Strategy):
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
 
 
-
 class VersionBased7Strategy(Strategy):
     """
     Implement the algorithm for the harvester lib v7.x.x using the Strategy interface.
@@ -176,21 +177,50 @@ class VersionBased7Strategy(Strategy):
 
     def get_harvesterStatus(self, harvester):
         feedback = {}
-        feedback[harvester.name] = {}
-        feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
-        feedback[harvester.name] = {'not implemented'}
-        return Response(feedback, status=status.HTTP_423_LOCKED)
+        if harvester.enabled:
+            try:
+                feedback[harvester.name] = {}
+                response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, stream=True)
+                harvester_json = json.loads(response.text)
+                feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.HEALTH]
+                if harvester_json[HCCJC.HEALTH] == HCCJC.OK:
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
+                elif harvester_json[HCCJC.HEALTH] != HCCJC.OK:
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                else:
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
+
+                feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE]
+                feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
+                feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json["harvestedCount"]
+                feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json["repositoryName"]
+
+            except ConnectionError as e:
+                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
+                feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
+                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+            return Response(feedback, status=response.status_code)
+        else:
+            return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
 
     def post_startHarvest(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}
-        feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
-        feedback[harvester.name] = {'not implemented'}
-        return Response(feedback, status=status.HTTP_423_LOCKED)
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, stream=True)
+        harvester_json = json.loads(response.text)
+        feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
+        feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
+        feedback[harvester.name][HCCJC.HEALTH] = harvester_json['message']
+        #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
+        #feedback[harvester.name] = {'not implemented'}
+        return Response(feedback, status=response.status_code)
 
     def post_stopHarvest(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}
-        feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
-        feedback[harvester.name] = {'not implemented'}
-        return Response(feedback, status=status.HTTP_423_LOCKED)
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_ABORT, stream=True)
+        harvester_json = json.loads(response.text)
+        feedback[harvester.name][HCCJC.HEALTH] = harvester_json['message']
+        #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
+        #feedback[harvester.name] = {'not implemented'}
+        return Response(feedback, status=response.status_code)
