@@ -3,7 +3,7 @@ from requests.exceptions import ConnectionError
 from rest_framework import status
 from rest_framework.response import Response
 
-from .harvesterapi import HarvesterApiConstantsV6
+from api.constants import HarvesterApiConstantsV6
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"

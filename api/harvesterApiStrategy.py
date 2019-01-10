@@ -7,7 +7,7 @@ from requests.exceptions import ConnectionError
 from rest_framework import status
 from rest_framework.response import Response
 
-from .harvesterapi import HarvesterApiConstantsV6, HarvesterApiConstantsV7
+from api.constants import HarvesterApiConstantsV6, HarvesterApiConstantsV7
 from api.constants import HCCJSONConstants as HCCJC
 
 __author__ = "Jan Frömberg"
@@ -30,6 +30,10 @@ class Strategy(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def get_harvesterLog(self, harvester):
+        pass
+
+    @abc.abstractmethod
     def post_startHarvest(self, harvester):
         pass
 
@@ -38,7 +42,7 @@ class Strategy(metaclass=abc.ABCMeta):
         pass
 
 
-class HarvesterApi:
+class HarvesterApiStrategy:
     """
     Define the interface of interest to clients.
     Maintain a reference to a Strategy object.
@@ -54,7 +58,7 @@ class HarvesterApi:
     def get_harvester(self):
         return self.harvester
 
-    def getStausOfHarvester(self):
+    def harvesterStatus(self):
         return self._strategy.get_harvesterStatus(self.harvester)
 
     def startHarvest(self):
@@ -62,6 +66,9 @@ class HarvesterApi:
 
     def stopHarvest(self):
         return self._strategy.post_stopHarvest(self.harvester)
+    
+    def harvesterLog(self):
+        return self._strategy.get_harvesterLog(self.harvester)
 
 
 class VersionBased6Strategy(Strategy):
@@ -169,6 +176,9 @@ class VersionBased6Strategy(Strategy):
         else:
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
 
+    def get_harvesterLog(self, harvester):
+        pass
+
 
 class VersionBased7Strategy(Strategy):
     """
@@ -194,6 +204,10 @@ class VersionBased7Strategy(Strategy):
                 feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
                 feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json["harvestedCount"]
                 feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json["repositoryName"]
+
+                response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG, stream=True)
+                harvester_log = response.text
+                feedback[harvester.name][HCCJC.LOGS] = harvester_log
 
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -224,3 +238,14 @@ class VersionBased7Strategy(Strategy):
         #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
         #feedback[harvester.name] = {'not implemented'}
         return Response(feedback, status=response.status_code)
+
+    def get_harvesterLog(self, harvester):
+        feedback = {}
+        feedback[harvester.name] = {}
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG, stream=True)
+        harvester_response = response.text
+        feedback[harvester.name][HCCJC.HEALTH] = harvester_response
+        #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
+        #feedback[harvester.name] = {'not implemented'}
+        return Response(feedback, status=response.status_code)
+

@@ -18,7 +18,7 @@ from api.mixins import AjaxTemplateMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
-from api.harvesterApiStrategy import HarvesterApi, VersionBased6Strategy, VersionBased7Strategy
+from api.harvesterApiStrategy import HarvesterApiStrategy, VersionBased6Strategy, VersionBased7Strategy
 
 import logging
 
@@ -187,7 +187,7 @@ def home(request):
         for harvester in harvesters:
             v6 = VersionBased6Strategy()
             baseLibraryV6 = HarvesterApi(harvester, v6)
-            response = baseLibraryV6.getStausOfHarvester()
+            response = baseLibraryV6.harvesterStatus()
             # response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
             if response:
                 feedback[harvester.name] = response.data[harvester.name]
@@ -287,7 +287,7 @@ def get_harvester_state(request, name, format=None):
     harvester = get_object_or_404(Harvester, name=name)
     v6 = VersionBased6Strategy()
     baseLibraryV6 = HarvesterApi(harvester, v6)
-    return baseLibraryV6.getStausOfHarvester()
+    return baseLibraryV6.harvesterStatus()
     #return Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
 
 
@@ -302,7 +302,7 @@ def get_harvester_states(request, format=None):
     for harvester in harvesters:
         v6 = VersionBased6Strategy()
         baseLibraryV6 = HarvesterApi(harvester, v6)
-        response = baseLibraryV6.getStausOfHarvester()
+        response = baseLibraryV6.harvesterStatus()
         #response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
