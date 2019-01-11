@@ -3,6 +3,7 @@ import abc
 import requests
 import logging
 import json
+import datetime
 from requests.exceptions import ConnectionError
 from rest_framework import status
 from rest_framework.response import Response
@@ -186,6 +187,7 @@ class VersionBased7Strategy(Strategy):
     """
 
     def get_harvesterStatus(self, harvester):
+        now = datetime.datetime.now()
         feedback = {}
         maxDocuments = False
         if harvester.enabled:
@@ -232,7 +234,8 @@ class VersionBased7Strategy(Strategy):
                 else:
                     feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
 
-                response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
+                    + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
                 harvester_log = response.text
                 feedback[harvester.name][HCCJC.LOGS] = harvester_log
 
