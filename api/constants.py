@@ -20,15 +20,23 @@ class HCCJSONConstants:
     STATE = "state"
     CACHED_DOCS = "cached_docs"
     DATA_PROVIDER = "data_pvd"
+    REPO_NAME = "repositoryName"
     MAX_DOCUMENTS = "max_docs"
+    HARVESTED_COUNT = "harvestedCount"
     MAX_DOCUMENT_COUNT = "maxDocumentCount"
     PROGRESS = "progress"
     PROGRESS_MAX = "progress_max"
+    # progress current in percentage
     PROGRESS_CURRENT = "progress_cur"
+    REMAIN_HARVEST_TIME = "remainingHarvestTime"
+    LAST_HARVEST_DATE = "lastHarvestDate"
     CRONTAB = "cron"
+    NO_CRONTAB = "no crontab defined yet"
+    SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
 
     OK = "OK"
+    MESSAGE = "message"
 
     WARNING = "warning"
     SUCCESS = "success"
@@ -51,6 +59,7 @@ class HarvesterApiConstantsV6:
     GD_HARVEST_CRON = "/schedule"
     G_STATUS = "/status/state"
     G_HEALTH = "/status/health"
+    # progress: N/A or 123/456
     G_PROGRESS = "/status/progress"
     G_MAX_DOCS = "/status/max-documents"
     G_DATA_PROVIDER = "/status/data-provider"

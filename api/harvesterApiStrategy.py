@@ -187,23 +187,50 @@ class VersionBased7Strategy(Strategy):
 
     def get_harvesterStatus(self, harvester):
         feedback = {}
+        maxDocuments = False
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
                 response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, stream=True)
                 harvester_json = json.loads(response.text)
+                
+                feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json[HCCJC.REPO_NAME]
                 feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.HEALTH]
+
                 if harvester_json[HCCJC.HEALTH] == HCCJC.OK:
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
                 elif harvester_json[HCCJC.HEALTH] != HCCJC.OK:
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                elif feedback[harvester.name][HCCJC.HEALTH].lower() == 'initialization':
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
                 else:
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
 
-                feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE]
-                feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
-                feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json["harvestedCount"]
-                feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json["repositoryName"]
+                feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE].lower()
+
+                if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
+                    maxDocuments = True
+                    feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
+                    feedback[harvester.name][HCCJC.PROGRESS_MAX] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
+                else:
+                    feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = "N/A"
+
+                feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                
+                if int(harvester_json[HCCJC.HARVESTED_COUNT]) != 0 and maxDocuments:
+                    feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
+                    int(int(harvester_json[HCCJC.HARVESTED_COUNT]) / (int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) * 100))
+                else:
+                    feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = int(harvester_json[HCCJC.HARVESTED_COUNT])
+
+                # schedules
+                response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, stream=True)
+                harvester_json = json.loads(response.text)
+                if not harvester_json[HCCJC.SCHEDULE]:
+                    feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
+                else:
+                    feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG, stream=True)
                 harvester_log = response.text
@@ -224,7 +251,7 @@ class VersionBased7Strategy(Strategy):
         harvester_json = json.loads(response.text)
         feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
         feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
-        feedback[harvester.name][HCCJC.HEALTH] = harvester_json['message']
+        feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
         #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
         #feedback[harvester.name] = {'not implemented'}
         return Response(feedback, status=response.status_code)

@@ -15,10 +15,11 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "Jan.froemberg@tu-dresden.de"
 
 
-class InitHarvesters:
+class InitHarvester:
     """
 
-    This Class initializes each harvester and decides the communication protocol to use.
+    This class initializes a harvester and decides the communication protocol to use.
+    Therefore it asks the harvester itself which library version it is using.
 
     """
 
@@ -27,7 +28,15 @@ class InitHarvesters:
         self.harvester = harvester
         
         if harvester.enabled:
-            response = requests.get(harvester.url + "/versions", stream=True)
+            try:
+                response = requests.get(harvester.url + "/versions", stream=True)
+            except ConnectionError as e:
+                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
+
+            if response.status_code == status.HTTP_401_UNAUTHORIZED:
+                response = Response('Authentication required.', status=status.HTTP_401_UNAUTHORIZED)
+            if response.status_code == status.HTTP_404_NOT_FOUND:
+                response = Response('Resource on server not found. Check URL.', status=status.HTTP_404_NOT_FOUND)
 
             if response.status_code == 200:
                 harvester_json = json.loads(response.text)

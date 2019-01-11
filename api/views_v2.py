@@ -18,7 +18,7 @@ from api.mixins import AjaxTemplateMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
-from api.harvesterapi import InitHarvesters
+from api.harvesterApi import InitHarvester
 from api.constants import HCCJSONConstants as HCCJC
 
 import logging
@@ -73,7 +73,7 @@ def stop_harvester(request, name):
     :return: an HttpResponseRedirect to the Main HCC page
     """
     harvester = get_object_or_404(Harvester, name=name)
-    api = InitHarvesters(harvester).getHarvesterApi()
+    api = InitHarvester(harvester).getHarvesterApi()
     response = api.stopHarvest()
     messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
@@ -89,7 +89,7 @@ def start_harvester(request, name):
     :return: an HttpResponseRedirect to the Main HCC page
     """
     harvester = get_object_or_404(Harvester, name=name)
-    api = InitHarvesters(harvester).getHarvesterApi()
+    api = InitHarvester(harvester).getHarvesterApi()
     response = api.startHarvest()
     messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
@@ -106,7 +106,7 @@ def start_all_harvesters(request):
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         if harvester.enabled:
-            api = InitHarvesters(harvester).getHarvesterApi()
+            api = InitHarvester(harvester).getHarvesterApi()
             response = api.startHarvest()
             if HCCJC.HEALTH in response.data[harvester.name]:
                 messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
@@ -127,7 +127,7 @@ def abort_all_harvesters(request):
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         if harvester.enabled:
-            api = InitHarvesters(harvester).getHarvesterApi()
+            api = InitHarvester(harvester).getHarvesterApi()
             response = api.stopHarvest()
             if HCCJC.HEALTH in response.data[harvester.name]:
                 messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
@@ -178,7 +178,7 @@ def home(request):
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
-            api = InitHarvesters(harvester).getHarvesterApi()
+            api = InitHarvester(harvester).getHarvesterApi()
             response = api.harvesterStatus()
             # response = Helpers.harvester_response_wrapper(harvester, 'GET_STATUS', request)
             if response:
@@ -203,7 +203,7 @@ def run_harvesters(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        api = InitHarvesters(harvester).getHarvesterApi()
+        api = InitHarvester(harvester).getHarvesterApi()
         response = api.startHarvest()
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
@@ -218,7 +218,7 @@ def start_harvest(request, name, format=None):
     harvester = Harvester.objects.get(name=name)
     # messages.add_message(request, messages.INFO, name + ' start triggered.')
     logger.info('Starting Harvester ' + harvester.name + '(' + str(harvester.owner) + ')')
-    api = InitHarvesters(harvester).getHarvesterApi()
+    api = InitHarvester(harvester).getHarvesterApi()
     return api.startHarvest()
 
 
@@ -241,7 +241,7 @@ def stop_harvest(request, name, format=None):
     Stop Harvest via POST request to a harvester url
     """
     harvester = Harvester.objects.get(name=name)
-    api = InitHarvesters(harvester).getHarvesterApi()
+    api = InitHarvester(harvester).getHarvesterApi()
     return api.stopHarvest()
     # messages.add_message(request, messages.INFO, name + ' stop triggered.')
     # return Helpers.harvester_response_wrapper(harvester, 'POST_STOPH', request)
@@ -256,7 +256,7 @@ def stop_harvesters(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        api = InitHarvesters(harvester).getHarvesterApi()
+        api = InitHarvester(harvester).getHarvesterApi()
         response = api.stopHarvest()
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
@@ -269,7 +269,7 @@ def get_harvester_state(request, name, format=None):
     View to show a Harvester state via GET Request
     """
     harvester = get_object_or_404(Harvester, name=name)
-    api = InitHarvesters(harvester).getHarvesterApi()
+    api = InitHarvester(harvester).getHarvesterApi()
     return api.harvesterStatus()
 
 
@@ -282,7 +282,7 @@ def get_harvester_states(request, format=None):
     feedback = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
-        api = InitHarvesters(harvester).getHarvesterApi()
+        api = InitHarvester(harvester).getHarvesterApi()
         response = api.harvesterStatus()
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
