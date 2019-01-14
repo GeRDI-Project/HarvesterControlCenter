@@ -230,7 +230,7 @@ class VersionBased7Strategy(Strategy):
                     
                     if int(harvester_json[HCCJC.HARVESTED_COUNT]) != 0 and maxDocuments:
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
-                        int(int(harvester_json[HCCJC.HARVESTED_COUNT]) / (int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) * 100))
+                        int((int(harvester_json[HCCJC.HARVESTED_COUNT]) * 100) / int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]))
                     else:
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = int(harvester_json[HCCJC.HARVESTED_COUNT])
                     
