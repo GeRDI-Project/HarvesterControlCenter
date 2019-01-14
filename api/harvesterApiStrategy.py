@@ -1,4 +1,3 @@
-# import base64
 import abc
 import requests
 import logging
@@ -196,48 +195,58 @@ class VersionBased7Strategy(Strategy):
                 response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, stream=True)
                 harvester_json = json.loads(response.text)
                 
-                feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json[HCCJC.REPO_NAME]
-                feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.HEALTH]
-
-                if harvester_json[HCCJC.HEALTH] == HCCJC.OK:
-                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
-                elif harvester_json[HCCJC.HEALTH] != HCCJC.OK:
-                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-                elif feedback[harvester.name][HCCJC.HEALTH].lower() == 'initialization':
+                if response.status_code == 503:
+                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
+                    feedback[harvester.name][HCCJC.STATUS] = 'initialization'
+                    feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
+                elif response.status_code == 500:
+                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
+                    feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
                 else:
-                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
 
-                feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE].lower()
+                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.HEALTH]
 
-                if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
-                    maxDocuments = True
-                    feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
-                    feedback[harvester.name][HCCJC.PROGRESS_MAX] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
-                else:
-                    feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = "N/A"
+                    if harvester_json[HCCJC.HEALTH] == HCCJC.OK:
+                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
+                    elif harvester_json[HCCJC.HEALTH] != HCCJC.OK:
+                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                    else:
+                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
 
-                feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
-                feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
-                
-                if int(harvester_json[HCCJC.HARVESTED_COUNT]) != 0 and maxDocuments:
-                    feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
-                    int(int(harvester_json[HCCJC.HARVESTED_COUNT]) / (int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) * 100))
-                else:
-                    feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = int(harvester_json[HCCJC.HARVESTED_COUNT])
+                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE].lower()
 
-                # schedules
-                response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, stream=True)
-                harvester_json = json.loads(response.text)
-                if not harvester_json[HCCJC.SCHEDULE]:
-                    feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
-                else:
-                    feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
+                    if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
+                        maxDocuments = True
+                        feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
+                        feedback[harvester.name][HCCJC.PROGRESS_MAX] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
+                    else:
+                        feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = "N/A"
 
-                response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
-                    + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
-                harvester_log = response.text
-                feedback[harvester.name][HCCJC.LOGS] = harvester_log
+                    feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                    feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                    
+                    if int(harvester_json[HCCJC.HARVESTED_COUNT]) != 0 and maxDocuments:
+                        feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
+                        int(int(harvester_json[HCCJC.HARVESTED_COUNT]) / (int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) * 100))
+                    else:
+                        feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = int(harvester_json[HCCJC.HARVESTED_COUNT])
+                    
+                    feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json[HCCJC.REPO_NAME]
+                    # schedules
+                    response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, stream=True)
+                    harvester_json = json.loads(response.text)
+                    if not harvester_json[HCCJC.SCHEDULE]:
+                        feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
+                    else:
+                        feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
+
+                    response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
+                        + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
+                    harvester_log = response.text
+                    feedback[harvester.name][HCCJC.LOGS] = harvester_log
 
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -255,8 +264,6 @@ class VersionBased7Strategy(Strategy):
         feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
         feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
         feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
-        #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
-        #feedback[harvester.name] = {'not implemented'}
         return Response(feedback, status=response.status_code)
 
     def post_stopHarvest(self, harvester):
@@ -265,8 +272,6 @@ class VersionBased7Strategy(Strategy):
         response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_ABORT, stream=True)
         harvester_json = json.loads(response.text)
         feedback[harvester.name][HCCJC.HEALTH] = harvester_json['message']
-        #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
-        #feedback[harvester.name] = {'not implemented'}
         return Response(feedback, status=response.status_code)
 
     def get_harvesterLog(self, harvester):
@@ -275,7 +280,5 @@ class VersionBased7Strategy(Strategy):
         response = requests.post(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG, stream=True)
         harvester_response = response.text
         feedback[harvester.name][HCCJC.HEALTH] = harvester_response
-        #feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
-        #feedback[harvester.name] = {'not implemented'}
         return Response(feedback, status=response.status_code)
 
