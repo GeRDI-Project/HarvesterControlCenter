@@ -25,7 +25,7 @@ from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
 from rest_framework.documentation import include_docs_urls
 
-from api import views, views_v2
+from api import views_v2 as views
 from api.forms import LoginForm
 from api.views_v2 import RegisterHarvesterFormView
 
@@ -39,18 +39,16 @@ __email__ = "Jan.froemberg@tu-dresden.de"
 schema_view = get_swagger_view(title='Harvester Control Center API', url=os.environ.get('FORCE_SCRIPT_NAME', ''))
 
 urlpatterns = [
-    path('', views_v2.index, name='home'),
-    path('hcc/', views_v2.home, name='hcc_gui'),
-    path('hcc/<str:name>/toggle', views_v2.toggle_harvester, name='toggle-harvester'),
-    path('hcc/<str:name>/submit', views_v2.submit_harvest, name='submit-harvest'),
-    path('hcc/<str:name>/stop', views_v2.stop_harvester, name='stop-harvester'),
-    path('hcc/<str:name>/start', views_v2.start_harvester, name='start-harvester'),
-    path('hcc/startall', views_v2.start_all_harvesters, name='start-harvesters'),
-    path('hcc/abortall', views_v2.abort_all_harvesters, name='abort-harvesters'),
+    path('', views.index, name='home'),
+    path('hcc/', views.home, name='hcc_gui'),
+    path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle-harvester'),
+    path('hcc/<str:name>/stop', views.stop_harvester, name='stop-harvester'),
+    path('hcc/<str:name>/start', views.start_harvester, name='start-harvester'),
+    path('hcc/startall', views.start_all_harvesters, name='start-harvesters'),
+    path('hcc/abortall', views.abort_all_harvesters, name='abort-harvesters'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),
     path('admin/', admin.site.urls),
-    path('v1/', include('api.urls', namespace='v1')),
-    path('v2/', include('api.urls_v2', namespace='v2')),
+    path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', schema_view, name='swagger-docs'),
     path('docs2/', include_docs_urls(title='HCC API Documentation',
          schema_url=os.environ.get('FORCE_SCRIPT_NAME', '')), name='doc'),

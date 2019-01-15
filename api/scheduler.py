@@ -28,4 +28,4 @@ def job():
 
 
 class Scheduler:
-    """Custom Scheduler class to handle timed harvests."""
+    """Custom Scheduler class to handle timed events."""

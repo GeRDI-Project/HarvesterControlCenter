@@ -162,7 +162,8 @@ WSGI_APPLICATION = 'hcc_py.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db', 'db.sqlite3'),
+        # this setting (ading a subpath for db) causes a db creation failure on systems which uses manage.py runserver/test
+        'NAME': os.path.join(BASE_DIR, 'db/', 'db.sqlite3'),
     }
 }
 

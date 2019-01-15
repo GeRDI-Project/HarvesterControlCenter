@@ -40,7 +40,7 @@ class ModelTestCase(TestCase):
 class ViewsTests(APITestCase, URLPatternsTestCase):
     """Test suite for the api views."""
     urlpatterns = [
-        path('v1/', include('api.urls')),
+        path('v1/', include('api.urls_v2')),
     ]
 
     def setUp(self):
