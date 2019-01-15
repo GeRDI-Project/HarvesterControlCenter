@@ -38,7 +38,7 @@ class InitHarvester:
             if response.status_code == status.HTTP_404_NOT_FOUND:
                 response = Response('Resource on server not found. Check URL.', status=status.HTTP_404_NOT_FOUND)
 
-            if response.status_code == 200:
+            if response.status_code == status.HTTP_200_OK:
                 harvester_json = json.loads(response.text)
                 versionString = harvester_json["value"][1]
                 libVersion = versionString.split("-")[2]

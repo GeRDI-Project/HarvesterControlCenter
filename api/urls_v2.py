@@ -18,7 +18,7 @@ urlpatterns = {
     path('harvesters/',
          HarvesterCreateView.as_view(), name="create"),
     path('harvesters/start',
-         views.run_harvesters, name="run-harvesters"),
+         views.start_harvesters, name="run-harvesters"),
     path('harvesters/stop',
          views.stop_harvesters, name="stop-harvesters"),
     path('harvesters/<str:name>/',

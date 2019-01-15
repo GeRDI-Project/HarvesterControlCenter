@@ -155,7 +155,7 @@ def home(request):
             return HttpResponseRedirect(reverse('hcc_gui'))
     # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every day 00:00
     else:
-        form = SchedulerForm({'schedule': '0 0 * * *'})
+        form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'})
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -179,7 +179,7 @@ def home(request):
 @api_view(['POST'])
 # @authentication_classes((TokenAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticated,))
-def run_harvesters(request, format=None):
+def start_harvesters(request, format=None):
     """
     Start all Harvesters via POST request
     """
@@ -333,14 +333,15 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
 
     def post(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
-        if request.POST['schedule']:
-            pass#response = Helpers.harvester_response_wrapper(harvester, 'POST_CRON', request)
-        else:
-            pass#response = Helpers.harvester_response_wrapper(harvester, 'DELETE_ALL_CRON', request)
-        #messages.add_message(request, messages.INFO, name + ': ' + response.data[name])
-        messages.add_message(request, messages.INFO, name + ': ' + 'nothing done. Implement it!')
+        api = InitHarvester(harvester).getHarvesterApi()
+        if request.POST[HCCJC.POSTCRONTAB]:
+            response = api.addSchedule(request)
+        messages.add_message(request, messages.INFO, name + ': ' + response.data[harvester.name])
         return HttpResponseRedirect(reverse('hcc_gui'))
 
     def delete(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
-        pass#return Helpers.harvester_response_wrapper(harvester, 'DELETE_ALL_CRON', request)
+        api = InitHarvester(harvester).getHarvesterApi()
+        response = api.deleteSchedule(request)
+        messages.add_message(request, messages.INFO, name + ': ' + response.data[harvester.name])
+        return HttpResponseRedirect(reverse('hcc_gui'))

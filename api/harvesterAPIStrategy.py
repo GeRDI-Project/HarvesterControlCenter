@@ -40,6 +40,14 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def post_stopHarvest(self, harvester):
         pass
+    
+    @abc.abstractmethod
+    def post_addHarvesterSchedule(self, harvester, request):
+        pass
+
+    @abc.abstractmethod
+    def post_deleteHarvesterSchedule(self, harvester, request):
+        pass
 
 
 class HarvesterApiStrategy:
@@ -69,6 +77,12 @@ class HarvesterApiStrategy:
     
     def harvesterLog(self):
         return self._strategy.get_harvesterLog(self.harvester)
+
+    def addSchedule(self, request):
+        return self._strategy.post_addHarvesterSchedule(self.harvester, request)
+    
+    def deleteSchedule(self, request):
+        return self._strategy.post_deleteHarvesterSchedule(self.harvester, request)
 
 
 class VersionBased6Strategy(Strategy):
@@ -179,12 +193,17 @@ class VersionBased6Strategy(Strategy):
     def get_harvesterLog(self, harvester):
         pass
 
+    def post_addHarvesterSchedule(self, harvester):
+        pass
+    
+    def post_deleteHarvesterSchedule(self, harvester):
+        pass
 
 class VersionBased7Strategy(Strategy):
     """
 
     Implement the algorithm for the harvester lib v7.x.x using the Strategy interface.
-    
+
     """
 
     def get_harvesterStatus(self, harvester):
@@ -249,7 +268,7 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
                     else:
                         feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
-
+                    # harvester logs
                     response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
                         + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
                     harvester_log = response.text
@@ -287,5 +306,28 @@ class VersionBased7Strategy(Strategy):
         response = requests.post(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG, stream=True)
         harvester_response = response.text
         feedback[harvester.name][HCCJC.HEALTH] = harvester_response
+        return Response(feedback, status=response.status_code)
+
+    def post_addHarvesterSchedule(self, harvester, request):
+        feedback = {}
+        feedback[harvester.name] = {}
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_CRON, \
+        json=json.dumps({HCCJC.POSTCRONTAB : request.POST[HCCJC.POSTCRONTAB]}), stream=True)
+        harvester_response = response.text
+        feedback[harvester.name][HCCJC.HEALTH] = harvester_response
+        return Response(feedback, status=response.status_code)
+    
+    def post_deleteHarvesterSchedule(self, harvester, request):
+        feedback = {}
+        feedback[harvester.name] = {}
+        if not request.POST[HCCJC.POSTCRONTAB]:
+            response = requests.post(harvester.url + HarvesterApiConstantsV7.DALL_HARVEST_CRON, stream=True)
+            harvester_response = response.text
+            feedback[harvester.name][HCCJC.HEALTH] = harvester_response
+        else:
+            response = requests.post(harvester.url + HarvesterApiConstantsV7.D_HARVEST_CRON, \
+            json="{" + HCCJC.POSTCRONTAB + ":" + request.POST[HCCJC.POSTCRONTAB] + "}", stream=True)
+            harvester_response = response.text
+            feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
 

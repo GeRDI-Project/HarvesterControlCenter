@@ -31,6 +31,7 @@ class HCCJSONConstants:
     REMAIN_HARVEST_TIME = "remainingHarvestTime"
     LAST_HARVEST_DATE = "lastHarvestDate"
     CRONTAB = "cron"
+    POSTCRONTAB = "cronTab"
     NO_CRONTAB = "no crontab defined yet"
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
