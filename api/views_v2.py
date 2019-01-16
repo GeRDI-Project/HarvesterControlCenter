@@ -335,13 +335,15 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
         harvester = get_object_or_404(Harvester, name=name)
         api = InitHarvester(harvester).getHarvesterApi()
         if request.POST[HCCJC.POSTCRONTAB]:
-            response = api.addSchedule(request)
-        messages.add_message(request, messages.INFO, name + ': ' + response.data[harvester.name])
+            response = api.addSchedule(request.POST[HCCJC.POSTCRONTAB])
+        else:
+            response = api.deleteSchedule(request.POST[HCCJC.POSTCRONTAB])
+        messages.add_message(request, messages.INFO, name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))
 
     def delete(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
         api = InitHarvester(harvester).getHarvesterApi()
-        response = api.deleteSchedule(request)
-        messages.add_message(request, messages.INFO, name + ': ' + response.data[harvester.name])
+        response = api.deleteSchedule(request.POST[HCCJC.POSTCRONTAB])
+        messages.add_message(request, messages.INFO, name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))

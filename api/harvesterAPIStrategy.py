@@ -42,11 +42,11 @@ class Strategy(metaclass=abc.ABCMeta):
         pass
     
     @abc.abstractmethod
-    def post_addHarvesterSchedule(self, harvester, request):
+    def post_addHarvesterSchedule(self, harvester, crontab):
         pass
 
     @abc.abstractmethod
-    def post_deleteHarvesterSchedule(self, harvester, request):
+    def post_deleteHarvesterSchedule(self, harvester, crontab):
         pass
 
 
@@ -78,11 +78,11 @@ class HarvesterApiStrategy:
     def harvesterLog(self):
         return self._strategy.get_harvesterLog(self.harvester)
 
-    def addSchedule(self, request):
-        return self._strategy.post_addHarvesterSchedule(self.harvester, request)
+    def addSchedule(self, crontab):
+        return self._strategy.post_addHarvesterSchedule(self.harvester, crontab)
     
-    def deleteSchedule(self, request):
-        return self._strategy.post_deleteHarvesterSchedule(self.harvester, request)
+    def deleteSchedule(self, crontab):
+        return self._strategy.post_deleteHarvesterSchedule(self.harvester, crontab)
 
 
 class VersionBased6Strategy(Strategy):
@@ -308,25 +308,25 @@ class VersionBased7Strategy(Strategy):
         feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
 
-    def post_addHarvesterSchedule(self, harvester, request):
+    def post_addHarvesterSchedule(self, harvester, crontab):
         feedback = {}
         feedback[harvester.name] = {}
         response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_CRON, \
-        json=json.dumps({HCCJC.POSTCRONTAB : request.POST[HCCJC.POSTCRONTAB]}), stream=True)
+        json={HCCJC.POSTCRONTAB : crontab}, stream=True)
         harvester_response = response.text
         feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
     
-    def post_deleteHarvesterSchedule(self, harvester, request):
+    def post_deleteHarvesterSchedule(self, harvester, crontab):
         feedback = {}
         feedback[harvester.name] = {}
-        if not request.POST[HCCJC.POSTCRONTAB]:
+        if not crontab:
             response = requests.post(harvester.url + HarvesterApiConstantsV7.DALL_HARVEST_CRON, stream=True)
             harvester_response = response.text
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         else:
             response = requests.post(harvester.url + HarvesterApiConstantsV7.D_HARVEST_CRON, \
-            json="{" + HCCJC.POSTCRONTAB + ":" + request.POST[HCCJC.POSTCRONTAB] + "}", stream=True)
+            json={HCCJC.POSTCRONTAB : crontab}, stream=True)
             harvester_response = response.text
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
