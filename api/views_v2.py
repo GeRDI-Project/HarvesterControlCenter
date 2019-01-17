@@ -147,6 +147,8 @@ def home(request):
         view_type = request.GET['viewtype']
     else:
         view_type = False
+    # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every day 00:00 
+    form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'})
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -167,10 +169,7 @@ def home(request):
             form = SchedulerForm(request.POST)
             if form.is_valid():
                 return HttpResponseRedirect(reverse('hcc_gui'))
-        # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every day 00:00
-        else:
-            form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'})
-
+             
         return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form, 'vt': view_type})
 
     messages.debug(request, feedback)
