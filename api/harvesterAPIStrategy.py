@@ -167,7 +167,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester.name] = {}
                 response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST, stream=True)
                 feedback[harvester.name] = response.text
-            except ConnectionError as e:
+            except ConnectionError:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
                 feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
