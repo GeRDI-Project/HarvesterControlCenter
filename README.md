@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v3.0.0
+# Harvester Control Center (HCC) v3.0.1
 A Harvester Control Center GUI with REST-API written in Django
 
 ## Technologies used
