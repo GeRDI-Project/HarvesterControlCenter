@@ -74,8 +74,7 @@ $(document).ready(function () {
             }
         }).fail(function (response) {
             alert('Error: ' + response.responseText);
-        });
-        ;
+        });;
 
     });
 
@@ -89,8 +88,7 @@ $(document).ready(function () {
             }
         }).fail(function (response) {
             alert('Error: ' + response.responseText);
-        });
-        ;
+        });;
 
     });
 
@@ -115,49 +113,55 @@ $(document).ready(function () {
             }
         }).fail(function (response) {
             alert('Error: ' + response.responseText);
-        });
-        ;
+        });;
 
     });
 
     $('#progresshv').on('click', function (event) {
 
-      var url = $(this).attr("title")
-      //var bar = document.getElementById("progresshv");
-      var bar = this;
-      var width = 99;
-      var id = setInterval(getTick, 2000);
+        var url = $(this).attr("title")
+        //var bar = document.getElementById("progresshv");
+        var bar = this;
+        var width = 99;
+        var max = "";
+        var id = setInterval(getTick, 2000);
 
-      function getTick() {
-          if (!(width >= 100 || width === 'undefined')) {
-              var request = $.ajax({
-                  url: url,
-                  headers: {"Access-Control-Allow-Origin": "*"},
-                  xhrFields: {
-                      withCredentials: true
-                  },
-                  dataType: 'json',
-                  method: 'GET'
-              });
+        function getTick() {
+            if (!(width >= 100 || width === 'undefined') || max === 'N/A') {
+                var request = $.ajax({
+                    url: url,
+                    headers: {
+                        "Access-Control-Allow-Origin": "*"
+                    },
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    dataType: 'json',
+                    method: 'GET'
+                });
 
-              request.done(function (data) {
+                request.done(function (data) {
 
-                  $.each(data, function (index, element) {
-                      $.each(element, function (i, e) {
-                          if (i === 'progress_cur') {
-                              width = e;
+                    $.each(data, function (index, element) {
+                        $.each(element, function (i, e) {
+                            if (i === 'progress_cur') {
+                                width = e;
+                            }
+                            if (i === 'max_docs') {
+                                max = e;
+                            }
+                        });
+                    });
+                });
+                bar.style.width = width + '%';
+                bar.innerHTML = width + '%';
 
-                          }
-                      });
-                  });
-              });
-              bar.style.width = width + '%';
-              bar.innerHTML = width + '%';
-
-          } else {
-              clearInterval(id);
-          }
-      }
+            } else {
+                bar.style.width = width + '%';
+                bar.innerHTML = width + '%';
+                clearInterval(id);
+            }
+        }
     });
 
 });

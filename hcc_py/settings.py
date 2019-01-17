@@ -33,7 +33,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False')
+DEBUG = os.environ.get('DEBUG', 'True')
 
 # A list/array of IPs and FQDNs
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
@@ -162,7 +162,8 @@ WSGI_APPLICATION = 'hcc_py.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db', 'db.sqlite3'),
+        # this setting (ading a subpath for db) causes a db creation failure on systems which uses manage.py runserver/test
+        'NAME': os.path.join(BASE_DIR, 'db/', 'db.sqlite3'),
     }
 }
 

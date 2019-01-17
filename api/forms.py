@@ -5,6 +5,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
 from api.models import Harvester
+from api.constants import HCCJSONConstants as HCCJC
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -72,13 +73,13 @@ class SchedulerForm(forms.Form):
     This class represents a Scheduling Form used with crispy forms.
     A helper property had to  be called in order to use crispy forms styling.
     """
-    schedule = forms.CharField(label="Scheduling Plan:", required=False)
+    cronTab = forms.CharField(label="Scheduling Plan:", required=False)
 
     @property
     def helper(self):
         helper = FormHelper()
         helper.form_tag = False
         helper.layout = Layout(
-            FieldWithButtons('schedule', Submit('submit_cron', 'set!', css_class="btn-default btn-sm"))
+            FieldWithButtons('cronTab', Submit('submit_cron', 'set!', css_class="btn-default btn-sm"))
         )
         return helper

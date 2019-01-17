@@ -140,7 +140,8 @@
                                                                                     <i class="fa fa-ban"
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
-                                                                            {% else %}
+                                                                            {% endif %}
+                                                                            {% if val.status == 'idle' or val.status == 'idling' %}
                                                                                 <a id=""
                                                                                    title="{% url 'api:start-harvest' name=harvester.name %}"
                                                                                    href="{% url 'start-harvester' name=harvester.name %}"
@@ -159,7 +160,6 @@
                                                                                     <i class="fa fa-ban"
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
-
                                                                             {% endif %}
                                                                             <small>{{ val.status }}</small>
                                                                             {% if val.health != 'OK' %}
