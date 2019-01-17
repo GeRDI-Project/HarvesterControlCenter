@@ -148,15 +148,6 @@ def home(request):
     else:
         view_type = False
 
-    # init form
-    if request.method == 'POST':
-        form = SchedulerForm(request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect(reverse('hcc_gui'))
-    # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every day 00:00
-    else:
-        form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'})
-
     # if user is logged in
     if request.user.is_authenticated:
         harvesters = Harvester.objects.all()
@@ -168,8 +159,18 @@ def home(request):
                 feedback[harvester.name] = response.data[harvester.name]
             else:
                 feedback[harvester.name] = {}
-                feedback[harvester.name][HCCJC.GUI_STATUS] = 'warning'
+                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 feedback[harvester.name][HCCJC.HEALTH] = 'Error : response object is not set'
+
+        # init form
+        if request.method == 'POST':
+            form = SchedulerForm(request.POST)
+            if form.is_valid():
+                return HttpResponseRedirect(reverse('hcc_gui'))
+        # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every day 00:00
+        else:
+            form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'})
+
         return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form, 'vt': view_type})
 
     messages.debug(request, feedback)
