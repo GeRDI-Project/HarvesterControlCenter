@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v3.0.1
+# Harvester Control Center (HCC) v3.0.2
 A Harvester Control Center GUI with REST-API written in Django
 
 ## Technologies used
@@ -25,15 +25,18 @@ A Harvester Control Center GUI with REST-API written in Django
         ```bash
             $ cd {{your_repo_path}}
         ```
+    
     2. Create and fire up your virtual environment:
         ```bash
             $ virtualenv venv -p python3
             $ source venv/bin/activate
         ```
+    
     3. Install the dependencies needed to run the app:
         ```bash
             $ pip install -r requirements.txt
         ```
+    
     4. (optional) Make those migrations work
         ```bash
             $ python manage.py makemigrations
@@ -55,6 +58,7 @@ A Harvester Control Center GUI with REST-API written in Django
    ```bash
       $ python manage.py createsuperuser
    ```
+   
    Fire up the server using this one simple command:
    ```bash
        $ python manage.py runserver

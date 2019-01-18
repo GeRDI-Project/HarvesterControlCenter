@@ -23,6 +23,7 @@ class Strategy(metaclass=abc.ABCMeta):
     Declare an interface common to all supported algorithms. HarvesterApi
     uses this interface to call the algorithm defined by a
     ConcreteStrategy.
+    Each method must return a Response with a JSON Body (see HCC Constants)
     """
 
     @abc.abstractmethod
@@ -105,41 +106,41 @@ class VersionBased6Strategy(Strategy):
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                     return Response(feedback, status=status.HTTP_404_NOT_FOUND)
 
-                feedback[harvester.name]['status'] = response.text
+                feedback[harvester.name][HCCJC.STATUS] = response.text
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HARVESTED_DOCS, stream=True)
-                feedback[harvester.name]['cached_docs'] = response.text
+                feedback[harvester.name][HCCJC.CACHED_DOCS] = response.text
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_DATA_PROVIDER, stream=True)
-                feedback[harvester.name]['data_pvd'] = response.text
+                feedback[harvester.name][HCCJC.DATA_PROVIDER] = response.text
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_MAX_DOCS, stream=True)
-                feedback[harvester.name]['max_docs'] = response.text
+                feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = response.text
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HEALTH, stream=True)
                 feedback[harvester.name][HCCJC.HEALTH] = response.text
 
-                if feedback[harvester.name][HCCJC.HEALTH] == HCCJC.OK and feedback[harvester.name]['status'] == 'idling':
+                if feedback[harvester.name][HCCJC.HEALTH] == HCCJC.OK and feedback[harvester.name][HCCJC.STATUS] == 'idling':
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
 
-                elif feedback[harvester.name][HCCJC.HEALTH] != 'OK':
+                elif feedback[harvester.name][HCCJC.HEALTH] != HCCJC.OK:
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
-                elif feedback[harvester.name]['status'].lower() == 'initialization':
+                elif feedback[harvester.name][HCCJC.STATUS].lower() == 'initialization':
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
 
                 else:
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_PROGRESS, stream=True)
-                feedback[harvester.name]['progress'] = response.text
+                feedback[harvester.name][HCCJC.PROGRESS] = response.text
                 if response.status_code != status.HTTP_500_INTERNAL_SERVER_ERROR \
                         and response.status_code != status.HTTP_400_BAD_REQUEST:
-                    feedback[harvester.name]['progress_cur'] = feedback[harvester.name]['cached_docs']
+                    feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = feedback[harvester.name][HCCJC.CACHED_DOCS]
                     if "/" not in response.text:
-                        feedback[harvester.name]['progress_max'] = int(response.text)
+                        feedback[harvester.name][HCCJC.PROGRESS_MAX] = int(response.text)
                     else:
-                        feedback[harvester.name]['progress_max'] = int(response.text.split("/")[1])
-                        feedback[harvester.name]['progress_cur'] = \
+                        feedback[harvester.name][HCCJC.PROGRESS_MAX] = int(response.text.split("/")[1])
+                        feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
                             int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
@@ -182,7 +183,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester.name] = {}
                 response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_ABORT, stream=True)
                 feedback[harvester.name] = response.text
-            except ConnectionError as e:
+            except ConnectionError:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
                 feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
@@ -270,7 +271,7 @@ class VersionBased7Strategy(Strategy):
                     feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
                     feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
                     
-                    if int(harvester_json[HCCJC.HARVESTED_COUNT]) != 0 and maxDocuments:
+                    if int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) != 0 and maxDocuments:
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
                         int((int(harvester_json[HCCJC.HARVESTED_COUNT]) * 100) / int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]))
                     else:
@@ -313,7 +314,7 @@ class VersionBased7Strategy(Strategy):
         feedback[harvester.name] = {}
         response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_ABORT, stream=True)
         harvester_json = json.loads(response.text)
-        feedback[harvester.name][HCCJC.HEALTH] = harvester_json['message']
+        feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
         return Response(feedback, status=response.status_code)
 
     def get_harvesterLog(self, harvester):

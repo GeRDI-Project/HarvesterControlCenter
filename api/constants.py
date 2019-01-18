@@ -48,7 +48,8 @@ class HCCJSONConstants:
 class HarvesterApiConstantsV6:
     """
 
-     This Class holds a list of Harvester API constants which will be updated accordingly to the Harvester-BaseLibrary.
+     This Class holds a list of Harvester Library API constants 
+     which will be updated accordingly to the Harvester-BaseLibrary.
 
     """
     P_HARVEST = "/"
@@ -75,8 +76,10 @@ class HarvesterApiConstantsV6:
 class HarvesterApiConstantsV7:
     """
 
-     This Class holds a list of Harvester API constants which will be updated accordingly to the Harvester-BaseLibrary.
-     Current version is 7.x.x See: https://wiki.gerdi-project.de/display/GeRDI/Harvester+Library+7.x.x
+     This Class holds a list of Harvester API constants 
+     which will be updated accordingly to the Harvester-BaseLibrary.
+     Current version is 7.x.x See: 
+     https://wiki.gerdi-project.de/display/GeRDI/Harvester+Library+7.x.x
      
     """
     PG_HARVEST = "/"
