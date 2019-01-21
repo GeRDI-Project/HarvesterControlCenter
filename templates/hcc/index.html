@@ -123,7 +123,8 @@
                                                                                         data-toggle="tooltip"
                                                                                         data-placement="top"
                                                                                 {% if val.max_docs %}
-                                                                                        title="{{ val.data_pvd }} harvested and cached Documents: {{ val.cached_docs }} of {{ val.max_docs }}"
+                                                                                        title="{{ val.data_pvd }} harvested and cached Documents: {{ val.cached_docs }} of {{ val.max_docs }}.
+                                                                                        {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         {% endfor %}
