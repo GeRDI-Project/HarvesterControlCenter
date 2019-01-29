@@ -271,7 +271,7 @@ class VersionBased7Strategy(Strategy):
                     feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
                     feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
                     
-                    if harvester_json[HCCJC.LAST_HARVEST_DATE]:
+                    if HCCJC.LAST_HARVEST_DATE in harvester_json:
                         feedback[harvester.name][HCCJC.LAST_HARVEST_DATE] = harvester_json[HCCJC.LAST_HARVEST_DATE]
 
                     if maxDocuments:
