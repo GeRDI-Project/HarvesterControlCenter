@@ -37,7 +37,14 @@ class HCCJSONConstants:
     LOGS = "log"
 
     OK = "OK"
+    N_A = "N/A"
     MESSAGE = "message"
+
+    INIT = "initialization"
+    HARV = "harvesting"
+    IDLE = "idle"
+    IDLE_OLD = "ideling"
+    HARVESTER_STATES = [INIT, HARV, IDLE, IDLE_OLD]
 
     WARNING = "warning"
     SUCCESS = "success"

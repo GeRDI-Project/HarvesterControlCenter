@@ -10,19 +10,19 @@
                 <div class="col-sm">
                     <div class="card">
                         <h3 class="card-header">Register new Harvester</h3>
-                        <div class="card-body">
-                            <a href="{% url 'hreg-form' %}" id="reg-button"><i class="fa fa-plus-circle fa-5x"
-                                                                               aria-hidden="true"></i></a>
+                        <div id="messages" class="card-body">
+                            <a href="{% url 'hreg-form' %}" id="reg-button">
+                                <i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i></a>
                             <!-- <a id="register-button" href="{% url 'hreg-form' %}" data-toggle="modal" data-target="#form-modal">Register</a> -->
                         </div>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header">Deploy new Harvester</h3>
+                        <h3 class="card-header">Get todays Harvester Logfiles</h3>
 
                         <div class="card-body">
-                            <a href="#"><i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i></a>
+                            <a id="btn-deploy-harvester" href="#"><i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i></a>
                         </div>
                     </div>
                 </div>
@@ -124,11 +124,11 @@
                                                                                         data-placement="top"
                                                                                 {% if val.max_docs %}
                                                                                         title="{{ val.data_pvd }} harvested and cached Documents: {{ val.cached_docs }} of {{ val.max_docs }}.
-                                                                                        {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
+                                                                                        {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}">
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         {% endfor %}
-                                                                        >{{ harvester.name|lower|capfirst }}</button>
+                                                                        {{ harvester.name|lower|capfirst }}</button>
                                                                     </div>
                                                                     {% for k, val in status.items %}
                                                                         {% if k == harvester.name %}
@@ -175,7 +175,7 @@
 
                                                                             {% if val.status == 'harvesting' or val.status == 'saving' or val.status == 'submitting' %}
                                                                                 <div class="progress">
-                                                                                    <div id="progresshv" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                                                                    <div id="progresshv-{{ harvester.name }}" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
                                                                                          title="{% url 'api:harvester-status' name=harvester.name %}"
                                                                                          style="width: {{ val.progress_cur }}%"
                                                                                          role="progressbar"
@@ -215,7 +215,7 @@
                                                                     </a></p>
                                                                         <div class="collapse"
                                                                              id="collapseStatus{{ forloop.counter }}">
-                                                                            <div class="card card-body">
+                                                                            <div id="hv-status-{{ harvester.name }}" class="card card-body">
                                                                                 {% for k, val in status.items %}
                                                                                     {% if k == harvester.name %}
                                                                                         {{ val }}
@@ -326,8 +326,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <form class="button-form" action="/v1/harvesters/status" data-method="POST">
-                        <button class="btn btn-danger">POST</button>
+                    <form class="button-form" action="/v1/harvesters/status" data-method="GET">
+                        <button class="btn btn-danger">GET</button>
                     </form>
                 </div>
             </div>
@@ -337,12 +337,10 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Modal title</h4>
+                    <h4 class="modal-title">Info</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
-                <div id="form-modal-body" class="modal-body">
-                    ...
-                </div>
+                <div id="form-modal-body" class="modal-body">...</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Save changes</button>

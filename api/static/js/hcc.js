@@ -21,6 +21,36 @@ $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
 
+    $('#btn-deploy-harvester').on('click', function (event) {
+        
+        var url = '/hcc/logs';
+
+        $.get(url, function (result) {
+            var status = result;
+            var data = JSON.stringify(result);
+            $( '#form-modal' ).modal('toggle');
+            $( '#form-modal-body' ).html( data );
+            $.each(status, function (hvname, element) {
+                if ( element != "disabled" ) {
+                    $( '#hv-status-' + hvname ).html( JSON.stringify(element) );
+                    $.each(element, function (i, e) {
+                        if ( e === 'harvesting' ) {
+                            if ( i === 'progress_cur' ){
+                                bar = $( "#progresshv-" + hvname);
+                                bar.style.width =  e + "%";
+                                bar.innerHTML = e + "%";
+                            }
+                        }
+                    });
+                    
+                }
+            });
+        }).fail(function (response) {
+            $( '#form-modal' ).modal('toggle');
+            $( '#form-modal-body' ).html( response.responseText );
+        });;
+    });
+
     var formButton = {
         regClick: function () {
             $('#form-modal-body').load('/v1/harvesters/register #hreg-form-content', formButton.toggleModal);
@@ -117,15 +147,15 @@ $(document).ready(function () {
 
     });
 
-    $('#progresshv').on('click', function (event) {
+    $("div[id^='progresshv-']").load( $(this).attr("title"), function (event) {
 
         var url = $(this).attr("title")
         //var bar = document.getElementById("progresshv");
         var bar = this;
         var width = 99;
         var max = "";
-        var id = setInterval(getTick, 2000);
-
+        var id = setInterval(getTick, 1982);
+    
         function getTick() {
             if (!(width >= 100 || width === 'undefined') || max === 'N/A') {
                 var request = $.ajax({
@@ -139,9 +169,9 @@ $(document).ready(function () {
                     dataType: 'json',
                     method: 'GET'
                 });
-
+    
                 request.done(function (data) {
-
+    
                     $.each(data, function (index, element) {
                         $.each(element, function (i, e) {
                             if (i === 'progress_cur') {
@@ -155,7 +185,7 @@ $(document).ready(function () {
                 });
                 bar.style.width = width + '%';
                 bar.innerHTML = width + '%';
-
+    
             } else {
                 bar.style.width = width + '%';
                 bar.innerHTML = width + '%';

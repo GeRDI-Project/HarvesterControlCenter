@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView, RedirectView
@@ -93,6 +93,23 @@ def start_harvester(request, name):
     messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
+@login_required
+def get_allHarvesterLog(request):
+    """
+    This function get the harvester logfile.
+
+    :param request: the request
+    :return: JSON Feedback Array
+    """
+    feedback = {}
+    harvesters = Harvester.objects.all()
+    for harvester in harvesters:
+        if harvester.enabled:
+            api = InitHarvester(harvester).getHarvesterApi()
+            response = api.harvesterLog()
+            feedback[harvester.name] = response.data[harvester.name]
+            #messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
+    return JsonResponse(feedback, status=status.HTTP_200_OK)
 
 @login_required
 def start_all_harvesters(request):
@@ -169,10 +186,10 @@ def home(request):
             form = SchedulerForm(request.POST)
             if form.is_valid():
                 return HttpResponseRedirect(reverse('hcc_gui'))
-             
+
+        messages.debug(request, feedback)     
         return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form, 'vt': view_type})
 
-    messages.debug(request, feedback)
     return render(request, 'hcc/index.html', {'status': feedback, 'form': form, 'vt': view_type})
 
 

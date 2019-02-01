@@ -43,6 +43,10 @@ class Strategy(metaclass=abc.ABCMeta):
         pass
     
     @abc.abstractmethod
+    def get_harvesterLog(self, harvester):
+        pass
+
+    @abc.abstractmethod
     def post_addHarvesterSchedule(self, harvester, crontab):
         pass
 
@@ -192,7 +196,7 @@ class VersionBased6Strategy(Strategy):
             return Response({harvester.name : {HCCJC.HEALTH : 'disabled'}}, status=status.HTTP_423_LOCKED)
 
     def get_harvesterLog(self, harvester):
-        return Response({harvester.name : {HCCJC.HEALTH : 'not implemented'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response({harvester.name : {HCCJC.LOGS : 'not implemented'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
     def post_addHarvesterSchedule(self, harvester, crontab):
         feedback = {}
@@ -224,7 +228,7 @@ class VersionBased7Strategy(Strategy):
     """
 
     def get_harvesterStatus(self, harvester):
-        now = datetime.datetime.now()
+        # now = datetime.datetime.now()
         feedback = {}
         maxDocuments = False
         if harvester.enabled:
@@ -236,7 +240,7 @@ class VersionBased7Strategy(Strategy):
                 if response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE:
                     feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
-                    feedback[harvester.name][HCCJC.STATUS] = 'initialization'
+                    feedback[harvester.name][HCCJC.STATUS] = HCCJC.INIT
                     feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
                 elif response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:
                     feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
@@ -244,34 +248,34 @@ class VersionBased7Strategy(Strategy):
                     feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
                     feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
                 elif response.status_code == status.HTTP_401_UNAUTHORIZED:
-                    feedback[harvester.name][HCCJC.HEALTH] = 'Authentication required.'
+                    feedback[harvester.name][HCCJC.HEALTH] = response.status_text
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 else:
 
                     feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.HEALTH]
+                    # to be legacy (prior lib v7) compatible set the old STATUS to STATE
+                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE].lower()
+                    feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                    feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                    feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json[HCCJC.REPO_NAME]
 
-                    if harvester_json[HCCJC.STATE].lower() == "harvesting":
-                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
-                    elif harvester_json[HCCJC.HEALTH] == HCCJC.OK:
+                    if harvester_json[HCCJC.HEALTH] == HCCJC.OK and harvester_json[HCCJC.STATE].lower() == HCCJC.IDLE:
                         feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
                     elif harvester_json[HCCJC.HEALTH] != HCCJC.OK:
                         feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                    elif harvester_json[HCCJC.STATE].lower() in [HCCJC.HARV]:
+                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
                     else:
                         feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
-
-                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE].lower()
 
                     if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
                         maxDocuments = True
                         feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
                         feedback[harvester.name][HCCJC.PROGRESS_MAX] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
                     else:
-                        feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = "N/A"
+                        feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = HCCJC.N_A
 
-                    feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
-                    feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
-                    
-                    if harvester_json[HCCJC.LAST_HARVEST_DATE]:
+                    if HCCJC.LAST_HARVEST_DATE in harvester_json:
                         feedback[harvester.name][HCCJC.LAST_HARVEST_DATE] = harvester_json[HCCJC.LAST_HARVEST_DATE]
 
                     if maxDocuments:
@@ -281,7 +285,6 @@ class VersionBased7Strategy(Strategy):
                     else:
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = int(harvester_json[HCCJC.HARVESTED_COUNT])
                     
-                    feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json[HCCJC.REPO_NAME]
                     # schedules
                     response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, stream=True)
                     harvester_json = json.loads(response.text)
@@ -289,11 +292,12 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
                     else:
                         feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
+
                     # harvester logs
-                    response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
-                        + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
-                    harvester_log = response.text
-                    feedback[harvester.name][HCCJC.LOGS] = harvester_log
+                    #response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
+                    #    + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
+                    #harvester_log = response.text
+                    #feedback[harvester.name][HCCJC.LOGS] = harvester_log
 
             except ConnectionError:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -322,11 +326,13 @@ class VersionBased7Strategy(Strategy):
         return Response(feedback, status=response.status_code)
 
     def get_harvesterLog(self, harvester):
+        now = datetime.datetime.now()
         feedback = {}
         feedback[harvester.name] = {}
-        response = requests.post(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG, stream=True)
+        response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
+            + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
         harvester_response = response.text
-        feedback[harvester.name][HCCJC.HEALTH] = harvester_response
+        feedback[harvester.name][HCCJC.LOGS] = harvester_response
         return Response(feedback, status=response.status_code)
 
     def post_addHarvesterSchedule(self, harvester, crontab):
