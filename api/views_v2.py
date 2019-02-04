@@ -96,7 +96,7 @@ def start_harvester(request, name):
 @login_required
 def get_allHarvesterLog(request):
     """
-    This function get the harvester logfile.
+    This function gets the harvester logfile.
 
     :param request: the request
     :return: JSON Feedback Array
@@ -110,6 +110,22 @@ def get_allHarvesterLog(request):
             feedback[harvester.name] = response.data[harvester.name]
             #messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return JsonResponse(feedback, status=status.HTTP_200_OK)
+
+@login_required
+def get_harvesterProgress(request, name):
+    """
+    This function gets the harvester progress.
+
+    :param request: the request
+    :return: JSON Feedback Array
+    """
+    feedback = {}
+    harvester = get_object_or_404(Harvester, name=name)
+    api = InitHarvester(harvester).getHarvesterApi()
+    response = api.harvesterProgress()
+    feedback[harvester.name] = response.data[harvester.name]
+    #messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
+    return JsonResponse(feedback, status=response.status_code)
 
 @login_required
 def start_all_harvesters(request):
@@ -172,6 +188,7 @@ def home(request):
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
+            form.helper['cronTab'].update_attributes(id="cronTab-" + harvester.name)
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.harvesterStatus()
             if response:
@@ -187,7 +204,7 @@ def home(request):
             if form.is_valid():
                 return HttpResponseRedirect(reverse('hcc_gui'))
 
-        messages.debug(request, feedback)     
+        # messages.debug(request, feedback)     
         return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form, 'vt': view_type})
 
     return render(request, 'hcc/index.html', {'status': feedback, 'form': form, 'vt': view_type})

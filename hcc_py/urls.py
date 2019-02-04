@@ -48,6 +48,7 @@ urlpatterns = [
     path('hcc/abortall', views.abort_all_harvesters, name='abort-harvesters'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name="hreg-form"),
     path('hcc/logs', views.get_allHarvesterLog, name="harvesters-log"),
+    path('hcc/<str:name>/progress', views.get_harvesterProgress, name="harvester-progress"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', schema_view, name='swagger-docs'),

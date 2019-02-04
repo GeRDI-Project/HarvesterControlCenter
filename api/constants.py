@@ -52,6 +52,16 @@ class HCCJSONConstants:
     INFO = "info"
 
 
+class HarvesterApiConstants:
+    """
+
+     This Class holds a list of Harvester Library API constants 
+     which will be updated accordingly to the Harvester-BaseLibrary.
+
+    """
+    G_VERSIONS = "/versions"
+
+
 class HarvesterApiConstantsV6:
     """
 
@@ -62,6 +72,9 @@ class HarvesterApiConstantsV6:
     P_HARVEST = "/"
     P_HARVEST_ABORT = "/abort"
     P_HARVEST_RESET = "/reset"
+    G_HARVEST_LOG = "/log?date="
+    HARVESTER_LOG_FORMAT = "%Y-%m-%d"
+    G_HARVEST_ALLLOG = "/log"
     P_HARVEST_SUBMIT = "/submit"
     P_HARVEST_SAVE = "/save"
     PD_HARVEST_CRON = "/schedule?cron="

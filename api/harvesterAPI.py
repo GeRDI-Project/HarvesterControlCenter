@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from api.harvesterAPIStrategy import HarvesterApiStrategy, VersionBased6Strategy, VersionBased7Strategy
+from api.constants import HarvesterApiConstants as HAC
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -29,7 +30,7 @@ class InitHarvester:
         
         if harvester.enabled:
             try:
-                response = requests.get(harvester.url + "/versions", stream=True)
+                response = requests.get(harvester.url + HAC.G_VERSIONS, stream=True)
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
 
