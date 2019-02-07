@@ -26,84 +26,84 @@ A Harvester Control Center GUI with REST-API written in Django
         git clone https://...
     ```
 
-* Dependencies
-    1. Cd into the cloned repo as such:
+### Dependencies
 
-        ```bash
-            cd {{your_repo_path}}
-        ```
+1. Cd into the cloned repo as such:
 
-    2. Create and fire up your virtual environment:
+```bash
+    cd {{your_repo_path}}
+```
 
-        ```bash
-            virtualenv venv -p python3
-            source venv/bin/activate
-        ```
+2. Create and fire up your virtual environment:
 
-    3. Install the dependencies needed to run the app:
+```bash
+    virtualenv venv -p python3
+    source venv/bin/activate
+```
 
-        ```bash
-            pip install -r requirements.txt
-        ```
+3. Install the dependencies needed to run the app:
 
-    4. (optional) Make those migrations work
+```bash
+    pip install -r requirements.txt
+```
 
-        ```bash
-            python manage.py makemigrations
-            python manage.py migrate
-        ```
+4. (optional) Make those migrations work
 
-* Authentication-Mechanisms
+```bash
+    python manage.py makemigrations
+    python manage.py migrate
+```
+
+### Authentication-Mechanisms
    1. Basic Authentication via Username and Password
    2. Token Authentication via Auth.-Token (see below)
 
-### Test the code
+### Code testing
 
-    To use Django Testing Environment fire the following command in your Terminal
+To use Django Testing Environment fire the following command in your Terminal
 
-    ```bash
-        python manage.py test
-    ```
+```bash
+    python manage.py test
+```
 
 ### Running in dev mode
 
-    first, create a super-user
+first, create a super-user
 
-    ```bash
-        python manage.py createsuperuser
-    ```
+```bash
+    python manage.py createsuperuser
+```
 
-    Fire up the server using this one simple command:
+Fire up the server using this one simple command:
 
-    ```bash
-        python manage.py runserver
-    ```
+```bash
+    python manage.py runserver
+```
 
-   You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. 
-   /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
+You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
 
-    * http://localhost:8000/docs/
-    * http://localhost:8000/admin/
-    * http://localhost:8000/v1/
+* <http://localhost:8000/docs/>
+* <http://localhost:8000/admin/>
+* <http://localhost:8000/v1/>
 
-   A GUI is accessible on your browser by using
+A GUI is accessible on your browser by using
 
-    * http://localhost:8000/hcc/
+* http://localhost:8000/hcc/
 
-   Get your _USER_TOKEN_ via POST-request to Resource /v1/get-token/
+Get your _USER_TOKEN_ via POST-request to Resource /v1/get-token/
 
-   ```bash
-        curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{ \
-            "username": "username", \
-            "password": "password" \
-          }' 'http://localhost:8000/v1/get-token/'
-   ```
+```bash
+    curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{ \
+        "username": "username", \
+        "password": "password" \
+        }' 'http://localhost:8000/v1/get-token/'
+```
 
-   For instance getting all harvesters (_/v1/harvesters/_) via Token-Authentication:
+For instance getting all harvesters (_/v1/harvesters/_) via Token-Authentication:
 
-   ```bash
-        curl -X GET --header 'Accept: application/json' --header 'X-CSRFToken: AJcweNkQirt51Z2lg0c94FujhSNYFiu5grZLR2N4D8r1X2wrUaUlK8EOieEStFR9' --header 'Authorization: Token [USER_TOKEN]' 'http://localhost:8000/v1/harvesters/'
-   ```
+```bash
+    curl -X GET --header 'Accept: application/json' --header 'X-CSRFToken: AJcweNkQirt51Z2lg0c94FujhSNYFiu5grZLR2N4D8r1X2wrUaUlK8EOieEStFR9' --header 'Authorization: Token [USER_TOKEN]' 'http://localhost:8000/v1/harvesters/'
+```
 
 ## Deployment
 
@@ -114,23 +114,23 @@ in folder nginx/nginx.conf.
 
 First build the docker container...
 
-   ```bash
-       docker build -t harvest/hccenter:latest .
-   ```
+```bash
+    docker build -t harvest/hccenter:latest .
+```
 
 ### Environment variable configuration
 
 There are six ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container.
 
-    name: "DEBUG" value: "False"
-    name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
-    name: "USE_X_FORWARDED_HOST" value: "True"
-    name: "SECURE_PROXY_SSL_HEADER" value: "https"
-    name: "FORCE_SCRIPT_NAME" value: "/path/to/desired/endpoint"
-    name: "SECRET_KEY" value: "a 50bit string"
+* name: "DEBUG" value: "False"
+* name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
+* name: "USE_X_FORWARDED_HOST" value: "True"
+* name: "SECURE_PROXY_SSL_HEADER" value: "https"
+* name: "FORCE_SCRIPT_NAME" value: "/path/to/desired/endpoint"
+* name: "SECRET_KEY" value: "a 50bit string"
 
-    Now run that container.
+Now run that container.
 
-    ```bash
-        docker run --name=gerdi_hcc -it -p 80:8080 harvest/hccenter:latest
-    ```
+```bash
+    docker run --name=gerdi_hcc -it -p 80:8080 harvest/hccenter:latest
+```
