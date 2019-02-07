@@ -13,6 +13,7 @@ A Harvester Control Center GUI with REST-API written in Django
 ## Installation
 
 * If you wish to run your own build, first ensure you have python globally installed in your computer. If not, you can get python [here](https://www.python.org").
+
 * After doing this, confirm that you have installed _virtualenv_ globally as well. If not, run this:
 
     ```bash
@@ -25,7 +26,7 @@ A Harvester Control Center GUI with REST-API written in Django
         git clone https://...
     ```
 
-* ### Dependencies
+* Dependencies
     1. Cd into the cloned repo as such:
 
         ```bash
@@ -52,30 +53,30 @@ A Harvester Control Center GUI with REST-API written in Django
             python manage.py migrate
         ```
 
-* ### Authentication-Mechanisms
+* Authentication-Mechanisms
    1. Basic Authentication via Username and Password
    2. Token Authentication via Auth.-Token (see below)
 
 ### Test the code
 
-   To use Django Testing Environment fire the following command in your Terminal
+    To use Django Testing Environment fire the following command in your Terminal
 
-   ```bash
-       python manage.py test
-   ```
+    ```bash
+        python manage.py test
+    ```
 
 ### Running in dev mode
 
     first, create a super-user
 
     ```bash
-      python manage.py createsuperuser
+        python manage.py createsuperuser
     ```
 
     Fire up the server using this one simple command:
 
     ```bash
-       python manage.py runserver
+        python manage.py runserver
     ```
 
    You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. 
@@ -115,11 +116,11 @@ First build the docker container...
 
    ```bash
        docker build -t harvest/hccenter:latest .
-   ````
+   ```
 
 ### Environment variable configuration
 
-There are six ENV variables which could be used to configure for production use. Feel free to set them as needed when starting the docker container.
+There are six ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container.
 
     name: "DEBUG" value: "False"
     name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
@@ -128,8 +129,8 @@ There are six ENV variables which could be used to configure for production use.
     name: "FORCE_SCRIPT_NAME" value: "/path/to/desired/endpoint"
     name: "SECRET_KEY" value: "a 50bit string"
 
-   Now run that container.
+    Now run that container.
 
-   ```bash
-       docker run --name=gerdi_hcc -it -p 80:8080 harvest/hccenter:latest
-   ```
+    ```bash
+        docker run --name=gerdi_hcc -it -p 80:8080 harvest/hccenter:latest
+    ```
