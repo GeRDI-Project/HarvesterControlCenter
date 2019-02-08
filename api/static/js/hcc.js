@@ -31,23 +31,13 @@ $(document).ready(function () {
             $( '#form-modal-body' ).html( data );
             $.each(status, function (hvname, element) {
                 if ( element != "disabled" ) {
-                    $( '#hv-status-' + hvname ).html( JSON.stringify(element) );
-                    $.each(element, function (i, e) {
-                        if ( e === 'harvesting' ) {
-                            if ( i === 'progress_cur' ){
-                                bar = $( "#progresshv-" + hvname);
-                                bar.style.width =  e + "%";
-                                bar.innerHTML = e + "%";
-                            }
-                        }
-                    });
-                    
+                    $( '#hv-status-' + hvname ).html( JSON.stringify(element) );                  
                 }
             });
         }).fail(function (response) {
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
-        });;
+        });
     });
 
     var formButton = {
@@ -103,7 +93,7 @@ $(document).ready(function () {
             }
         }).fail(function (response) {
             alert('Error: ' + response.responseText);
-        });;
+        });
 
     });
 
@@ -117,7 +107,7 @@ $(document).ready(function () {
             }
         }).fail(function (response) {
             alert('Error: ' + response.responseText);
-        });;
+        });
 
     });
 
@@ -142,7 +132,7 @@ $(document).ready(function () {
             }
         }).fail(function (response) {
             alert('Error: ' + response.responseText);
-        });;
+        });
 
     });
 

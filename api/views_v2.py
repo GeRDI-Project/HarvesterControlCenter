@@ -188,7 +188,7 @@ def home(request):
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
-            form.helper['cronTab'].update_attributes(id="cronTab-" + harvester.name)
+            #TODO: form.helper['cronTab'].update_attributes(id="cronTab-" + harvester.name)
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.harvesterStatus()
             if response:

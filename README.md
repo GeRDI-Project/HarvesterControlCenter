@@ -12,42 +12,42 @@ A Harvester Control Center GUI with REST-API written in Django
 
 ## Installation
 
-* If you wish to run your own build, first ensure you have python globally installed in your computer. If not, you can get python [here](https://www.python.org").
+If you wish to run your own build, first ensure you have python globally installed in your computer. If not, you can get python [here](https://www.python.org").
 
-* After doing this, confirm that you have installed _virtualenv_ globally as well. If not, run this:
+After doing this, confirm that you have installed _virtualenv_ globally as well. If not, run this:
 
-    ```bash
-        pip install virtualenv
-    ```
+```bash
+    pip install virtualenv
+```
 
-* Then, Git clone this repo to your PC
+Then, Git clone this repo to your PC
 
-    ```bash
-        git clone https://...
-    ```
+```bash
+    git clone https://...
+```
 
 ### Dependencies
 
-1. Cd into the cloned repo as such:
+Change into the cloned repo as such:
 
 ```bash
     cd {{your_repo_path}}
 ```
 
-2. Create and fire up your virtual environment:
+Create and fire up your virtual environment:
 
 ```bash
     virtualenv venv -p python3
     source venv/bin/activate
 ```
 
-3. Install the dependencies needed to run the app:
+Install the dependencies needed to run the app:
 
 ```bash
     pip install -r requirements.txt
 ```
 
-4. (optional) Make those migrations work
+(optional) Make those migrations work
 
 ```bash
     python manage.py makemigrations
@@ -55,6 +55,7 @@ A Harvester Control Center GUI with REST-API written in Django
 ```
 
 ### Authentication-Mechanisms
+
    1. Basic Authentication via Username and Password
    2. Token Authentication via Auth.-Token (see below)
 
@@ -68,7 +69,7 @@ To use Django Testing Environment fire the following command in your Terminal
 
 ### Running in dev mode
 
-first, create a super-user
+First, create a super-user
 
 ```bash
     python manage.py createsuperuser
@@ -88,7 +89,7 @@ You can now access the service on your browser by using the following URLS. /doc
 
 A GUI is accessible on your browser by using
 
-* http://localhost:8000/hcc/
+* <http://localhost:8000/hcc/>
 
 Get your _USER_TOKEN_ via POST-request to Resource /v1/get-token/
 
