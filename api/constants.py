@@ -28,6 +28,7 @@ class HCCJSONConstants:
     PROGRESS_MAX = "progress_max"
     # progress current in percentage
     PROGRESS_CURRENT = "progress_cur"
+    # in millisecs
     REMAIN_HARVEST_TIME = "remainingHarvestTime"
     LAST_HARVEST_DATE = "lastHarvestDate"
     CRONTAB = "cron"

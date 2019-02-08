@@ -293,7 +293,9 @@ class VersionBased7Strategy(Strategy):
                     
                     if HCCJC.LAST_HARVEST_DATE in harvester_json:
                         feedback[harvester.name][HCCJC.LAST_HARVEST_DATE] = harvester_json[HCCJC.LAST_HARVEST_DATE]
-                    
+                    if HCCJC.REMAIN_HARVEST_TIME in harvester_json:
+                        feedback[harvester.name][HCCJC.REMAIN_HARVEST_TIME] = harvester_json[HCCJC.REMAIN_HARVEST_TIME]
+
                     # schedules
                     response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, stream=True)
                     harvester_json = json.loads(response.text)

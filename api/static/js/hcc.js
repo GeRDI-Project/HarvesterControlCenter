@@ -138,7 +138,7 @@ $(document).ready(function () {
 
     $("div[id^='progresshv-']").load( $(this).attr("title"), function (event) {
 
-        var url = $(this).attr("title")
+        var url = $(this).attr("title");
         //var bar = document.getElementById("progresshv");
         var bar = this;
         var width = 99;
