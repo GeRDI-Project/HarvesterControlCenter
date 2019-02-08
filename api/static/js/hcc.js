@@ -142,6 +142,7 @@ $(document).ready(function () {
         //var bar = document.getElementById("progresshv");
         var bar = this;
         var width = 99;
+        var remain = 0;
         var max = "";
         var id = setInterval(getTick, 1982);
     
@@ -166,6 +167,9 @@ $(document).ready(function () {
                             if (i === 'progress_cur') {
                                 width = e;
                             }
+                            if (i === 'remainingHarvestTime') {
+                                remain = e;
+                            }
                             if (i === 'max_docs') {
                                 max = e;
                             }
@@ -173,7 +177,8 @@ $(document).ready(function () {
                     });
                 });
                 bar.style.width = width + '%';
-                bar.innerHTML = width + '%';
+                var time = remain/1000/60;
+                bar.innerHTML = width + '%' + ' remaining time: ' + parseInt(time) + ' minutes';
     
             } else {
                 bar.style.width = width + '%';

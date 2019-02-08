@@ -354,7 +354,10 @@ class VersionBased7Strategy(Strategy):
                 feedback[harvester.name][HCCJC.PROGRESS_MAX] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
             else:
                 feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = HCCJC.N_A
-
+            
+            if HCCJC.REMAIN_HARVEST_TIME in harvester_json:
+                feedback[harvester.name][HCCJC.REMAIN_HARVEST_TIME] = harvester_json[HCCJC.REMAIN_HARVEST_TIME]
+            
             if maxDocuments:
                 if int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) > 0:
                     feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
