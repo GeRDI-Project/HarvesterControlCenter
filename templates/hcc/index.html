@@ -160,7 +160,9 @@
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
-                                                                            <small>{{ val.status }}</small>
+
+                                                                            <small data-toggle="tooltip" data-placement="top" title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
+                                                                            
                                                                             {% if val.health != 'OK' %}
                                                                                 <i class="fa fa-exclamation-triangle float-right"
                                                                                    style="color: #ffc107;"
