@@ -1,6 +1,6 @@
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Field
+from crispy_forms.layout import Layout, Submit
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -83,7 +83,7 @@ class SchedulerForm(forms.Form):
         helper = FormHelper()
         helper.form_tag = False
         helper.layout = Layout(
-            Field('cronTab', id="cron-id", style="font-size: 1.5rem;"),
-            Submit('submit_cron', 'set!', css_class="btn-default btn-sm")
+            FieldWithButtons('cronTab',
+                Submit('submit_cron', 'set!', css_class="btn-default btn-sm"))
         )
         return helper
