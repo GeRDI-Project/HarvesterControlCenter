@@ -22,7 +22,7 @@
                         <h3 class="card-header">Get todays Harvester Logfiles</h3>
 
                         <div class="card-body">
-                            <a id="btn-deploy-harvester" href="#"><i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i></a>
+                            <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}"><i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i></a>
                         </div>
                     </div>
                 </div>
@@ -160,7 +160,9 @@
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
-                                                                            <small>{{ val.status }}</small>
+
+                                                                            <small data-toggle="tooltip" data-placement="top" title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
+                                                                            
                                                                             {% if val.health != 'OK' %}
                                                                                 <i class="fa fa-exclamation-triangle float-right"
                                                                                    style="color: #ffc107;"

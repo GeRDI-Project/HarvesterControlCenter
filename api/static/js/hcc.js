@@ -22,7 +22,7 @@ $(document).ready(function () {
 
     $('#btn-deploy-harvester').on('click', function (event) {
         
-        var url = '/hcc/logs';
+        var url = $(this).attr("title");
 
         $.get(url, function (result) {
             var status = result;

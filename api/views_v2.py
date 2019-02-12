@@ -187,17 +187,21 @@ def home(request):
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
-            # TODO do that call a client side!!
+            # TODO do that call at client side!!
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.harvesterStatus()
             if response:
                 feedback[harvester.name] = response.data[harvester.name]
                 if harvester.enabled:
-                    # if a GET (or any other method) we'll create form initialized with schedule for this harvester 
-                    form = SchedulerForm(initial={HCCJC.POSTCRONTAB : response.data[harvester.name][HCCJC.CRONTAB]}, prefix=harvester.name)
-                    forms[harvester.name] = form
+                    if HCCJC.CRONTAB in response.data[harvester.name]:
+                        # if a GET (or any other method) we'll create form initialized with schedule for this harvester 
+                        form = SchedulerForm(initial={HCCJC.POSTCRONTAB : response.data[harvester.name][HCCJC.CRONTAB]}, prefix=harvester.name)
+                        forms[harvester.name] = form
+                    else:
+                        form = SchedulerForm(initial={HCCJC.POSTCRONTAB : '0 0 * * *'}, prefix=harvester.name)
+                        forms[harvester.name] = form
             else:
-                form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'}, prefix=harvester.name)
+                form = SchedulerForm(initial={HCCJC.POSTCRONTAB : '0 0 * * *'}, prefix=harvester.name)
                 forms[harvester.name] = form
                 feedback[harvester.name] = {}
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
