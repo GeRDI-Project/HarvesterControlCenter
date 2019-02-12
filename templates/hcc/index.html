@@ -229,7 +229,12 @@
                                                                                 {% if val.cron %}
                                                                                     <form action="{% url 'api:harvester-cron' name=harvester.name %}"
                                                                                           method="post">
+                                                                                        {% csrf_token %}
+                                                                                        {% for k, form in forms.items %}
+                                                                                        {% if k == harvester.name %}  
                                                                                         {% crispy form %}
+                                                                                        {% endif %}
+                                                                                        {% endfor %}
                                                                                     </form>
                                                                                 {% endif %}
                                                                             {% endif %}

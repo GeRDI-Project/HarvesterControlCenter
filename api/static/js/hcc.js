@@ -17,7 +17,7 @@ limitations under the License.
 $(document).ready(function () {
 
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="tooltip"]').tooltip();
     });
 
     $('#btn-deploy-harvester').on('click', function (event) {

@@ -180,20 +180,24 @@ def home(request):
         view_type = request.GET['viewtype']
     else:
         view_type = False
-    # if a GET (or any other method) we'll create a blank form initialized with a std schedule for every day 00:00 
-    form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'})
 
     # if user is logged in
     if request.user.is_authenticated:
+        forms = {}
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
-            #TODO: form.helper['cronTab'].update_attributes(id="cronTab-" + harvester.name)
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.harvesterStatus()
             if response:
                 feedback[harvester.name] = response.data[harvester.name]
+                if harvester.enabled:
+                    # if a GET (or any other method) we'll create form initialized with schedule for this harvester 
+                    form = SchedulerForm(initial={HCCJC.POSTCRONTAB : response.data[harvester.name][HCCJC.CRONTAB]}, prefix=harvester.name)
+                    forms[harvester.name] = form
             else:
+                form = SchedulerForm({HCCJC.POSTCRONTAB : '0 0 * * *'}, prefix=harvester.name)
+                forms[harvester.name] = form
                 feedback[harvester.name] = {}
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 feedback[harvester.name][HCCJC.HEALTH] = 'Error : response object is not set'
@@ -205,9 +209,9 @@ def home(request):
                 return HttpResponseRedirect(reverse('hcc_gui'))
 
         # messages.debug(request, feedback)     
-        return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'form': form, 'vt': view_type})
+        return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'forms': forms, 'vt': view_type})
 
-    return render(request, 'hcc/index.html', {'status': feedback, 'form': form, 'vt': view_type})
+    return render(request, 'hcc/index.html', {'status': feedback, 'vt': view_type})
 
 
 @api_view(['POST'])
@@ -368,10 +372,11 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
     def post(self, request, name):
         harvester = get_object_or_404(Harvester, name=name)
         api = InitHarvester(harvester).getHarvesterApi()
-        if request.POST[HCCJC.POSTCRONTAB]:
-            response = api.addSchedule(request.POST[HCCJC.POSTCRONTAB])
+        crontab = request.POST.get(name + "-" + HCCJC.POSTCRONTAB, False);
+        if crontab:
+            response = api.addSchedule(crontab)
         else:
-            response = api.deleteSchedule(request.POST[HCCJC.POSTCRONTAB])
+            response = api.deleteSchedule(crontab)
         messages.add_message(request, messages.INFO, name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))
 
