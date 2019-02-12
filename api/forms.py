@@ -75,7 +75,7 @@ class SchedulerForm(forms.Form):
     """
     cronTab = forms.CharField(
         label="Scheduling Plan:",
-        max_length = 9,
+        max_length = 14,
         required=False)
 
     @property
