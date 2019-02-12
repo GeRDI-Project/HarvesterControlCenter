@@ -187,6 +187,7 @@ def home(request):
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
+            # TODO do that call a client side!!
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.harvesterStatus()
             if response:
