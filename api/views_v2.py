@@ -206,6 +206,22 @@ def home(request):
                 feedback[harvester.name] = {}
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 feedback[harvester.name][HCCJC.HEALTH] = 'Error : response object is not set'
+        
+        sum_harvested = 0
+        sum_max_docs = 0
+        for key, value in feedback.items():
+            try:
+                for k, v in value.items():
+                    if k == HCCJC.CACHED_DOCS:
+                        sum_harvested += v
+                    if k == HCCJC.MAX_DOCUMENTS:
+                        if v != 'N/A':
+                            sum_max_docs += v
+            except:
+                pass
+        feedback['sum_harvested'] = sum_harvested
+        feedback['sum_maxdocs'] = sum_max_docs
+        messages.add_message(request, messages.INFO, 'Total amount of harvested Items so far: ' + str(sum_harvested) + ' of ' + str(sum_max_docs))
 
         # init form
         if request.method == 'POST':
