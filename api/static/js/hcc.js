@@ -29,11 +29,11 @@ $(document).ready(function () {
             var data = JSON.stringify(result);
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( data );
-            $.each(status, function (hvname, element) {
-                if ( element != "disabled" ) {
-                    $( '#hv-status-' + hvname ).html( JSON.stringify(element) );                  
-                }
-            });
+            for (var key in status) {
+                var obj = status[key];
+                $( '#hv-status-' + key ).html( obj.log );
+            }
+        
         }).fail(function (response) {
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
