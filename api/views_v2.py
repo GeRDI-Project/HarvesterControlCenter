@@ -93,6 +93,23 @@ def start_harvester(request, name):
     messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
+
+@login_required
+def reset_harvester(request, name):
+    """
+    This function resets an harvester.
+
+    :param request: the request
+    :param name: name of the harvester
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+    harvester = get_object_or_404(Harvester, name=name)
+    api = InitHarvester(harvester).getHarvesterApi()
+    response = api.resetHarvest()
+    messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
+
 @login_required
 def get_allHarvesterLog(request):
     """
@@ -108,8 +125,8 @@ def get_allHarvesterLog(request):
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.harvesterLog()
             feedback[harvester.name] = response.data[harvester.name]
-            #messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return JsonResponse(feedback, status=status.HTTP_200_OK)
+
 
 @login_required
 def get_harvesterProgress(request, name):
@@ -124,8 +141,8 @@ def get_harvesterProgress(request, name):
     api = InitHarvester(harvester).getHarvesterApi()
     response = api.harvesterProgress()
     feedback[harvester.name] = response.data[harvester.name]
-    #messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return JsonResponse(feedback, status=response.status_code)
+
 
 @login_required
 def start_all_harvesters(request):
@@ -184,6 +201,7 @@ def home(request):
     # if user is logged in
     if request.user.is_authenticated:
         forms = {}
+        response = None
         harvesters = Harvester.objects.all()
         # get status of each enabled harvester
         for harvester in harvesters:
@@ -205,7 +223,7 @@ def home(request):
                 forms[harvester.name] = form
                 feedback[harvester.name] = {}
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-                feedback[harvester.name][HCCJC.HEALTH] = 'Error : response object is not set'
+                feedback[harvester.name][HCCJC.HEALTH] = 'Error : no response object'
         
         sum_harvested = 0
         sum_max_docs = 0
@@ -221,7 +239,7 @@ def home(request):
                 pass
         feedback['sum_harvested'] = sum_harvested
         feedback['sum_maxdocs'] = sum_max_docs
-        messages.add_message(request, messages.INFO, 'Total amount of harvested Items so far: ' + str(sum_harvested) + ' of ' + str(sum_max_docs))
+        messages.add_message( request, messages.INFO, 'Total amount of harvested Items so far: %s' % sum_harvested )
 
         # init form
         if request.method == 'POST':
@@ -229,7 +247,6 @@ def home(request):
             if form.is_valid():
                 return HttpResponseRedirect(reverse('hcc_gui'))
 
-        # messages.debug(request, feedback)     
         return render(request, 'hcc/index.html', {'harvesters': harvesters, 'status': feedback, 'forms': forms, 'vt': view_type})
 
     return render(request, 'hcc/index.html', {'status': feedback, 'vt': view_type})
