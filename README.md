@@ -1,6 +1,13 @@
-# Harvester Control Center (HCC) v3.1.6
+# Harvester Control Center (HCC) v3.2.7
 
-A Harvester Control Center GUI with REST-API written in Django
+A Harvester Control Center GUI with REST-API written in Django.
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://code.gerdi-project.de/projects/HAR/repos/harvestercontrolcenter/browse)
+[![Website shields.io](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](https://www.test.gerdi.org/harvest/hccenter/hcc/)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](http://www.gerdi-project.de/)
+[![ForTheBadge built-with-science](http://ForTheBadge.com/images/badges/built-with-science.svg)](https://www.tu-dresden.de/zih/)
 
 ## Technologies used
 
