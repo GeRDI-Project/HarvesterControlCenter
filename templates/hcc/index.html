@@ -9,8 +9,8 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header">Register new Harvester</h3>
-                        <div id="messages" class="card-body">
+                        <h3 class="card-header"><a href="#" data-toggle="collapse" data-target="#collapseRegister">Register new Harvester</a></h3>
+                        <div class="card-body collapse" id="collapseRegister">
                             <a href="{% url 'hreg-form' %}" id="reg-button">
                                 <i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i>
                             </a>
@@ -20,8 +20,8 @@
                 </div>
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header">Get todays Harvester Logfiles</h3>
-                        <div class="card-body">
+                        <h3 class="card-header"><a href="#" data-toggle="collapse" data-target="#collapseLogfiles">Get todays Harvester Logfiles</a></h3>
+                        <div class="card-body collapse" id="collapseLogfiles">
                             <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
                                 <i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i>
                             </a>
@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header"><a href="#" data-toggle="collapse" data-target="#collapseChart">Statistics</a></h3>
+                        <h3 class="card-header"><a id="btn-get-stats" href="#" title="{% url 'api:all-harvester-status' %}" data-toggle="collapse" data-target="#collapseChart">Statistics</a></h3>
                         <div class="card-body collapse" id="collapseChart">
                             <div class="container"><canvas id="harvesterChart" width="100px" height="20px"></canvas></div>
                         </div>
@@ -92,8 +92,9 @@
                                                         <li class="list-group-item list-group-item-{{ val.gui_status }}"
                                                             data-toggle="tooltip"
                                                             data-placement="right"
-                                                            title="{{ val.health }}"><a
-                                                                href="{{ harvester.url }}">{{ harvester.name }}</a> {{ val.status }}
+                                                            title="{{ val.health }}">
+                                                            <a href="{{ harvester.url }}">{{ harvester.name }}</a>
+                                                            <div id="status_label_{{ harvester.name }}">{{ val.status }}</div>
                                                         </li>
                                                     {% endif %}
                                                 {% endfor %}
@@ -194,7 +195,7 @@
                                                                                          aria-valuemin="0"
                                                                                          aria-valuemax="{{ val.progress_max }}">{{ val.progress_cur }}%
                                                                                     </div>
-                                                                                </div>
+                                                                                </div><small id="status_label_{{ harvester.name }}" style="font-size: 10px"></small>
                                                                             {% endif %}
 
 

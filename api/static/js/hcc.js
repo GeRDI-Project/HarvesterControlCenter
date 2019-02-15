@@ -40,6 +40,54 @@ $(document).ready(function () {
         });
     });
 
+    $('#btn-get-stats').on('click', function (event) {
+        
+        var vdata = [];
+        var vlabels = [];
+        var gbcarray = [];
+        var url = $(this).attr("title");
+        $.get(url, function (result) {
+            var status = result;
+            var i = 0;
+            for (var key in status) {
+                i++;
+                var obj = status[key];
+                if ( obj != 'disabled' ) {
+                    
+                    if ( obj.cached_docs ) {
+                        vlabels.push( key );
+                        vdata.push( parseInt(obj.cached_docs) );
+                        gbcarray.push( 'rgba(' + 
+                        (Math.floor(Math.random() * 256)) + ',' + 
+                        (Math.floor(Math.random() * 256)) + ',' + 
+                        (Math.floor(Math.random() * 256)) + ', 0.5)' );
+                    }
+                }
+            }
+
+            var ctx = document.getElementById("harvesterChart");
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: vlabels,
+                    datasets: [{
+                        label: '# of harvested Items',
+                        data: vdata,
+                        backgroundColor: gbcarray,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                
+                }
+            });
+        
+        }).fail(function (response) {
+            $( '#form-modal' ).modal('toggle');
+            $( '#form-modal-body' ).html( response.responseText );
+        });
+    });
+
     var formButton = {
         regClick: function () {
             $('#form-modal-body').load('/v1/harvesters/register #hreg-form-content', formButton.toggleModal);
@@ -136,17 +184,32 @@ $(document).ready(function () {
 
     });
 
+    // milisec to hours, min, sec
+    function timeConvert(n) {
+        var num = n;
+        var rseconds = Math.floor((num / 1000) % 60);
+        var minutes = (num / 1000) / 60;
+        var rminutes = Math.floor(minutes);
+        var hours = (minutes / 60);
+        var rhours = Math.round(hours);
+        return rhours + "h " + rminutes + "min " + rseconds + "sec";
+    }
+
     $("div[id^='progresshv-']").load( $(this).attr("title"), function (event) {
 
         var url = $(this).attr("title");
-        //var bar = document.getElementById("progresshv");
         var bar = this;
         var width = 99;
-        var remain = 0;
+        var perc = "%";
         var max = "";
+        var harvester_name = "";
         var id = setInterval(getTick, 1982);
+        var remain;
+        var time = 0;
+        var time_string = "";
     
         function getTick() {
+            
             if (!(width >= 100 || width === 'undefined') || max === 'N/A') {
                 var request = $.ajax({
                     url: url,
@@ -159,69 +222,32 @@ $(document).ready(function () {
                     dataType: 'json',
                     method: 'GET'
                 });
-    
+
                 request.done(function (data) {
-    
-                    $.each(data, function (index, element) {
-                        $.each(element, function (i, e) {
-                            if (i === 'progress_cur') {
-                                width = e;
-                            }
-                            if (i === 'remainingHarvestTime') {
-                                remain = e;
-                            }
-                            if (i === 'max_docs') {
-                                max = e;
-                            }
-                        });
-                    });
+                    for ( var key in data ) {
+                        harvester_name = key;
+                        width = data[key].progress_cur;
+                        remain = data[key].remainingHarvestTime;
+                        max = data[key].max_docs;                        
+                    }
                 });
-                bar.style.width = width + '%';
-                var time = remain/1000/60;
-                bar.innerHTML = width + '%' + ' remaining time: ' + parseInt(time) + ' minutes';
+
+                bar.style.width = width + "%";
+                if ( max === "N/A" ) {
+                    perc = "";
+                }
+                if ( typeof remain !== "undefined" ) {
+                    time = timeConvert(remain);
+                    time_string = 'remaining time: ' + time;
+                }
+                $( '#status_label_' + harvester_name).html( time_string );
+                bar.innerHTML = width + perc;
     
             } else {
                 bar.style.width = width + '%';
                 bar.innerHTML = width + '%';
+                $( '#status_label_' + harvester_name).html( "" );
                 clearInterval(id);
-            }
-        }
-    });
-
-    var ctx = document.getElementById("harvesterChart");
-    var myChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
-                }]
             }
         }
     });
