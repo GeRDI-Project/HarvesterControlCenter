@@ -41,6 +41,10 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def post_stopHarvest(self, harvester):
         pass
+
+    @abc.abstractmethod
+    def post_resetHarvest(self, harvester):
+        pass
     
     @abc.abstractmethod
     def get_harvesterLog(self, harvester):
@@ -83,6 +87,9 @@ class HarvesterApiStrategy:
 
     def stopHarvest(self):
         return self._strategy.post_stopHarvest(self.harvester)
+
+    def resetHarvest(self):
+        return self._strategy.post_resetHarvest(self.harvester)
     
     def harvesterLog(self):
         return self._strategy.get_harvesterLog(self.harvester)
@@ -187,6 +194,21 @@ class VersionBased6Strategy(Strategy):
         else:
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
 
+    def post_resetHarvest(self, harvester):
+        feedback = {}
+        if harvester.enabled:
+            try:
+                feedback[harvester.name] = {}
+                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_RESET, stream=True)
+                feedback[harvester.name] = response.text
+            except ConnectionError:
+                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
+                feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
+                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+            return Response(feedback, status=response.status_code)
+        else:
+            return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
+    
     def post_stopHarvest(self, harvester):
         feedback = {}
         if harvester.enabled:
@@ -324,6 +346,16 @@ class VersionBased7Strategy(Strategy):
         feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
         return Response(feedback, status=response.status_code)
 
+    def post_resetHarvest(self, harvester):
+        feedback = {}
+        feedback[harvester.name] = {}
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_RESET, stream=True)
+        harvester_json = json.loads(response.text)
+        feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
+        feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
+        feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
+        return Response(feedback, status=response.status_code)
+    
     def post_stopHarvest(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}

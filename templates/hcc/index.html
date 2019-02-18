@@ -9,20 +9,32 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header">Register new Harvester</h3>
-                        <div id="messages" class="card-body">
+                        <h3 class="card-header"><a href="#" data-toggle="collapse" data-target="#collapseRegister">Register new Harvester</a></h3>
+                        <div class="card-body collapse" id="collapseRegister">
                             <a href="{% url 'hreg-form' %}" id="reg-button">
-                                <i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i></a>
+                                <i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i>
+                            </a>
                             <!-- <a id="register-button" href="{% url 'hreg-form' %}" data-toggle="modal" data-target="#form-modal">Register</a> -->
                         </div>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header">Get todays Harvester Logfiles</h3>
-
-                        <div class="card-body">
-                            <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}"><i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i></a>
+                        <h3 class="card-header"><a href="#" data-toggle="collapse" data-target="#collapseLogfiles">Get todays Harvester Logfiles</a></h3>
+                        <div class="card-body collapse" id="collapseLogfiles">
+                            <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
+                                <i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div><br>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="card">
+                        <h3 class="card-header"><a id="btn-get-stats" href="#" title="{% url 'api:all-harvester-status' %}" data-toggle="collapse" data-target="#collapseChart">Statistics</a></h3>
+                        <div class="card-body collapse" id="collapseChart">
+                            <div class="container"><canvas id="harvesterChart" width="100px" height="20px"></canvas></div>
                         </div>
                     </div>
                 </div>
@@ -31,7 +43,6 @@
 
             {% if harvesters|length > 0 %}
 
-                <br>
                 <div class="accordion" id="harvesterAccordion">
                     <div class="card">
                         <div class="card-header" id="headingEnabled">
@@ -81,8 +92,9 @@
                                                         <li class="list-group-item list-group-item-{{ val.gui_status }}"
                                                             data-toggle="tooltip"
                                                             data-placement="right"
-                                                            title="{{ val.health }}"><a
-                                                                href="{{ harvester.url }}">{{ harvester.name }}</a> {{ val.status }}
+                                                            title="{{ val.health }}">
+                                                            <a href="{{ harvester.url }}">{{ harvester.name }}</a>
+                                                            <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
                                                         </li>
                                                     {% endif %}
                                                 {% endfor %}
@@ -114,17 +126,17 @@
                                                                          aria-label="control harvester">
                                                                         <a href="{% url 'toggle-harvester' name=harvester.name %}"
                                                                            class="btn btn-success btn-sm" role="button">
-                                                                            <i class="fa fa-toggle-on"
-                                                                               aria-hidden="true"></i></a>
+                                                                            <i class="fa fa-toggle-on" aria-hidden="true"></i></a>
                                                                         
-                                                                                <button type="button" data-toggle="tooltip" data-placement="top"
+                                                                                <button id="btn-harvester-status-{{ harvester.name }}" type="button" data-toggle="tooltip" data-placement="top"
                                                                                 {% for k, val in status.items %}
-                                                                                {% if k == harvester.name %}
-                                                                                        class="btn btn-{{ val.gui_status }} btn-sm"
-                                                                                        title="{{ val.data_pvd }} harvested and cached Documents: {{ val.cached_docs }} 
-                                                                                        {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.
+                                                                                    {% if k == harvester.name %}
+                                                                                        class="btn btn-sm btn-{{ val.gui_status }}"
+                                                                                        title="{% if val.data_pvd %}{{ val.data_pvd }}{% endif %}
+                                                                                        {% if val.cached_docs %} harvested and cached Documents: {{ val.cached_docs }}
+                                                                                        {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
                                                                                         {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
-                                                                                {% endif %}
+                                                                                    {% endif %}
                                                                                 {% endfor %}
                                                                                 >{{ harvester.name|lower|capfirst }}</button>
                                                                     </div>
@@ -161,7 +173,9 @@
                                                                                 </a>
                                                                             {% endif %}
 
-                                                                            <small data-toggle="tooltip" data-placement="top" title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
+                                                                            <small id="lbl-harvester-status-{{ harvester.name }}" data-toggle="tooltip" 
+                                                                                data-placement="top" 
+                                                                                title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
                                                                             
                                                                             {% if val.health != 'OK' %}
                                                                                 <i class="fa fa-exclamation-triangle float-right"
@@ -182,7 +196,7 @@
                                                                                          aria-valuemin="0"
                                                                                          aria-valuemax="{{ val.progress_max }}">{{ val.progress_cur }}%
                                                                                     </div>
-                                                                                </div>
+                                                                                </div><small id="status-label-{{ harvester.name }}" style="font-size: 10px"></small>
                                                                             {% endif %}
 
 
@@ -195,7 +209,16 @@
                                                                 <div class="card-body">
                                                                     Control Center API:
                                                                     <a class="card-title"
-                                                                       href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a>
+                                                                       href="{% url 'api:harvester-detail' name=harvester.name %}">
+                                                                       {{ harvester.name }}
+                                                                    </a>
+                                                                    <a id=""
+                                                                        title="{% url 'reset-harvester' name=harvester.name %}"
+                                                                        href="{% url 'reset-harvester' name=harvester.name %}"
+                                                                        role="button"
+                                                                        class="btn btn-primary btn-sm">
+                                                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                                                    </a>
                                                                 </div>
                                                                 <ul class="list-group list-group-flush">
                                                                     <li class="list-group-item">

@@ -38,20 +38,20 @@ class HCCJSONConstants:
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
 
-    OK = "OK"
-    N_A = "N/A"
+    OK      = "OK"
+    N_A     = "N/A"
     MESSAGE = "message"
 
-    INIT = "initialization"
-    HARV = "harvesting"
-    IDLE = "idle"
-    IDLE_OLD = "ideling"
+    INIT        = "initialization"
+    HARV        = "harvesting"
+    IDLE        = "idle"
+    IDLE_OLD    = "ideling"
     HARVESTER_STATES = [INIT, HARV, IDLE, IDLE_OLD]
 
     WARNING = "warning"
     SUCCESS = "success"
     PRIMARY = "primary"
-    INFO = "info"
+    INFO    = "info"
 
 
 class HarvesterApiConstants:

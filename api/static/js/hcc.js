@@ -29,11 +29,72 @@ $(document).ready(function () {
             var data = JSON.stringify(result);
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( data );
-            $.each(status, function (hvname, element) {
-                if ( element != "disabled" ) {
-                    $( '#hv-status-' + hvname ).html( JSON.stringify(element) );                  
+            for (var key in status) {
+                var obj = status[key];
+                $( '#hv-status-' + key ).html( obj.log );
+            }
+        
+        }).fail(function (response) {
+            $( '#form-modal' ).modal('toggle');
+            $( '#form-modal-body' ).html( response.responseText );
+        });
+    });
+
+    $('#btn-get-stats').on('click', function (event) {
+        
+        var vdata = [];
+        var vlabels = [];
+        var gbcarray = [];
+        var bcarray = [];
+        var url = $(this).attr("title");
+        $.get(url, function (result) {
+            var status = result;
+            var i = 0;
+            for (var key in status) {
+                i++;
+                var obj = status[key];
+                if ( obj != 'disabled' ) {
+                    
+                    $( '#hv-status-' + key ).html( JSON.stringify(obj) );
+                    var btnhvstatus = document.getElementById('btn-harvester-status-' + key);
+                    if ( btnhvstatus ) {
+                        btnhvstatus.classList.toggle("btn-info", false);
+                        btnhvstatus.classList.toggle("btn-warning", false);
+                        btnhvstatus.classList.toggle("btn-success", false);
+                        btnhvstatus.classList.add( "btn-" + obj.gui_status );
+                    }
+                    if ( obj.status ) {
+                        var lbl_status = document.getElementById('lbl-harvester-status-' + key);
+                        lbl_status.innerHTML = obj.status ;
+                    }
+                    if ( obj.cached_docs ) {
+                        vlabels.push( key );
+                        vdata.push( parseInt(obj.cached_docs) );
+                        var r = (Math.floor(Math.random() * 256));
+                        var g = (Math.floor(Math.random() * 256));
+                        var b = (Math.floor(Math.random() * 256));
+                        gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ', 0.3)' );
+                        bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ', 0.4)' );
+                    }
                 }
+            }
+
+            var ctx = document.getElementById("harvesterChart");
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: vlabels,
+                    datasets: [{
+                        label: '# of harvested Items',
+                        data: vdata,
+                        backgroundColor: gbcarray,
+                        borderColor: bcarray,
+                        borderWidth: 1
+                    }]
+                },
+                options: { cutoutPercentage: 45 }
             });
+        
         }).fail(function (response) {
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
@@ -136,17 +197,32 @@ $(document).ready(function () {
 
     });
 
+    // milisec to hours, min, sec
+    function timeConvert(n) {
+        var num = n;
+        var rseconds = Math.floor((num / 1000) % 60);
+        var minutes = (num / 1000) / 60;
+        var rminutes = Math.floor(minutes);
+        var hours = (minutes / 60);
+        var rhours = Math.round(hours);
+        return rhours + "h " + rminutes + "min " + rseconds + "sec";
+    }
+
     $("div[id^='progresshv-']").load( $(this).attr("title"), function (event) {
 
         var url = $(this).attr("title");
-        //var bar = document.getElementById("progresshv");
         var bar = this;
         var width = 99;
-        var remain = 0;
+        var perc = "%";
         var max = "";
+        var harvester_name = "";
         var id = setInterval(getTick, 1982);
+        var remain;
+        var time = 0;
+        var time_string = "";
     
         function getTick() {
+            
             if (!(width >= 100 || width === 'undefined') || max === 'N/A') {
                 var request = $.ajax({
                     url: url,
@@ -159,30 +235,31 @@ $(document).ready(function () {
                     dataType: 'json',
                     method: 'GET'
                 });
-    
+
                 request.done(function (data) {
-    
-                    $.each(data, function (index, element) {
-                        $.each(element, function (i, e) {
-                            if (i === 'progress_cur') {
-                                width = e;
-                            }
-                            if (i === 'remainingHarvestTime') {
-                                remain = e;
-                            }
-                            if (i === 'max_docs') {
-                                max = e;
-                            }
-                        });
-                    });
+                    for ( var key in data ) {
+                        harvester_name = key;
+                        width = data[key].progress_cur;
+                        remain = data[key].remainingHarvestTime;
+                        max = data[key].max_docs;                        
+                    }
                 });
-                bar.style.width = width + '%';
-                var time = remain/1000/60;
-                bar.innerHTML = width + '%' + ' remaining time: ' + parseInt(time) + ' minutes';
+
+                bar.style.width = width + "%";
+                if ( max === "N/A" ) {
+                    perc = "";
+                }
+                if ( typeof remain !== "undefined" ) {
+                    time = timeConvert(remain);
+                    time_string = 'remaining time: ' + time;
+                }
+                $( '#status-label-' + harvester_name).html( time_string );
+                bar.innerHTML = width + perc;
     
             } else {
                 bar.style.width = width + '%';
                 bar.innerHTML = width + '%';
+                $( '#status-label-' + harvester_name).html( "" );
                 clearInterval(id);
             }
         }
