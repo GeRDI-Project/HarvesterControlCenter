@@ -45,6 +45,7 @@ $(document).ready(function () {
         var vdata = [];
         var vlabels = [];
         var gbcarray = [];
+        var bcarray = [];
         var url = $(this).attr("title");
         $.get(url, function (result) {
             var status = result;
@@ -54,13 +55,26 @@ $(document).ready(function () {
                 var obj = status[key];
                 if ( obj != 'disabled' ) {
                     
+                    $( '#hv-status-' + key ).html( JSON.stringify(obj) );
+                    var btnhvstatus = document.getElementById('btn-harvester-status-' + key);
+                    if ( btnhvstatus ) {
+                        btnhvstatus.classList.toggle("btn-info", false);
+                        btnhvstatus.classList.toggle("btn-warning", false);
+                        btnhvstatus.classList.toggle("btn-success", false);
+                        btnhvstatus.classList.add( "btn-" + obj.gui_status );
+                    }
+                    if ( obj.status ) {
+                        var lbl_status = document.getElementById('lbl-harvester-status-' + key);
+                        lbl_status.innerHTML = obj.status ;
+                    }
                     if ( obj.cached_docs ) {
                         vlabels.push( key );
                         vdata.push( parseInt(obj.cached_docs) );
-                        gbcarray.push( 'rgba(' + 
-                        (Math.floor(Math.random() * 256)) + ',' + 
-                        (Math.floor(Math.random() * 256)) + ',' + 
-                        (Math.floor(Math.random() * 256)) + ', 0.5)' );
+                        var r = (Math.floor(Math.random() * 256));
+                        var g = (Math.floor(Math.random() * 256));
+                        var b = (Math.floor(Math.random() * 256));
+                        gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ', 0.3)' );
+                        bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ', 0.4)' );
                     }
                 }
             }
@@ -74,12 +88,11 @@ $(document).ready(function () {
                         label: '# of harvested Items',
                         data: vdata,
                         backgroundColor: gbcarray,
-                        borderWidth: 2
+                        borderColor: bcarray,
+                        borderWidth: 1
                     }]
                 },
-                options: {
-                
-                }
+                options: { cutoutPercentage: 45 }
             });
         
         }).fail(function (response) {
@@ -240,13 +253,13 @@ $(document).ready(function () {
                     time = timeConvert(remain);
                     time_string = 'remaining time: ' + time;
                 }
-                $( '#status_label_' + harvester_name).html( time_string );
+                $( '#status-label-' + harvester_name).html( time_string );
                 bar.innerHTML = width + perc;
     
             } else {
                 bar.style.width = width + '%';
                 bar.innerHTML = width + '%';
-                $( '#status_label_' + harvester_name).html( "" );
+                $( '#status-label-' + harvester_name).html( "" );
                 clearInterval(id);
             }
         }

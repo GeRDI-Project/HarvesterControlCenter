@@ -94,7 +94,7 @@
                                                             data-placement="right"
                                                             title="{{ val.health }}">
                                                             <a href="{{ harvester.url }}">{{ harvester.name }}</a>
-                                                            <div id="status_label_{{ harvester.name }}">{{ val.status }}</div>
+                                                            <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
                                                         </li>
                                                     {% endif %}
                                                 {% endfor %}
@@ -126,18 +126,17 @@
                                                                          aria-label="control harvester">
                                                                         <a href="{% url 'toggle-harvester' name=harvester.name %}"
                                                                            class="btn btn-success btn-sm" role="button">
-                                                                            <i class="fa fa-toggle-on"
-                                                                               aria-hidden="true"></i></a>
+                                                                            <i class="fa fa-toggle-on" aria-hidden="true"></i></a>
                                                                         
-                                                                                <button type="button" data-toggle="tooltip" data-placement="top"
+                                                                                <button id="btn-harvester-status-{{ harvester.name }}" type="button" data-toggle="tooltip" data-placement="top"
                                                                                 {% for k, val in status.items %}
-                                                                                {% if k == harvester.name %}
-                                                                                        class="btn btn-{{ val.gui_status }} btn-sm"
+                                                                                    {% if k == harvester.name %}
+                                                                                        class="btn btn-sm btn-{{ val.gui_status }}"
                                                                                         title="{% if val.data_pvd %}{{ val.data_pvd }}{% endif %}
                                                                                         {% if val.cached_docs %} harvested and cached Documents: {{ val.cached_docs }}
                                                                                         {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
                                                                                         {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
-                                                                                {% endif %}
+                                                                                    {% endif %}
                                                                                 {% endfor %}
                                                                                 >{{ harvester.name|lower|capfirst }}</button>
                                                                     </div>
@@ -174,7 +173,9 @@
                                                                                 </a>
                                                                             {% endif %}
 
-                                                                            <small data-toggle="tooltip" data-placement="top" title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
+                                                                            <small id="lbl-harvester-status-{{ harvester.name }}" data-toggle="tooltip" 
+                                                                                data-placement="top" 
+                                                                                title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
                                                                             
                                                                             {% if val.health != 'OK' %}
                                                                                 <i class="fa fa-exclamation-triangle float-right"
@@ -195,7 +196,7 @@
                                                                                          aria-valuemin="0"
                                                                                          aria-valuemax="{{ val.progress_max }}">{{ val.progress_cur }}%
                                                                                     </div>
-                                                                                </div><small id="status_label_{{ harvester.name }}" style="font-size: 10px"></small>
+                                                                                </div><small id="status-label-{{ harvester.name }}" style="font-size: 10px"></small>
                                                                             {% endif %}
 
 
