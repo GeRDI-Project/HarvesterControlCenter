@@ -81,17 +81,15 @@ $(document).ready(function () {
         myChart.data.labels.pop();
         myChart.data.datasets.forEach( function(dataset) {
             dataset.data.pop();
-            //dataset.backgroundColor.pop();
-            //dataset.borderColor.pop();
+            dataset.backgroundColor.pop();
+            dataset.borderColor.pop();
         });
         myChart.update();
 
-        myChart.data.labels.push(labels);
-        myChart.data.datasets.forEach( function(dataset) {
-            dataset.data.push(data);
-            //dataset.backgroundColor.push(bgColorArray);
-            //dataset.borderColor.push(bColorArray);
-        });
+        myChart.data.labels = labels;
+        myChart.data.datasets[0].backgroundColor = bgColorArray;
+        myChart.data.datasets[0].borderColor = bColorArray;
+        myChart.data.datasets[0].data = data;
         myChart.update();
     }
 
@@ -126,7 +124,7 @@ $(document).ready(function () {
                     var r = (Math.floor(Math.random() * 256));
                     var g = (Math.floor(Math.random() * 256));
                     var b = (Math.floor(Math.random() * 256));
-                    gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.3)');
+                    gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.3)' );
                     bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.4)' );
                 }
             }
