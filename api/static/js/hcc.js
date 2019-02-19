@@ -24,7 +24,7 @@ $(document).ready(function () {
             labels: ['new_label'],
             datasets: [{
                 label: 'Number of harvested Items',
-                data: [17041982],
+                data: [170482],
                 backgroundColor: ['rgba(255, 99, 132, 0.2)'],
                 borderColor: ['rgba(255, 99, 132, 1)'],
                 borderWidth: 1
