@@ -34,7 +34,10 @@
                     <div class="card">
                         <h3 class="card-header"><a id="btn-get-stats" href="#" title="{% url 'api:all-harvester-status' %}" data-toggle="collapse" data-target="#collapseChart">Statistics</a></h3>
                         <div class="card-body collapse" id="collapseChart">
-                            <div class="container"><canvas id="harvesterChart" width="100px" height="20px"></canvas></div>
+                            <div class="container">
+                                <img class="loaderImage" src="/static/images/ajax-loader.gif">
+                                <canvas id="harvesterChart" width="100px" height="20px"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>

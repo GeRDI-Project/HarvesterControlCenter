@@ -15,6 +15,23 @@ limitations under the License.
  */
 
 $(document).ready(function () {
+    
+    $('.loaderImage').hide();
+    var ctx = document.getElementById("harvesterChart");
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['labels'],
+            datasets: [{
+                label: 'Number of harvested Items',
+                data: [17041982],
+                backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+                borderColor: ['rgba(255, 99, 132, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: { cutoutPercentage: 45 }
+    });
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
@@ -42,64 +59,81 @@ $(document).ready(function () {
 
     $('#btn-get-stats').on('click', function (event) {
         
+        var url = $(this).attr("title");
+        $('.loaderImage').show();
+        $.get(url, function (result) {
+            
+            updateGUI(result);
+        
+        }).fail(function (response) {
+
+            $('.loaderImage').hide();
+            $( '#form-modal' ).modal('toggle');
+            $( '#form-modal-body' ).html( response.responseText );
+            
+        });
+    });
+
+    function updateChart(labels, data, bgColorArray, bColorArray) {
+
+        $('.loaderImage').hide();
+
+        myChart.data.labels.pop();
+        myChart.data.datasets.forEach( function(dataset) {
+            dataset.data.pop();
+            dataset.backgroundColor.pop();
+            dataset.borderColor.pop();
+        });
+        myChart.update();
+
+        myChart.data.labels.push(labels);
+        myChart.data.datasets.forEach( function(dataset) {
+            dataset.data.push(data);
+            dataset.backgroundColor.push(bgColorArray);
+            dataset.borderColor.push(bColorArray);
+        });
+        myChart.update();
+    }
+
+    function updateGUI(data) {
+
+        var status = data;
         var vdata = [];
         var vlabels = [];
         var gbcarray = [];
         var bcarray = [];
-        var url = $(this).attr("title");
-        $.get(url, function (result) {
-            var status = result;
-            var i = 0;
-            for (var key in status) {
-                i++;
-                var obj = status[key];
-                if ( obj != 'disabled' ) {
-                    
-                    $( '#hv-status-' + key ).html( JSON.stringify(obj) );
-                    var btnhvstatus = document.getElementById('btn-harvester-status-' + key);
-                    if ( btnhvstatus ) {
-                        btnhvstatus.classList.toggle("btn-info", false);
-                        btnhvstatus.classList.toggle("btn-warning", false);
-                        btnhvstatus.classList.toggle("btn-success", false);
-                        btnhvstatus.classList.add( "btn-" + obj.gui_status );
-                    }
-                    if ( obj.status ) {
-                        var lbl_status = document.getElementById('lbl-harvester-status-' + key);
-                        lbl_status.innerHTML = obj.status ;
-                    }
-                    if ( obj.cached_docs ) {
-                        vlabels.push( key );
-                        vdata.push( parseInt(obj.cached_docs) );
-                        var r = (Math.floor(Math.random() * 256));
-                        var g = (Math.floor(Math.random() * 256));
-                        var b = (Math.floor(Math.random() * 256));
-                        gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ', 0.3)' );
-                        bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ', 0.4)' );
-                    }
+
+        for (var key in status) {
+
+            var obj = status[key];
+            if ( obj != 'disabled' ) {
+                
+                $( '#hv-status-' + key ).html( JSON.stringify(obj) );
+                var btnhvstatus = document.getElementById('btn-harvester-status-' + key);
+                if ( btnhvstatus ) {
+                    btnhvstatus.classList.toggle("btn-info", false);
+                    btnhvstatus.classList.toggle("btn-warning", false);
+                    btnhvstatus.classList.toggle("btn-success", false);
+                    btnhvstatus.classList.add( "btn-" + obj.gui_status );
+                }
+                if ( obj.status ) {
+                    var lbl_status = document.getElementById('lbl-harvester-status-' + key);
+                    lbl_status.innerHTML = obj.status ;
+                }
+                if ( obj.cached_docs ) {
+                    vlabels.push( key );
+                    vdata.push( parseInt(obj.cached_docs) );
+                    var r = (Math.floor(Math.random() * 256));
+                    var g = (Math.floor(Math.random() * 256));
+                    var b = (Math.floor(Math.random() * 256));
+                    gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.3)');
+                    bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.4)' );
                 }
             }
+        }
 
-            var ctx = document.getElementById("harvesterChart");
-            var myChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: vlabels,
-                    datasets: [{
-                        label: '# of harvested Items',
-                        data: vdata,
-                        backgroundColor: gbcarray,
-                        borderColor: bcarray,
-                        borderWidth: 1
-                    }]
-                },
-                options: { cutoutPercentage: 45 }
-            });
-        
-        }).fail(function (response) {
-            $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html( response.responseText );
-        });
-    });
+        updateChart(vlabels, vdata, gbcarray, bcarray);
+    }
 
     var formButton = {
         regClick: function () {
@@ -143,59 +177,6 @@ $(document).ready(function () {
     };
 
     $('#register-button').click(formButton.regClick);
-
-    $('a#postharvester').on('click', function (event) {
-
-        var url = $(this).attr("title");
-
-        $.post(url, function (result) {
-            for (var key in result) {
-                alert(key + " Info: " + result[key]);
-            }
-        }).fail(function (response) {
-            alert('Error: ' + response.responseText);
-        });
-
-    });
-
-    $('#stopallharvesters').on('click', function (event) {
-
-        var url = '/v1/harvesters/stop';
-
-        $.post(url, function (result) {
-            for (var key in result) {
-                alert(key + " Info: " + result[key]);
-            }
-        }).fail(function (response) {
-            alert('Error: ' + response.responseText);
-        });
-
-    });
-
-    $('button#setcrontab').on('click', function (event) {
-
-        var setcron = $(this).attr("title") + '/schedule?cron=' + $('input#crontab').val();
-        var deletecron = $(this).attr("title") + '/schedule';
-
-        $.ajax({
-            url: deletecron,
-            type: 'DELETE',
-            success: function (result) {
-                for (var key in result) {
-                    alert(key + " Info: " + result[key]);
-                }
-            }
-        });
-
-        $.post(setcron, function (result) {
-            for (var key in result) {
-                alert(key + " Info: " + result[key]);
-            }
-        }).fail(function (response) {
-            alert('Error: ' + response.responseText);
-        });
-
-    });
 
     // milisec to hours, min, sec
     function timeConvert(n) {
