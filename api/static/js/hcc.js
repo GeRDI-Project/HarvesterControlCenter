@@ -21,7 +21,7 @@ $(document).ready(function () {
     var myChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['labels'],
+            labels: ['new_label'],
             datasets: [{
                 label: 'Number of harvested Items',
                 data: [17041982],
@@ -57,7 +57,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#btn-get-stats').on('click', function (event) {
+    $('#collapseChart').on('show.bs.collapse', function (event) {
         
         var url = $(this).attr("title");
         $('.loaderImage').show();
@@ -81,16 +81,16 @@ $(document).ready(function () {
         myChart.data.labels.pop();
         myChart.data.datasets.forEach( function(dataset) {
             dataset.data.pop();
-            dataset.backgroundColor.pop();
-            dataset.borderColor.pop();
+            //dataset.backgroundColor.pop();
+            //dataset.borderColor.pop();
         });
         myChart.update();
 
         myChart.data.labels.push(labels);
         myChart.data.datasets.forEach( function(dataset) {
             dataset.data.push(data);
-            dataset.backgroundColor.push(bgColorArray);
-            dataset.borderColor.push(bColorArray);
+            //dataset.backgroundColor.push(bgColorArray);
+            //dataset.borderColor.push(bColorArray);
         });
         myChart.update();
     }

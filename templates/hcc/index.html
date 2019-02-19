@@ -1,5 +1,6 @@
 {% extends 'hcc/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}<a href="{% url 'hcc_gui' %}">Harvester Control Center</a>{% endblock %}
 
@@ -32,10 +33,10 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header"><a id="btn-get-stats" href="#" title="{% url 'api:all-harvester-status' %}" data-toggle="collapse" data-target="#collapseChart">Statistics</a></h3>
-                        <div class="card-body collapse" id="collapseChart">
+                        <h3 class="card-header"><a id="btn-get-stats" href="#" title="" data-toggle="collapse" data-target="#collapseChart">Statistics</a></h3>
+                        <div class="card-body collapse" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
                             <div class="container">
-                                <img class="loaderImage" src="/static/images/ajax-loader.gif">
+                                <img class="loaderImage" src="{% static 'images/ajax-loader.gif' %}">
                                 <canvas id="harvesterChart" width="100px" height="20px"></canvas>
                             </div>
                         </div>
