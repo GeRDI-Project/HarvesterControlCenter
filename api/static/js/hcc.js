@@ -195,10 +195,10 @@ $(document).ready(function () {
 
     // milisec to hours, min, sec
     function timeConvert(n) {
-        var num = n;
-        var rseconds = Math.floor( (num / 1000) % 60 );
-        var rminutes = Math.floor( (num / (1000*60)) % 60 );
-        var rhours   = Math.round( (num / (1000*60*60)) % 24 );
+        var milisec = n;
+        var rseconds = Math.floor( (milisec / 1000) % 60 );
+        var rminutes = Math.floor( (milisec / (1000*60)) % 60 );
+        var rhours   = Math.round( (milisec / (1000*60*60)) % 24 );
         return rhours + "h " + rminutes + "min " + rseconds + "sec";
     }
 
