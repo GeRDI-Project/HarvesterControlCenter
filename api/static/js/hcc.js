@@ -17,6 +17,7 @@ limitations under the License.
 $(document).ready(function () {
     
     $('.loaderImage').hide();
+    $('.loaderImageLog').hide();
     var ctx = document.getElementById("harvesterChart");
     var myChart = new Chart(ctx, {
         type: 'pie',
@@ -40,7 +41,7 @@ $(document).ready(function () {
     $('#btn-deploy-harvester').on('click', function (event) {
         
         var url = $(this).attr("title");
-
+        $('.loaderImageLog').show();
         $.get(url, function (result) {
             var status = result;
             var data = JSON.stringify(result);
@@ -50,8 +51,10 @@ $(document).ready(function () {
                 var obj = status[key];
                 $( '#hv-status-' + key ).html( obj.log );
             }
+            $('.loaderImageLog').hide();
         
         }).fail(function (response) {
+            $('.loaderImageLog').hide();
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
         });
@@ -127,6 +130,20 @@ $(document).ready(function () {
                     gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.3)' );
                     bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.4)' );
                 }
+                if ( obj.health != 'OK' ) {
+                    $( '#health-exclamation-' + key ).show();
+                    $( '#health-exclamation-' + key ).prop('title', obj.health );
+                } else {
+                    $( '#health-exclamation-' + key ).hide();
+                }
+                if ( obj.status == 'harvesting' ) {
+                    $( '#progresshv-' + key ).show();
+                } else {
+                    $( '#progresshv-' + key ).hide();
+                }
+                if ( obj.data_pvd ) {
+                    $( '#btn-harvester-status-' + key ).prop('title', obj.data_pvd + ': ' + obj.cached_docs + ' of ' + obj.max_docs + '. ' + obj.lastHarvestDate);
+                }
             }
         }
 
@@ -179,11 +196,9 @@ $(document).ready(function () {
     // milisec to hours, min, sec
     function timeConvert(n) {
         var num = n;
-        var rseconds = Math.floor((num / 1000) % 60);
-        var minutes = (num / 1000) / 60;
-        var rminutes = Math.floor(minutes);
-        var hours = (minutes / 60);
-        var rhours = Math.round(hours);
+        var rseconds = Math.floor( (num / 1000) % 60 );
+        var rminutes = Math.floor( (num / (1000*60)) % 60 );
+        var rhours   = Math.round( (num / (1000*60*60)) % 24 );
         return rhours + "h " + rminutes + "min " + rseconds + "sec";
     }
 

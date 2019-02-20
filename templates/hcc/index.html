@@ -21,7 +21,10 @@
                 </div>
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header"><a href="#" data-toggle="collapse" data-target="#collapseLogfiles">Get todays Harvester Logfiles</a></h3>
+                        <h3 class="card-header">
+                            <a href="#" data-toggle="collapse" data-target="#collapseLogfiles">Get todays Harvester Logfiles</a>
+                            <img class="loaderImageLog" src="{% static 'images/ajax-loader.gif' %}">
+                        </h3>
                         <div class="card-body collapse" id="collapseLogfiles">
                             <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
                                 <i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i>
@@ -33,12 +36,12 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="card">
-                        <h3 class="card-header"><a id="btn-get-stats" href="#" title="" data-toggle="collapse" data-target="#collapseChart">Statistics</a></h3>
+                        <h3 class="card-header">
+                            <a id="btn-get-stats" href="#" title="" data-toggle="collapse" data-target="#collapseChart">Statistics</a>
+                            <img class="loaderImage" src="{% static 'images/ajax-loader.gif' %}">
+                        </h3>
                         <div class="card-body collapse" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
-                            <div class="container">
-                                <img class="loaderImage" src="{% static 'images/ajax-loader.gif' %}">
-                                <canvas id="harvesterChart" width="100px" height="20px"></canvas>
-                            </div>
+                            <div class="container"><canvas id="harvesterChart" width="100px" height="20px"></canvas></div>
                         </div>
                     </div>
                 </div>
@@ -56,10 +59,10 @@
                                     Enabled Harvesters
                                 </button>
                                 <div class="btn-group" role="group" aria-label="ControlPanel">
-                                    <a id="" href="{% url 'start-harvesters' %}" title="{% url 'start-harvesters' %}"
-                                       role="button" type="button" class="btn btn-primary">start all</a>
-                                    <a id="" href="{% url 'abort-harvesters' %}" title="{% url 'abort-harvesters' %}"
-                                       role="button" type="button" class="btn btn-dark">abort all</a>
+                                    <button id="" href="{% url 'start-harvesters' %}" title="{% url 'start-harvesters' %}"
+                                       role="button" type="button" class="btn btn-primary">start all</button>
+                                    <button id="" href="{% url 'abort-harvesters' %}" title="{% url 'abort-harvesters' %}"
+                                       role="button" type="button" class="btn btn-dark">abort all</button>
                                 </div>
                                 {% if vt == 'list' %}
                                     <a href="{% url 'hcc_gui' %}"><i class="fa fa-id-card float-right" title="card view"
@@ -132,7 +135,8 @@
                                                                            class="btn btn-success btn-sm" role="button">
                                                                             <i class="fa fa-toggle-on" aria-hidden="true"></i></a>
                                                                         
-                                                                                <button id="btn-harvester-status-{{ harvester.name }}" type="button" data-toggle="tooltip" data-placement="top"
+                                                                                <button id="btn-harvester-status-{{ harvester.name }}" type="button" 
+                                                                                data-toggle="tooltip" data-placement="top"
                                                                                 {% for k, val in status.items %}
                                                                                     {% if k == harvester.name %}
                                                                                         class="btn btn-sm btn-{{ val.gui_status }}"
@@ -182,12 +186,13 @@
                                                                                 title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
                                                                             
                                                                             {% if val.health != 'OK' %}
-                                                                                <i class="fa fa-exclamation-triangle float-right"
-                                                                                   style="color: #ffc107;"
-                                                                                   data-toggle="tooltip"
-                                                                                   data-placement="top"
-                                                                                   title="{{ val.health }}"
-                                                                                   aria-hidden="true"></i>
+                                                                                <i  id="health-exclamation-{{ harvester.name }}"
+                                                                                    class="fa fa-exclamation-triangle float-right"
+                                                                                    style="color: #ffc107;"
+                                                                                    data-toggle="tooltip"
+                                                                                    data-placement="top"
+                                                                                    title="{{ val.health }}"
+                                                                                    aria-hidden="true"></i>
                                                                             {% endif %}
 
                                                                             {% if val.status == 'harvesting' or val.status == 'saving' or val.status == 'submitting' %}
