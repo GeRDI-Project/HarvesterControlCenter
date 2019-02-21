@@ -4,6 +4,7 @@ import logging
 import json
 import datetime
 from requests.exceptions import ConnectionError
+from requests.exceptions import Timeout
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -109,6 +110,42 @@ class VersionBased6Strategy(Strategy):
     Implement the algorithm using the Strategy interface.
     """
 
+    def a_response(self, harvester_name, url, method):
+        feedback = {}
+        feedback[harvester_name] = {}
+        if method == 'Get':
+            try:
+                feedback[harvester_name] = {}
+                response = requests.get(url, timeout=5)
+                feedback[harvester_name] = response.text
+            except requests.exceptions.Timeout:
+                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
+                feedback[harvester_name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
+                feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+            return Response(feedback, status=response.status_code)
+        elif method == 'Put':
+            try:
+                feedback[harvester_name] = {}
+                response = requests.put(url, timeout=5)
+                feedback[harvester_name] = response.text
+            except requests.exceptions.Timeout:
+                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
+                feedback[harvester_name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
+                feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+            return Response(feedback, status=response.status_code)
+        elif method == 'Post':
+            try:
+                feedback[harvester_name] = {}
+                response = requests.post(url, timeout=12)
+                feedback[harvester_name] = response.text
+            except requests.exceptions.Timeout:
+                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
+                feedback[harvester_name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
+                feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+            return Response(feedback, status=response.status_code)
+            
+        return Response(feedback, status=status.HTTP_400_BAD_REQUEST)
+    
     def get_harvesterStatus(self, harvester):
         feedback = {}
         if harvester.enabled:
@@ -169,7 +206,7 @@ class VersionBased6Strategy(Strategy):
                     cronstring = 'no crontab defined yet'
                 feedback[harvester.name][HCCJC.CRONTAB] = cronstring
 
-            except ConnectionError:
+            except requests.exceptions.Timeout:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
                 feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
@@ -180,47 +217,20 @@ class VersionBased6Strategy(Strategy):
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
 
     def post_startHarvest(self, harvester):
-        feedback = {}
         if harvester.enabled:
-            try:
-                feedback[harvester.name] = {}
-                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST, timeout=5)
-                feedback[harvester.name] = response.text
-            except ConnectionError:
-                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
-                feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
-                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-            return Response(feedback, status=response.status_code)
+            return self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV6.P_HARVEST, 'Post')
         else:
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
 
     def post_resetHarvest(self, harvester):
-        feedback = {}
         if harvester.enabled:
-            try:
-                feedback[harvester.name] = {}
-                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_RESET, timeout=5)
-                feedback[harvester.name] = response.text
-            except ConnectionError:
-                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
-                feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
-                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-            return Response(feedback, status=response.status_code)
+            return self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV6.P_HARVEST_RESET, 'Post')
         else:
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
     
     def post_stopHarvest(self, harvester):
-        feedback = {}
         if harvester.enabled:
-            try:
-                feedback[harvester.name] = {}
-                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_ABORT, timeout=5)
-                feedback[harvester.name] = response.text
-            except ConnectionError:
-                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
-                feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
-                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-            return Response(feedback, status=response.status_code)
+            return self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV6.P_HARVEST_ABORT, 'Post')
         else:
             return Response({harvester.name : {HCCJC.HEALTH : 'disabled'}}, status=status.HTTP_423_LOCKED)
 
@@ -234,8 +244,7 @@ class VersionBased6Strategy(Strategy):
         feedback = {}
         feedback[harvester.name] = {}
         del_response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, timeout=5)
-        response = requests.post(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON \
-        + crontab, timeout=5)
+        response = requests.post(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON + crontab, timeout=5)
         feedback[harvester.name][HCCJC.HEALTH] = del_response.text + ', ' + response.text
         return Response(feedback, status=response.status_code)
 
@@ -243,8 +252,7 @@ class VersionBased6Strategy(Strategy):
         feedback = {}
         feedback[harvester.name] = {}
         if crontab:
-            response = requests.delete(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON \
-            + crontab, timeout=5)
+            response = requests.delete(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON + crontab, timeout=5)
             feedback[harvester.name][HCCJC.HEALTH] = response.text
         else:
             response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, timeout=5)
@@ -328,7 +336,7 @@ class VersionBased7Strategy(Strategy):
                     else:
                         feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
 
-            except ConnectionError:
+            except Timeout:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
                 feedback[harvester.name][HCCJC.HEALTH] = response.status_text + '. ' + response.data
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
