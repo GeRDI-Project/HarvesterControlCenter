@@ -22,7 +22,7 @@ $(document).ready(function () {
     var myChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['new_label'],
+            labels: ['my_label'],
             datasets: [{
                 label: 'Number of harvested Items',
                 data: [170482],
