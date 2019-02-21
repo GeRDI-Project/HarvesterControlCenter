@@ -30,7 +30,7 @@ class InitHarvester:
         
         if harvester.enabled:
             try:
-                response = requests.get(harvester.url + HAC.G_VERSIONS, stream=True)
+                response = requests.get(harvester.url + HAC.G_VERSIONS, timeout=5)
             except ConnectionError as e:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
 

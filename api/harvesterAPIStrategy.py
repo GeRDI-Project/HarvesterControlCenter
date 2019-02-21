@@ -114,7 +114,7 @@ class VersionBased6Strategy(Strategy):
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
-                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_STATUS, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_STATUS, timeout=5)
                 if response.status_code == status.HTTP_401_UNAUTHORIZED:
                     feedback[harvester.name][HCCJC.HEALTH] = 'Authentication required.'
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
@@ -125,16 +125,16 @@ class VersionBased6Strategy(Strategy):
                     return Response(feedback, status=status.HTTP_404_NOT_FOUND)
 
                 feedback[harvester.name][HCCJC.STATUS] = response.text
-                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HARVESTED_DOCS, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HARVESTED_DOCS, timeout=5)
                 feedback[harvester.name][HCCJC.CACHED_DOCS] = response.text
 
-                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_DATA_PROVIDER, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_DATA_PROVIDER, timeout=5)
                 feedback[harvester.name][HCCJC.DATA_PROVIDER] = response.text
 
-                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_MAX_DOCS, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_MAX_DOCS, timeout=5)
                 feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = response.text
 
-                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HEALTH, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_HEALTH, timeout=5)
                 feedback[harvester.name][HCCJC.HEALTH] = response.text
 
                 if feedback[harvester.name][HCCJC.HEALTH] == HCCJC.OK and feedback[harvester.name][HCCJC.STATUS] == 'idling':
@@ -149,7 +149,7 @@ class VersionBased6Strategy(Strategy):
                 else:
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
 
-                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_PROGRESS, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.G_PROGRESS, timeout=5)
                 feedback[harvester.name][HCCJC.PROGRESS] = response.text
                 if response.status_code != status.HTTP_500_INTERNAL_SERVER_ERROR \
                         and response.status_code != status.HTTP_400_BAD_REQUEST:
@@ -161,7 +161,7 @@ class VersionBased6Strategy(Strategy):
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
                             int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
 
-                response = requests.get(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, timeout=5)
                 crontab = "Schedules:"
                 cron = response.text.find(crontab)
                 cronstring = response.text[cron + 11:cron + 11 + 9]
@@ -184,7 +184,7 @@ class VersionBased6Strategy(Strategy):
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
-                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST, stream=True)
+                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST, timeout=5)
                 feedback[harvester.name] = response.text
             except ConnectionError:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -199,7 +199,7 @@ class VersionBased6Strategy(Strategy):
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
-                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_RESET, stream=True)
+                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_RESET, timeout=5)
                 feedback[harvester.name] = response.text
             except ConnectionError:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -214,7 +214,7 @@ class VersionBased6Strategy(Strategy):
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
-                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_ABORT, stream=True)
+                response = requests.post(harvester.url + HarvesterApiConstantsV6.P_HARVEST_ABORT, timeout=5)
                 feedback[harvester.name] = response.text
             except ConnectionError:
                 response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -233,9 +233,9 @@ class VersionBased6Strategy(Strategy):
     def post_addHarvesterSchedule(self, harvester, crontab):
         feedback = {}
         feedback[harvester.name] = {}
-        del_response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
+        del_response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, timeout=5)
         response = requests.post(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON \
-        + crontab, stream=True)
+        + crontab, timeout=5)
         feedback[harvester.name][HCCJC.HEALTH] = del_response.text + ', ' + response.text
         return Response(feedback, status=response.status_code)
 
@@ -244,10 +244,10 @@ class VersionBased6Strategy(Strategy):
         feedback[harvester.name] = {}
         if crontab:
             response = requests.delete(harvester.url + HarvesterApiConstantsV6.PD_HARVEST_CRON \
-            + crontab, stream=True)
+            + crontab, timeout=5)
             feedback[harvester.name][HCCJC.HEALTH] = response.text
         else:
-            response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, stream=True)
+            response = requests.delete(harvester.url + HarvesterApiConstantsV6.GD_HARVEST_CRON, timeout=5)
             feedback[harvester.name][HCCJC.HEALTH] = response.text
         return Response(feedback, status=response.status_code)
 
@@ -265,7 +265,7 @@ class VersionBased7Strategy(Strategy):
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
-                response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, stream=True)
+                response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, timeout=5)
                 harvester_json = json.loads(response.text)
                 
                 if response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE:
@@ -321,7 +321,7 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.REMAIN_HARVEST_TIME] = harvester_json[HCCJC.REMAIN_HARVEST_TIME]
 
                     # schedules
-                    response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, stream=True)
+                    response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, timeout=5)
                     harvester_json = json.loads(response.text)
                     if not harvester_json[HCCJC.SCHEDULE]:
                         feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
@@ -339,7 +339,7 @@ class VersionBased7Strategy(Strategy):
     def post_startHarvest(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}
-        response = requests.post(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, stream=True)
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, timeout=5)
         harvester_json = json.loads(response.text)
         feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
         feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
@@ -349,7 +349,7 @@ class VersionBased7Strategy(Strategy):
     def post_resetHarvest(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}
-        response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_RESET, stream=True)
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_RESET, timeout=5)
         harvester_json = json.loads(response.text)
         feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
         feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
@@ -359,7 +359,7 @@ class VersionBased7Strategy(Strategy):
     def post_stopHarvest(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}
-        response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_ABORT, stream=True)
+        response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_ABORT, timeout=5)
         harvester_json = json.loads(response.text)
         feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
         return Response(feedback, status=response.status_code)
@@ -369,8 +369,8 @@ class VersionBased7Strategy(Strategy):
         feedback = {}
         feedback[harvester.name] = {}
         response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
-            + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), stream=True)
-        harvester_response = response.text
+            + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), timeout=5)
+        harvester_response = response.text if response.text != "" else 'no logtext'
         feedback[harvester.name][HCCJC.LOGS] = harvester_response
         return Response(feedback, status=response.status_code)
 
@@ -378,7 +378,7 @@ class VersionBased7Strategy(Strategy):
         feedback = {}
         feedback[harvester.name] = {}
         maxDocuments = False
-        response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, stream=True)
+        response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, timeout=5)
         harvester_json = json.loads(response.text)
         if harvester.enabled:
             feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
@@ -405,7 +405,7 @@ class VersionBased7Strategy(Strategy):
         feedback = {}
         feedback[harvester.name] = {}
         response = requests.post(harvester.url + HarvesterApiConstantsV7.P_HARVEST_CRON, \
-        json={HCCJC.POSTCRONTAB : crontab}, stream=True)
+        json={HCCJC.POSTCRONTAB : crontab}, timeout=5)
         harvester_response = response.text
         feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
@@ -414,12 +414,12 @@ class VersionBased7Strategy(Strategy):
         feedback = {}
         feedback[harvester.name] = {}
         if not crontab:
-            response = requests.post(harvester.url + HarvesterApiConstantsV7.DALL_HARVEST_CRON, stream=True)
+            response = requests.post(harvester.url + HarvesterApiConstantsV7.DALL_HARVEST_CRON, timeout=5)
             harvester_response = response.text
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         else:
             response = requests.post(harvester.url + HarvesterApiConstantsV7.D_HARVEST_CRON, \
-            json={HCCJC.POSTCRONTAB : crontab}, stream=True)
+            json={HCCJC.POSTCRONTAB : crontab}, timeout=5)
             harvester_response = response.text
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
