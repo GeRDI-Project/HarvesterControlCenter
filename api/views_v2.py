@@ -158,10 +158,11 @@ def start_all_harvesters(request):
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.startHarvest()
             if HCCJC.HEALTH in response.data[harvester.name]:
-                messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
+                messages.add_message(request, messages.INFO,
+                                    harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
             else:
                 messages.add_message(request, messages.INFO,
-                                     harvester.name + ': ' + str(response.data[harvester.name]))
+                                    harvester.name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -203,6 +204,9 @@ def home(request):
         forms = {}
         response = None
         harvesters = Harvester.objects.all()
+        num_harvesters = len(harvesters)
+        num_enabled_harvesters = 0
+        num_disabled_harvesters = 0
         # get status of each enabled harvester
         for harvester in harvesters:
             # TODO do that call at client side!!
@@ -211,6 +215,7 @@ def home(request):
             if response:
                 feedback[harvester.name] = response.data[harvester.name]
                 if harvester.enabled:
+                    num_enabled_harvesters += 1
                     if HCCJC.CRONTAB in response.data[harvester.name]:
                         # if a GET (or any other method) we'll create form initialized with schedule for this harvester 
                         form = SchedulerForm(initial={HCCJC.POSTCRONTAB : response.data[harvester.name][HCCJC.CRONTAB]}, prefix=harvester.name)
@@ -218,6 +223,8 @@ def home(request):
                     else:
                         form = SchedulerForm(initial={HCCJC.POSTCRONTAB : '0 0 * * *'}, prefix=harvester.name)
                         forms[harvester.name] = form
+                else:
+                    num_disabled_harvesters += 1
             else:
                 form = SchedulerForm(initial={HCCJC.POSTCRONTAB : '0 0 * * *'}, prefix=harvester.name)
                 forms[harvester.name] = form
@@ -239,7 +246,10 @@ def home(request):
                 pass
         feedback['sum_harvested'] = sum_harvested
         feedback['sum_maxdocs'] = sum_max_docs
-        messages.add_message( request, messages.INFO, 'Total amount of harvested Items so far: %s' % sum_harvested )
+        feedback['num_disabled_harvesters'] = num_disabled_harvesters
+        feedback['num_enabled_harvesters'] = num_enabled_harvesters
+        feedback['num_harvesters'] = num_harvesters
+        messages.add_message( request, messages.INFO, '{} enabled Harvesters with total amount of harvested Items so far: {}'.format(num_enabled_harvesters, sum_harvested) )
 
         # init form
         if request.method == 'POST':

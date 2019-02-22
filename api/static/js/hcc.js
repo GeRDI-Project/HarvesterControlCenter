@@ -22,7 +22,7 @@ $(document).ready(function () {
     var myChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['new_label'],
+            labels: ['my_label'],
             datasets: [{
                 label: 'Number of harvested Items',
                 data: [170482],
@@ -142,7 +142,11 @@ $(document).ready(function () {
                     $( '#progresshv-' + key ).hide();
                 }
                 if ( obj.data_pvd ) {
-                    $( '#btn-harvester-status-' + key ).prop('title', obj.data_pvd + ': ' + obj.cached_docs + ' of ' + obj.max_docs + '. ' + obj.lastHarvestDate);
+                    $( '#btn-harvester-status-' + key ).attr('data-original-title', obj.data_pvd + 
+                    ' harvested and cached documents: ' + 
+                    obj.cached_docs + ' of ' + 
+                    obj.max_docs + '. Last harvest: ' + 
+                    obj.lastHarvestDate);
                 }
             }
         }
