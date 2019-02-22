@@ -1,7 +1,7 @@
 import requests
 import logging
 import json
-from requests.exceptions import ConnectionError
+from requests.exceptions import RequestException
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -31,8 +31,8 @@ class InitHarvester:
         if harvester.enabled:
             try:
                 response = requests.get(harvester.url + HAC.G_VERSIONS, timeout=5)
-            except ConnectionError as e:
-                response = Response("A Connection Error. Host probably down. ", status=status.HTTP_408_REQUEST_TIMEOUT)
+            except RequestException as e:
+                response = Response("A Connection Error. Harvester initialization failed. " + e, status=status.HTTP_408_REQUEST_TIMEOUT)
 
             if response.status_code == status.HTTP_401_UNAUTHORIZED:
                 response = Response('Authentication required.', status=status.HTTP_401_UNAUTHORIZED)
