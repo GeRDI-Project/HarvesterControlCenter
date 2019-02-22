@@ -158,10 +158,11 @@ def start_all_harvesters(request):
             api = InitHarvester(harvester).getHarvesterApi()
             response = api.startHarvest()
             if HCCJC.HEALTH in response.data[harvester.name]:
-                messages.add_message(request, messages.INFO, harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
+                messages.add_message(request, messages.INFO,
+                                    harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
             else:
                 messages.add_message(request, messages.INFO,
-                                     harvester.name + ': ' + str(response.data[harvester.name]))
+                                    harvester.name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 

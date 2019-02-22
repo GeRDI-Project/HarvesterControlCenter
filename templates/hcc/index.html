@@ -56,18 +56,20 @@
                             <h5 class="mb-0">
                                 <button class="btn btn-outline-info" type="button" data-toggle="collapse"
                                         data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    {% for k, v in status.items %}
-                                        {% if k == 'num_enabled_harvesters' %}
-                                        {{ v }}
-                                        {% endif %}
-                                    {% endfor %}
                                     Enabled Harvesters
+                                    <span class="badge badge-light">
+                                        {% for k, v in status.items %}
+                                            {% if k == 'num_enabled_harvesters' %}
+                                            {{ v }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
                                 </button>
                                 <div class="btn-group" role="group" aria-label="ControlPanel">
-                                    <button id="" href="{% url 'start-harvesters' %}" title="{% url 'start-harvesters' %}"
-                                       role="button" type="button" class="btn btn-primary">start all</button>
-                                    <button id="" href="{% url 'abort-harvesters' %}" title="{% url 'abort-harvesters' %}"
-                                       role="button" type="button" class="btn btn-dark">abort all</button>
+                                    <a href="{% url 'start-harvesters' %}"
+                                       role="button" class="btn btn-primary">start all</a>
+                                    <a href="{% url 'abort-harvesters' %}"
+                                       role="button" class="btn btn-dark">abort all</a>
                                 </div>
                                 {% if vt == 'list' %}
                                     <a href="{% url 'hcc_gui' %}"><i class="fa fa-id-card float-right" title="card view"
@@ -138,20 +140,21 @@
                                                                          aria-label="control harvester">
                                                                         <a href="{% url 'toggle-harvester' name=harvester.name %}"
                                                                            class="btn btn-success btn-sm" role="button">
-                                                                            <i class="fa fa-toggle-on" aria-hidden="true"></i></a>
+                                                                            <i class="fa fa-toggle-on" aria-hidden="true"></i>
+                                                                        </a>
                                                                         
-                                                                                <button id="btn-harvester-status-{{ harvester.name }}" type="button" 
-                                                                                data-toggle="tooltip" data-placement="top"
-                                                                                {% for k, val in status.items %}
-                                                                                    {% if k == harvester.name %}
-                                                                                        class="btn btn-sm btn-{{ val.gui_status }}"
-                                                                                        title="{% if val.data_pvd %}{{ val.data_pvd }}{% endif %}
-                                                                                        {% if val.cached_docs %} harvested and cached Documents: {{ val.cached_docs }}
-                                                                                        {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
-                                                                                        {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
-                                                                                    {% endif %}
-                                                                                {% endfor %}
-                                                                                >{{ harvester.name|lower|capfirst }}</button>
+                                                                        <button id="btn-harvester-status-{{ harvester.name }}" type="button" 
+                                                                        data-toggle="tooltip" data-placement="top"
+                                                                        {% for k, val in status.items %}
+                                                                            {% if k == harvester.name %}
+                                                                                class="btn btn-sm btn-{{ val.gui_status }}"
+                                                                                title="{% if val.data_pvd %}{{ val.data_pvd }}{% endif %}
+                                                                                {% if val.cached_docs %} harvested and cached Documents: {{ val.cached_docs }}
+                                                                                {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
+                                                                                {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                        >{{ harvester.name|lower|capfirst }}</button>
                                                                     </div>
                                                                     {% for k, val in status.items %}
                                                                         {% if k == harvester.name %}
@@ -298,12 +301,14 @@
                             <h5 class="mb-0">
                                 <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse"
                                         data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                    {% for k, v in status.items %}
-                                    {% if k == 'num_disabled_harvesters' %}
-                                    {{ v }}
-                                    {% endif %}
-                                    {% endfor %}
                                     Disabled Harvesters
+                                    <span class="badge badge-light">
+                                        {% for k, v in status.items %}
+                                            {% if k == 'num_disabled_harvesters' %}
+                                            {{ v }}
+                                            {% endif %}
+                                            {% endfor %}
+                                    </span>
                                 </button>
                             </h5>
                         </div>
@@ -327,8 +332,8 @@
                                                                     href="{% url 'api:harvester-detail' name=harvester.name %}">HCC
                                                                 API for {{ harvester.name }}</a></h5>
 
-                                                            <p class="card-text">
-                                                                Metadata: {{ harvester.metadataPrefix }}</p>
+                                                            <p class="card-text">Metadata: {{ harvester.metadataPrefix }}</p>
+                                                            <p class="card-text">Notes: {{ harvester.notes }}</p>
                                                             <p class="card-text">API: <a
                                                                     href="{{ harvester.url }}">{{ harvester.url|slice:":30"|add:"..." }}</a>
                                                             </p>
