@@ -112,46 +112,53 @@ class VersionBased6Strategy(Strategy):
     def a_response(self, harvester_name, url, method):
         feedback = {}
         feedback[harvester_name] = {}
+        response = None
         if method == 'Get':
             try:
                 feedback[harvester_name] = {}
                 response = requests.get(url, timeout=5)
                 feedback[harvester_name] = response.text
             except RequestException as e:
-                feedback[harvester_name][HCCJC.HEALTH] = e
+                feedback[harvester_name][HCCJC.HEALTH] = str(e)
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-            return Response(feedback, status=response.status_code)
+
+            return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT)
         elif method == 'Put':
             try:
                 feedback[harvester_name] = {}
                 response = requests.put(url, timeout=5)
                 feedback[harvester_name] = response.text
             except RequestException as e:
-                feedback[harvester_name][HCCJC.HEALTH] = e
+                feedback[harvester_name][HCCJC.HEALTH] = str(e)
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-            return Response(feedback, status=response.status_code)
+
+            return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT)
         elif method == 'Post':
             try:
                 feedback[harvester_name] = {}
-                response = requests.post(url, timeout=12)
+                response = requests.post(url, timeout=9)
                 feedback[harvester_name] = response.text
             except RequestException as e:
-                feedback[harvester_name][HCCJC.HEALTH] = e
+                feedback[harvester_name][HCCJC.HEALTH] = str(e)
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-            return Response(feedback, status=response.status_code)
+
+            return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT)
 
         return Response(feedback, status=status.HTTP_400_BAD_REQUEST)
     
     def get_harvesterStatus(self, harvester):
         feedback = {}
+        response = None
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_STATUS, timeout=5)
+
                 if response.status_code == status.HTTP_401_UNAUTHORIZED:
                     feedback[harvester.name][HCCJC.HEALTH] = 'Authentication required.'
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                     return Response(feedback, status=status.HTTP_401_UNAUTHORIZED)
+
                 if response.status_code == status.HTTP_404_NOT_FOUND:
                     feedback[harvester.name][HCCJC.HEALTH] = 'Resource on server not found. Check URL.'
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
@@ -203,10 +210,10 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester.name][HCCJC.CRONTAB] = cronstring
 
             except RequestException as e:
-                feedback[harvester.name][HCCJC.HEALTH] = e
+                feedback[harvester.name][HCCJC.HEALTH] = str(e)
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
-            return Response(feedback, status=response.status_code)
+            return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT)
         else:
             # logging.debug("Harvester disabled - got no info; returning a Response with JSON")
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
@@ -265,6 +272,7 @@ class VersionBased7Strategy(Strategy):
     def a_response(self, harvester_name, url, method):
         feedback = {}
         feedback[harvester_name] = {}
+        response = None
 
         try:
 
@@ -273,9 +281,9 @@ class VersionBased7Strategy(Strategy):
             elif method == 'Put':
                 response = requests.put(url, timeout=5)
             elif method == 'Post':
-                response = requests.post(url, timeout=12)
+                response = requests.post(url, timeout=9)
             elif method == 'Delete':
-                response = requests.delete(url, timeout=12)
+                response = requests.delete(url, timeout=5)
 
             try:    
                 harvester_json = json.loads(response.text)
@@ -293,14 +301,16 @@ class VersionBased7Strategy(Strategy):
 
         except RequestException as e:
 
-            feedback[harvester_name][HCCJC.HEALTH] = e
+            feedback[harvester_name][HCCJC.HEALTH] = str(e)
             feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
-        return Response(feedback, status=response.status_code), harvester_json
+        return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT), harvester_json
 
     def get_harvesterStatus(self, harvester):
         feedback = {}
         maxDocuments = False
+        response = None
+
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
@@ -368,9 +378,10 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
 
             except RequestException as e:
-                feedback[harvester.name][HCCJC.HEALTH] = e.strerror
+                feedback[harvester.name][HCCJC.HEALTH] = str(e)
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-            return Response(feedback, status=response.status_code)
+            
+            return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT)
         else:
             return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
 
