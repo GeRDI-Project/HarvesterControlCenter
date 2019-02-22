@@ -32,7 +32,7 @@ class InitHarvester:
             try:
                 response = requests.get(harvester.url + HAC.G_VERSIONS, timeout=5)
             except RequestException as e:
-                response = Response("A Connection Error. Harvester initialization failed. " + e, status=status.HTTP_408_REQUEST_TIMEOUT)
+                response = Response("A Connection Error. Harvester initialization failed. " + str(e), status=status.HTTP_408_REQUEST_TIMEOUT)
 
             if response.status_code == status.HTTP_401_UNAUTHORIZED:
                 response = Response('Authentication required.', status=status.HTTP_401_UNAUTHORIZED)
