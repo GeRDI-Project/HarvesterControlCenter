@@ -188,10 +188,14 @@
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
+                                                                            {% if val.nextHarvestDate %}
+                                                                                <i 
+                                                                                title="next harvest: {{ val.nextHarvestDate }}" 
+                                                                                data-toggle="tooltip" data-placement="top"
+                                                                                class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                                                                            {% endif %}
 
-                                                                            <small id="lbl-harvester-status-{{ harvester.name }}" data-toggle="tooltip" 
-                                                                                data-placement="top" 
-                                                                                title="{% if val.nextHarvestDate %}next run: {{ val.nextHarvestDate }}{% endif %}">{{ val.status }}</small>
+                                                                            <small id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</small>
                                                                             
                                                                             {% if val.health != 'OK' %}
                                                                                 <i  id="health-exclamation-{{ harvester.name }}"
