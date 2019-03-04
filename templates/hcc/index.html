@@ -148,10 +148,12 @@
                                                                         {% for k, val in status.items %}
                                                                             {% if k == harvester.name %}
                                                                                 class="btn btn-sm btn-{{ val.gui_status }}"
-                                                                                title="{% if val.data_pvd %}{{ val.data_pvd }}{% endif %}
+                                                                                {% if val.data_pvd %}
+                                                                                title="{{ val.data_pvd }}
                                                                                 {% if val.cached_docs %} harvested and cached Documents: {{ val.cached_docs }}
                                                                                 {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
                                                                                 {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
+                                                                                {% endif %}
                                                                             {% endif %}
                                                                         {% endfor %}
                                                                         >{{ harvester.name|lower|capfirst }}</button>
