@@ -41,7 +41,9 @@
                             <img class="loaderImage" src="{% static 'images/ajax-loader.gif' %}">
                         </h3>
                         <div class="card-body collapse" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
-                            <div class="container"><canvas id="harvesterChart" width="100px" height="20px"></canvas></div>
+                            <div class="chart-container" style="position: relative;">
+                                <canvas id="harvesterChart" width="300" height="120" style="display: block; width: 300px; height: 120px;"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -93,7 +95,7 @@
                                         {% for harvester in harvesters %}
                                             {% if forloop.first %}
                                             {% if vt == 'list' %}
-                                                <div class="col-sm-2">
+                                                <div class="col-lg-2 col-md-6 col-sm-12">
                                                 <ul class="list-group">
                                             {% endif %}
                                             {% endif %}
@@ -118,14 +120,14 @@
                                                       </ul><br></div>
                                                     {% else %}
                                                       </ul><br></div>
-                                                      <div class="col-sm-2">
+                                                      <div class="col-lg-2 col-md-6 col-sm-12">
                                                         <ul class="list-group">
                                                     {% endif %}
                                                 {% endif %}
 
                                                 {% else %}
 
-                                                    <div class="col-sm-4"><br>
+                                                    <div class="col-lg-4 col-md-6 col-sm-12"><br>
                                                         <div class="card">
                                                             <h4 class="card-header">
                                                                 <div class="clearfix">
