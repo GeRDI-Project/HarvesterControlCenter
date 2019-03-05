@@ -192,9 +192,9 @@
                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
-                                                                            {% if val.nextHarvestDate %}
+                                                                            {% if val.nextHarvestDate or val.cron and val.cron != 'no crontab defined yet' %}
                                                                                 <i 
-                                                                                title="next harvest: {{ val.nextHarvestDate }}" 
+                                                                                title="next harvest: {{ val.nextHarvestDate }} with crontab {{ val.cron }}" 
                                                                                 data-toggle="tooltip" data-placement="top"
                                                                                 class="fa fa-calendar-check-o" aria-hidden="true"></i>
                                                                             {% endif %}
