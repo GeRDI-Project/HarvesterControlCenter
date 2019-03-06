@@ -191,12 +191,11 @@ class VersionBased6Strategy(Strategy):
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_PROGRESS, timeout=5)
                 feedback[harvester.name][HCCJC.PROGRESS] = response.text
-                if response.status_code != status.HTTP_500_INTERNAL_SERVER_ERROR \
-                        and response.status_code != status.HTTP_400_BAD_REQUEST:
+                if response.status_code != status.HTTP_500_INTERNAL_SERVER_ERROR:
                     feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = feedback[harvester.name][HCCJC.CACHED_DOCS]
                     if "/" not in response.text:
                         feedback[harvester.name][HCCJC.PROGRESS_MAX] = int(response.text)
-                    else:
+                    elif "N/A" not in response.text:
                         feedback[harvester.name][HCCJC.PROGRESS_MAX] = int(response.text.split("/")[1])
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
                             int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
