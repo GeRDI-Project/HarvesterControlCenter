@@ -329,7 +329,7 @@
                                     <div class="row">
                                         {% for harvester in harvesters %}
                                             {% if harvester.enabled is not True %}
-                                                <div class="col-sm-4"><br>
+                                                <div class="col-lg-4 col-md-6 col-sm-12"><br>
                                                     <div class="card">
                                                         <h3 class="card-header">
                                                             <a href="{% url 'toggle-harvester' name=harvester.name %}"
