@@ -16,8 +16,8 @@ limitations under the License.
 
 $(document).ready(function () {
     
-    $('.loaderImage').hide();
-    $('.loaderImageLog').hide();
+    $('#loaderSpinnerLog').hide();
+    $('#loaderSpinnerStat').hide();
     var ctx = document.getElementById("harvesterChart");
     var myChart = new Chart(ctx, {
         type: 'pie',
@@ -41,7 +41,7 @@ $(document).ready(function () {
     $('#btn-deploy-harvester').on('click', function (event) {
         
         var url = $(this).attr("title");
-        $('.loaderImageLog').show();
+        $('#loaderSpinnerLog').show();
         $.get(url, function (result) {
             var status = result;
             var data = JSON.stringify(result);
@@ -51,10 +51,10 @@ $(document).ready(function () {
                 var obj = status[key];
                 $( '#hv-status-' + key ).html( obj.log );
             }
-            $('.loaderImageLog').hide();
+            $('#loaderSpinnerLog').hide();
         
         }).fail(function (response) {
-            $('.loaderImageLog').hide();
+            $('#loaderSpinnerLog').hide();
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
         });
@@ -63,14 +63,14 @@ $(document).ready(function () {
     $('#collapseChart').on('show.bs.collapse', function (event) {
         
         var url = $(this).attr("title");
-        $('.loaderImage').show();
+        $('#loaderSpinnerStat').show();
         $.get(url, function (result) {
             
             updateGUI(result);
         
         }).fail(function (response) {
 
-            $('.loaderImage').hide();
+            $('#loaderSpinnerStat').hide();
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
             
@@ -79,7 +79,7 @@ $(document).ready(function () {
 
     function updateChart(labels, data, bgColorArray, bColorArray) {
 
-        $('.loaderImage').hide();
+        $('#loaderSpinnerStat').hide();
 
         myChart.data.labels.pop();
         myChart.data.datasets.forEach( function(dataset) {
@@ -137,9 +137,9 @@ $(document).ready(function () {
                     $( '#health-exclamation-' + key ).hide();
                 }
                 if ( obj.status == 'harvesting' ) {
-                    $( '#progresshv-' + key ).show();
+                    //$( '#progresshv-' + key ).show();
                 } else {
-                    $( '#progresshv-' + key ).hide();
+                    //$( '#progresshv-' + key ).hide();
                 }
                 if ( obj.data_pvd ) {
                     $( '#btn-harvester-status-' + key ).attr('data-original-title', obj.data_pvd + 
@@ -213,12 +213,16 @@ $(document).ready(function () {
         var width = 99;
         var perc = "%";
         var max = "";
-        var harvester_name = "";
-        var id = setInterval(getTick, 1982);
+        var harvester_name = url.split('/')[2];
+        var lbl_status = document.getElementById('lbl-harvester-status-' + harvester_name);
+        var id;
+        if ( lbl_status.innerHTML == 'harvesting' ) { 
+            id = setInterval(getTick, 1982);
+        }
         var remain;
         var time = 0;
         var time_string = "";
-    
+        
         function getTick() {
             
             if (!(width >= 100 || width === 'undefined') || max === 'N/A') {
@@ -261,6 +265,7 @@ $(document).ready(function () {
                 clearInterval(id);
             }
         }
+        
     });
 
 });

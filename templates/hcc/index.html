@@ -22,8 +22,12 @@
                 <div class="col-sm">
                     <div class="card">
                         <h3 class="card-header">
-                            <a href="#" data-toggle="collapse" data-target="#collapseLogfiles">Get todays Harvester Logfiles</a>
-                            <img class="loaderImageLog" src="{% static 'images/ajax-loader.gif' %}">
+                            <a href="#" data-toggle="collapse" data-target="#collapseLogfiles">
+                                Get todays Harvester Logfiles
+                                <div id="loaderSpinnerLog" class="spinner-grow align-middle" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </a>
                         </h3>
                         <div class="card-body collapse" id="collapseLogfiles">
                             <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
@@ -32,13 +36,18 @@
                         </div>
                     </div>
                 </div>
-            </div><br>
+            </div>
+            <br>
             <div class="row">
                 <div class="col-sm">
                     <div class="card">
                         <h3 class="card-header">
-                            <a id="btn-get-stats" href="#" title="" data-toggle="collapse" data-target="#collapseChart">Statistics</a>
-                            <img class="loaderImage" src="{% static 'images/ajax-loader.gif' %}">
+                            <a id="btn-get-stats" href="#" title="" data-toggle="collapse" data-target="#collapseChart">
+                                Statistics
+                                <div id="loaderSpinnerStat" class="spinner-grow align-middle role="status">
+                                        <span class="sr-only">Loading...</span>
+                                </div>
+                            </a>
                         </h3>
                         <div class="card-body collapse" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
                             <div class="chart-container" style="position: relative;">
@@ -168,8 +177,7 @@
                                                                                    href="{% url 'stop-harvester' name=harvester.name %}"
                                                                                    role="button"
                                                                                    class="btn btn-primary btn-sm">
-                                                                                    <i class="fa fa-ban"
-                                                                                       aria-hidden="true"></i>
+                                                                                    <i class="fa fa-ban" aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
                                                                             {% if val.status == 'idle' or val.status == 'idling' %}
@@ -178,8 +186,7 @@
                                                                                    href="{% url 'start-harvester' name=harvester.name %}"
                                                                                    role="button"
                                                                                    class="btn btn-primary btn-sm">
-                                                                                    <i class="fa fa-play-circle"
-                                                                                       aria-hidden="true"></i>
+                                                                                    <i class="fa fa-play-circle" aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
                                                                             {% if val.status == 'submitting' %}
@@ -188,8 +195,7 @@
                                                                                    href="{% url 'stop-harvester' name=harvester.name %}"
                                                                                    role="button"
                                                                                    class="btn btn-primary btn-sm">
-                                                                                    <i class="fa fa-ban"
-                                                                                       aria-hidden="true"></i>
+                                                                                    <i class="fa fa-ban" aria-hidden="true"></i>
                                                                                 </a>
                                                                             {% endif %}
                                                                             {% if val.nextHarvestDate or val.cron and val.cron != 'no crontab defined yet' %}
@@ -200,30 +206,26 @@
                                                                             {% endif %}
 
                                                                             <small id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</small>
-                                                                            
-                                                                            {% if val.health != 'OK' %}
-                                                                                <i  id="health-exclamation-{{ harvester.name }}"
-                                                                                    class="fa fa-exclamation-triangle float-right"
-                                                                                    style="color: #ffc107;"
-                                                                                    data-toggle="tooltip"
-                                                                                    data-placement="top"
-                                                                                    title="{{ val.health }}"
-                                                                                    aria-hidden="true"></i>
-                                                                            {% endif %}
 
-                                                                            {% if val.status == 'harvesting' or val.status == 'saving' or val.status == 'submitting' %}
-                                                                                <div class="progress">
-                                                                                    <div id="progresshv-{{ harvester.name }}" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                                                                         title="{% url 'harvester-progress' name=harvester.name %}"
-                                                                                         style="width:{{val.progress_cur}}%"
-                                                                                         role="progressbar"
-                                                                                         aria-valuenow="{{ val.progress_cur }}"
-                                                                                         aria-valuemin="0"
-                                                                                         aria-valuemax="{{ val.progress_max }}">{{ val.progress_cur }}%
-                                                                                    </div>
-                                                                                </div><small id="status-label-{{ harvester.name }}" style="font-size: 10px"></small>
-                                                                            {% endif %}
+                                                                            <i id="health-exclamation-{{ harvester.name }}"
+                                                                                class="fa fa-exclamation-triangle float-right"
+                                                                                style="color: #ffc107;{% if val.health == 'OK' %}display: none{% endif %};"
+                                                                                data-toggle="tooltip" data-placement="top"
+                                                                                title="{{ val.health }}"
+                                                                                aria-hidden="true"></i>
 
+                                                                            <div class="progress">
+                                                                                <div id="progresshv-{{ harvester.name }}" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                                                                    title="{% url 'harvester-progress' name=harvester.name %}"
+                                                                                    style="width:{{val.progress_cur}}%;{% if val.gui_status == 'warning' %}display: none;{% endif %}"
+                                                                                    role="progressbar"
+                                                                                    aria-valuenow="{{ val.progress_cur }}"
+                                                                                    aria-valuemin="0"
+                                                                                    aria-valuemax="{{ val.progress_max }}">
+                                                                                    {{ val.progress_cur }}{% if val.max_docs != 'N/A' %}%{% endif %};
+                                                                                </div>
+                                                                            </div>
+                                                                            <small id="status-label-{{ harvester.name }}" style="font-size: 10px"></small>
 
                                                                         {% endif %}
                                                                     {% endfor %}
@@ -371,8 +373,11 @@
 
         {% else %}
 
-            <div class="alert alert-info" role="alert">You are not logged in ... <a href="{% url 'login' %}" class=""><i
-                    class="fa fa-sign-in" aria-hidden="true"></i> log in.</a></div>
+            <div class="alert alert-info" role="alert">You are not logged in ... 
+                <a href="{% url 'login' %}" class="">
+                    <i class="fa fa-sign-in" aria-hidden="true"></i> log in.
+                </a>
+            </div>
 
         {% endif %}
     </div>
