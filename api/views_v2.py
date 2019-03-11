@@ -32,6 +32,7 @@ __email__ = "jan.froemberg@tu-dresden.de"
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+logger.debug(__name__)
 
 
 def index(request):
@@ -55,9 +56,11 @@ def toggle_harvester(request, name):
     harv = get_object_or_404(Harvester, name=name)
     if harv.enabled:
         harv.disable()
+        logger.info(harv.name + " disabled.")
         messages.add_message(request, messages.INFO, name + ' harvester disabled.')
     else:
         harv.enable()
+        logger.info(harv.name + " enabled.")
         messages.add_message(request, messages.INFO, name + ' harvester enabled.')
     return HttpResponseRedirect(reverse('hcc_gui'))
 
@@ -74,6 +77,7 @@ def stop_harvester(request, name):
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).getHarvesterApi()
     response = api.stopHarvest()
+    logger.info(harvester.name + " stopped.")
     messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
@@ -90,6 +94,7 @@ def start_harvester(request, name):
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).getHarvesterApi()
     response = api.startHarvest()
+    logger.info(harvester.name + " started.")
     messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
@@ -106,6 +111,7 @@ def reset_harvester(request, name):
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).getHarvesterApi()
     response = api.resetHarvest()
+    logger.info(harvester.name + " resetted.")
     messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
@@ -201,6 +207,9 @@ def home(request):
 
     # if user is logged in
     if request.user.is_authenticated:
+        logger.warning(request.user.username + " logged in. warn")
+        logger.info(request.user.username + " logged in. info")
+        logger.debug(request.user.username + " logged in. debug")
         forms = {}
         response = None
         harvesters = Harvester.objects.all()

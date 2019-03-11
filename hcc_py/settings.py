@@ -40,24 +40,63 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(','
 CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 # Logging configuration
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': '/var/log/django/debug.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'stream': 'ext://sys.stdout',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'filedebug': {
+            #'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': './log/django/debug.log',
+            'maxBytes': 1024*1024*1, #1MB
+            'backupCount': 3,
+            'formatter': 'simple',
+        },
+        'fileinfo': {
+            #'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': './log/django/info.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['fileinfo'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['filedebug'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+    },
+}
 
 # Configure Django to run in subpath
 # https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-FORCE_SCRIPT_NAME
