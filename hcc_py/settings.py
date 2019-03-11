@@ -20,7 +20,7 @@ __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
 __version__ = "3.4.8"
 __maintainer__ = "Jan Frömberg"
-__email__ = "Jan.froemberg@tu-dresden.de"
+__email__ = "jan.froemberg@tu-dresden.de"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
