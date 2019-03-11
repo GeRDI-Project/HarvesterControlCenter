@@ -35,6 +35,7 @@ class HCCJSONConstants:
     CRONTAB = "cron"
     POSTCRONTAB = "cronTab"
     NO_CRONTAB = "no crontab defined yet"
+    NO_LOGTEXT = "no log"
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
 

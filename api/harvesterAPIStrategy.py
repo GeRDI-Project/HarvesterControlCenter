@@ -403,7 +403,7 @@ class VersionBased7Strategy(Strategy):
         response, json = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
             + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), 'Get')
         
-        feedback[harvester.name][HCCJC.LOGS] = str(json) if str(json) != "" else 'no logtext for today: ' + str(now)
+        feedback[harvester.name][HCCJC.LOGS] = str(json) if str(json) != "" else HCCJC.NO_LOGTEXT + ' for today: ' + str(now)
         return Response(feedback, status=response.status_code)
 
     def get_harvesterProgress(self, harvester):
