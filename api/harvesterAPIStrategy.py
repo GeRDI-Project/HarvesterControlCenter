@@ -287,11 +287,11 @@ class VersionBased7Strategy(Strategy):
             try:    
                 harvester_json = json.loads(response.text)
 
-                if harvester_json[HCCJC.STATUS]:
+                if HCCJC.STATUS in harvester_json:
                     feedback[harvester_name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
                     feedback[harvester_name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
 
-                if harvester_json[HCCJC.MESSAGE]:
+                if HCCJC.MESSAGE in harvester_json:
                     feedback[harvester_name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
 
             except ValueError:
@@ -313,8 +313,8 @@ class VersionBased7Strategy(Strategy):
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
-                response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, timeout=5)
-                harvester_json = json.loads(response.text)
+                response, x = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.PG_HARVEST, 'Get')
+                harvester_json = x
                 
                 if response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE:
                     feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
@@ -369,8 +369,8 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.REMAIN_HARVEST_TIME] = harvester_json[HCCJC.REMAIN_HARVEST_TIME]
 
                     # schedules
-                    response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, timeout=5)
-                    harvester_json = json.loads(response.text)
+                    response, x = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, 'Get')
+                    harvester_json = x
                     if not harvester_json[HCCJC.SCHEDULE]:
                         feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
                     else:
@@ -403,16 +403,19 @@ class VersionBased7Strategy(Strategy):
         response, json = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
             + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), 'Get')
         
-        feedback[harvester.name][HCCJC.LOGS] = str(json) if str(json) != "" else 'no logtext'
+        feedback[harvester.name][HCCJC.LOGS] = str(json) if str(json) != "" else 'no logtext for today: ' + str(now)
         return Response(feedback, status=response.status_code)
 
     def get_harvesterProgress(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}
         maxDocuments = False
-        response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, timeout=5)
-        harvester_json = json.loads(response.text)
+        
         if harvester.enabled:
+            
+            response, x = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.PG_HARVEST, 'Get')
+            harvester_json = x
+
             feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
             if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
                 maxDocuments = True
