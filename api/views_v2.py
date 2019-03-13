@@ -234,18 +234,18 @@ def home(request):
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 feedback[harvester.name][HCCJC.HEALTH] = 'Error : no response object'
         
+        # get total amount of docs
         sum_harvested = 0
         sum_max_docs = 0
-        for key, value in feedback.items():
-            try:
-                for k, v in value.items():
+        for harvester in feedback.values():
+            if isinstance(harvester, dict):
+                for (k, v) in harvester.items():
                     if k == HCCJC.CACHED_DOCS:
-                        sum_harvested += v
+                        sum_harvested += int(v)
                     if k == HCCJC.MAX_DOCUMENTS:
                         if v != 'N/A':
-                            sum_max_docs += v
-            except:
-                pass
+                            sum_max_docs += int(v)
+            
         feedback['sum_harvested'] = sum_harvested
         feedback['sum_maxdocs'] = sum_max_docs
         feedback['num_disabled_harvesters'] = num_disabled_harvesters
