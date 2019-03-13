@@ -227,7 +227,6 @@ $( window ).ready( function(){
         
                 var is = $( '#progresshv-' + me);
                 var remember = is.attr("title");
-                var max = "";
                 var intervalid = setInterval( getProgress, 1982, remember, me );
             }
         }
@@ -239,12 +238,13 @@ $( window ).ready( function(){
         var timelabel = $( '#status-label-' + _harv);
         var statuslabel = $( '#lbl-harvester-status-' + _harv);
         var width = parseInt(bar['0'].innerText.replace('%', ''));
+        var state = statuslabel['0'].innerText;
         var perc = "%";
         var remain;
         var time = 0;
         var time_string = "";
 
-        if ( width < 100 || max === 'N/A') {
+        if ( state == 'harvesting' || state == 'queued' || typeof state == "undefined" ) {
 
             var request = $.ajax({
                 url: _url,
@@ -265,9 +265,11 @@ $( window ).ready( function(){
                     remain = data[key].remainingHarvestTime;
                     max = data[key].max_docs;
                     cache = data[key].progress;
+                    state = data[key].state;
 
                     $( '#btn-harvester-status-' + key ).attr('data-original-title',
                     cache + ' of ' + max);
+                    statuslabel.html(state);
 
                     // referenced by context, this
                     bar.css("width", width + "%");

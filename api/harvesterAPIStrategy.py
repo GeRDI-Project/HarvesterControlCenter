@@ -426,6 +426,7 @@ class VersionBased7Strategy(Strategy):
             harvester_json = x
 
             feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
+            feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATE].lower()
             if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
                 maxDocuments = True
                 feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
