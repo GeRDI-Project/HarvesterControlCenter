@@ -48,9 +48,9 @@ $( function () {
         $('#loaderSpinnerLog').show();
         $.get(url, function (result) {
             var status = result;
-            var data = JSON.stringify(result);
+            var data = JSON.stringify(result, undefined, 2);
             $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html( data );
+            $( '#form-modal-body' ).html('<pre>' + data + '</pre>');
             for (var key in status) {
                 var obj = status[key];
                 $( '#hv-status-' + key ).html( obj.log );
