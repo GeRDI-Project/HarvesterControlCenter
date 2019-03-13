@@ -69,7 +69,7 @@ LOGGING = {
         'filedebug': {
             'class': 'logging.handlers.RotatingFileHandler',
             #'filters': ['require_debug_true'],
-            'filename': './log/django/debug.log',
+            'filename': './log/debug.log',
             'maxBytes': 1024*1024*2, #2MB
             'backupCount': 3,
             'formatter': 'verbose',
@@ -77,7 +77,7 @@ LOGGING = {
         'fileinfo': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': './log/django/info.log',
+            'filename': './log/info.log',
             'maxBytes': 1024*1024*1, #1MB
             'backupCount': 3,
             'formatter': 'simple',

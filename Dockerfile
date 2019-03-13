@@ -7,7 +7,7 @@ FROM python:alpine
 
 WORKDIR /usr/src/app
 
-RUN mkdir /usr/src/app/log/django && touch /usr/src/app/log/django/debug.log && touch /usr/src/app/log/django/info.log
+RUN mkdir /usr/src/app/log && touch /usr/src/app/log/debug.log && touch /usr/src/app/log/info.log
 
 COPY requirements.txt ./
 
