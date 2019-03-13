@@ -225,7 +225,7 @@ $( window ).ready( function(){
 
             if ( obj.innerText == 'harvesting' || obj.innerText == 'queued' ) { 
         
-                var is = $( '#progresshv-' + method);
+                var is = $( '#progresshv-' + me);
                 var remember = is.attr("title");
                 var max = "";
                 var intervalid = setInterval( getProgress, 1982, remember, me );
