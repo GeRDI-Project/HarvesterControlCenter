@@ -18,6 +18,10 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+
 class Strategy(metaclass=abc.ABCMeta):
     """
     Declare an interface common to all supported algorithms. HarvesterApi
@@ -83,21 +87,26 @@ class HarvesterApiStrategy:
         return self._strategy.get_harvesterStatus(self.harvester)
 
     def startHarvest(self):
+        logger.info(self.harvester.name + " start clicked by user.")
         return self._strategy.post_startHarvest(self.harvester)
 
     def stopHarvest(self):
+        logger.info(self.harvester.name + " stop clicked by user.")
         return self._strategy.post_stopHarvest(self.harvester)
 
     def resetHarvest(self):
+        logger.info(self.harvester.name + " reset clicked by user.")
         return self._strategy.post_resetHarvest(self.harvester)
     
     def harvesterLog(self):
         return self._strategy.get_harvesterLog(self.harvester)
 
     def addSchedule(self, crontab):
+        logger.info(self.harvester.name + " scheduled added by user.")
         return self._strategy.post_addHarvesterSchedule(self.harvester, crontab)
     
     def deleteSchedule(self, crontab):
+        logger.info(self.harvester.name + " schedules deleted by user.")
         return self._strategy.post_deleteHarvesterSchedule(self.harvester, crontab)
 
     def harvesterProgress(self):
