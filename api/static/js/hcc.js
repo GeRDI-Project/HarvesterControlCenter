@@ -229,6 +229,8 @@ $( window ).ready( function(){
             if ( obj.innerText == 'harvesting' || obj.innerText == 'queued' ) { 
         
                 var is = $( '#progresshv-' + me);
+                is.addClass( "progress-bar-animated" );
+                is.removeClass ( "progress-bar-grey" );
                 var remember = is.attr("title");
                 var intervalid = setInterval( getProgress, 1982, remember, me );
             }
@@ -290,6 +292,8 @@ $( window ).ready( function(){
 
         } else {
 
+            bar.removeClass( "progress-bar-animated" );
+            bar.addClass( "progress-bar-grey" );
             bar.css("width", width + "%");
             bar.html(width + '%');
             timelabel.html( "" );
