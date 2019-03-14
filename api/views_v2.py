@@ -401,6 +401,7 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView
         harv_w_user = Harvester(owner=self.request.user)
         form = HarvesterForm(self.request.POST, instance=harv_w_user)
         form.save()
+        # logger.info("new harvester created using the reg form: " + form.cleaned_data['name'])
         return super().form_valid(form)
 
 

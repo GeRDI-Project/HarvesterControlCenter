@@ -23,20 +23,23 @@ $( function () {
     $('#loaderSpinnerStat').hide();
 
     var ctx = document.getElementById("harvesterChart");
-    var myChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['my_label'],
-            datasets: [{
-                label: 'Number of harvested Items',
-                data: [170482],
-                backgroundColor: ['rgba(255, 99, 132, 0.2)'],
-                borderColor: ['rgba(255, 99, 132, 1)'],
-                borderWidth: 1
-            }]
-        },
-        options: { cutoutPercentage: 45 }
-    });
+    if ( ctx != null ) {
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['my_label'],
+                datasets: [{
+                    label: 'Number of harvested Items',
+                    data: [170482],
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: { cutoutPercentage: 45 }
+        });
+    }
+    
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
