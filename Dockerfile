@@ -4,6 +4,7 @@
 
 # FROM directive instructing base image to build upon
 FROM python:alpine
+LABEL author="Jan Frömberg <jan.froemberg@tu-dresden.de>"
 
 WORKDIR /usr/src/app
 
