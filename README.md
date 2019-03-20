@@ -141,5 +141,5 @@ There are seven ENV variables which could be used to configure production use. F
 Now run that container.
 
 ```bash
-    docker run --name=gerdi_hcc -it -p 80:8080 harvest/hccenter:latest
+    docker run --name=gerdi_hcc -it -p 8080:80 harvest/hccenter:latest
 ```
