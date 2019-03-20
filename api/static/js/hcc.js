@@ -242,8 +242,8 @@ $( window ).ready( function(){
         var bar = $( '#progresshv-' + _harv);
         var timelabel = $( '#status-label-' + _harv);
         var statuslabel = $( '#lbl-harvester-status-' + _harv);
-        var width = parseInt(bar['0'].innerText.replace('%', ''));
-        var state = statuslabel['0'].innerText;
+        var width = parseInt(bar[0].innerText.replace('%', ''));
+        var state = statuslabel[0].innerText;
         var perc = "%";
         var remain;
         var time = 0;
