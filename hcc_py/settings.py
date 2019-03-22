@@ -18,9 +18,9 @@ __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "3.3.8"
+__version__ = "3.4.8"
 __maintainer__ = "Jan Frömberg"
-__email__ = "Jan.froemberg@tu-dresden.de"
+__email__ = "jan.froemberg@tu-dresden.de"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -33,31 +33,70 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True')
+# There is a BUG?! If it will be settet via ENV Var, this is parsed as a string
+DEBUG = os.environ.get('DEBUG', False) == 'True'
+TEMPLATE_DEBUG = False
 
 # A list/array of IPs and FQDNs
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 # Logging configuration
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': '/var/log/django/debug.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
+LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': LOGLEVEL,
+            'stream': 'ext://sys.stdout',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'filedebug': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            #'filters': ['require_debug_true'],
+            'filename': './log/debug.log',
+            'maxBytes': 1024*1024*2, #2MB
+            'backupCount': 3,
+            'formatter': 'verbose',
+        },
+        'fileinfo': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': './log/info.log',
+            'maxBytes': 1024*1024*1, #1MB
+            'backupCount': 3,
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': LOGLEVEL,
+        },
+        'api': {
+            'handlers': ['filedebug'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 # Configure Django to run in subpath
 # https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-FORCE_SCRIPT_NAME
@@ -162,7 +201,7 @@ WSGI_APPLICATION = 'hcc_py.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # this setting (ading a subpath for db) causes a db creation failure on systems which uses manage.py runserver/test
+        # this setting (adding a subpath for db) maybe causes a db creation failure on systems which uses manage.py runserver/test
         'NAME': os.path.join(BASE_DIR, 'db/', 'db.sqlite3'),
     }
 }

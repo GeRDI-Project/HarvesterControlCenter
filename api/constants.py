@@ -5,7 +5,7 @@ __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
 __maintainer__ = "Jan Frömberg"
-__email__ = "Jan.froemberg@tu-dresden.de"
+__email__ = "jan.froemberg@tu-dresden.de"
 
 
 class HCCJSONConstants:
@@ -35,6 +35,7 @@ class HCCJSONConstants:
     CRONTAB = "cron"
     POSTCRONTAB = "cronTab"
     NO_CRONTAB = "no crontab defined yet"
+    NO_LOGTEXT = "no log"
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
 

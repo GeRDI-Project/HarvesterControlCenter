@@ -15,7 +15,11 @@ __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
 __maintainer__ = "Jan Frömberg"
-__email__ = "Jan.froemberg@tu-dresden.de"
+__email__ = "jan.froemberg@tu-dresden.de"
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class Strategy(metaclass=abc.ABCMeta):
@@ -83,25 +87,90 @@ class HarvesterApiStrategy:
         return self._strategy.get_harvesterStatus(self.harvester)
 
     def startHarvest(self):
+        logger.info(self.harvester.name + " start clicked by user.")
         return self._strategy.post_startHarvest(self.harvester)
 
     def stopHarvest(self):
+        logger.info(self.harvester.name + " stop clicked by user.")
         return self._strategy.post_stopHarvest(self.harvester)
 
     def resetHarvest(self):
+        logger.info(self.harvester.name + " reset clicked by user.")
         return self._strategy.post_resetHarvest(self.harvester)
     
     def harvesterLog(self):
         return self._strategy.get_harvesterLog(self.harvester)
 
     def addSchedule(self, crontab):
+        logger.info(self.harvester.name + " scheduled added by user.")
         return self._strategy.post_addHarvesterSchedule(self.harvester, crontab)
     
     def deleteSchedule(self, crontab):
+        logger.info(self.harvester.name + " schedules deleted by user.")
         return self._strategy.post_deleteHarvesterSchedule(self.harvester, crontab)
 
     def harvesterProgress(self):
         return self._strategy.get_harvesterProgress(self.harvester)
+
+
+class BaseStrategy(Strategy):
+    """
+    Fallback strategy alorithm for basic harvester support.
+    Just UP/DOWN information.
+    """
+    def get_harvesterStatus(self, harvester):
+        feedback = {}
+        response = None
+        if harvester.enabled:
+            try:
+                feedback[harvester.name] = {}
+                response = requests.get(harvester.url, timeout=5)
+
+                if response.status_code == status.HTTP_401_UNAUTHORIZED:
+                    feedback[harvester.name][HCCJC.HEALTH] = 'Authentication required.'
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                    return Response(feedback, status=status.HTTP_401_UNAUTHORIZED)
+
+                if response.status_code == status.HTTP_404_NOT_FOUND:
+                    feedback[harvester.name][HCCJC.HEALTH] = 'Resource on server not found. Check URL.'
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                    return Response(feedback, status=status.HTTP_404_NOT_FOUND)
+
+                if response.status_code == status.HTTP_200_OK:
+                    feedback[harvester.name][HCCJC.HEALTH] = response.text
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
+
+                feedback[harvester.name][HCCJC.CRONTAB] = "cron not supported. basic mode."
+
+            except RequestException as e:
+                feedback[harvester.name][HCCJC.HEALTH] = str(e)
+                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+
+            return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT)
+        else:
+            # logging.debug("Harvester disabled - got no info; returning a Response with JSON")
+            return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
+
+    def post_startHarvest(self, harvester):
+        return Response({harvester.name : 'start not supported'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def post_resetHarvest(self, harvester):
+        return Response({harvester.name : 'reset not supported'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def post_stopHarvest(self, harvester):
+        return Response({harvester.name : 'stop not supported'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def get_harvesterLog(self, harvester):
+        return Response({harvester.name : {HCCJC.LOGS : 'log not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def get_harvesterProgress(self, harvester):
+        return Response({harvester.name : {HCCJC.PROGRESS : 'progress not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def post_addHarvesterSchedule(self, harvester, crontab):
+        return Response({harvester.name : {HCCJC.HEALTH : 'cron not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+    
+    def post_deleteHarvesterSchedule(self, harvester, crontab):
+        return Response({harvester.name : {HCCJC.HEALTH : 'cron not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class VersionBased6Strategy(Strategy):
@@ -191,12 +260,11 @@ class VersionBased6Strategy(Strategy):
 
                 response = requests.get(harvester.url + HarvesterApiConstantsV6.G_PROGRESS, timeout=5)
                 feedback[harvester.name][HCCJC.PROGRESS] = response.text
-                if response.status_code != status.HTTP_500_INTERNAL_SERVER_ERROR \
-                        and response.status_code != status.HTTP_400_BAD_REQUEST:
+                if response.status_code != status.HTTP_500_INTERNAL_SERVER_ERROR:
                     feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = feedback[harvester.name][HCCJC.CACHED_DOCS]
                     if "/" not in response.text:
                         feedback[harvester.name][HCCJC.PROGRESS_MAX] = int(response.text)
-                    else:
+                    elif "N/A" not in response.text:
                         feedback[harvester.name][HCCJC.PROGRESS_MAX] = int(response.text.split("/")[1])
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
                             int((int(response.text.split("/")[0]) / int(response.text.split("/")[1])) * 100)
@@ -288,11 +356,11 @@ class VersionBased7Strategy(Strategy):
             try:    
                 harvester_json = json.loads(response.text)
 
-                if harvester_json[HCCJC.STATUS]:
+                if HCCJC.STATUS in harvester_json:
                     feedback[harvester_name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
                     feedback[harvester_name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
 
-                if harvester_json[HCCJC.MESSAGE]:
+                if HCCJC.MESSAGE in harvester_json:
                     feedback[harvester_name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
 
             except ValueError:
@@ -314,8 +382,8 @@ class VersionBased7Strategy(Strategy):
         if harvester.enabled:
             try:
                 feedback[harvester.name] = {}
-                response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, timeout=5)
-                harvester_json = json.loads(response.text)
+                response, x = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.PG_HARVEST, 'Get')
+                harvester_json = x
                 
                 if response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE:
                     feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
@@ -370,8 +438,8 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.REMAIN_HARVEST_TIME] = harvester_json[HCCJC.REMAIN_HARVEST_TIME]
 
                     # schedules
-                    response = requests.get(harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, timeout=5)
-                    harvester_json = json.loads(response.text)
+                    response, x = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON, 'Get')
+                    harvester_json = x
                     if not harvester_json[HCCJC.SCHEDULE]:
                         feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
                     else:
@@ -404,17 +472,21 @@ class VersionBased7Strategy(Strategy):
         response, json = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.G_HARVEST_LOG 
             + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT), 'Get')
         
-        feedback[harvester.name][HCCJC.LOGS] = str(json) if str(json) != "" else 'no logtext'
+        feedback[harvester.name][HCCJC.LOGS] = str(json) if str(json) != "" else HCCJC.NO_LOGTEXT + ' for today: ' + str(now)
         return Response(feedback, status=response.status_code)
 
     def get_harvesterProgress(self, harvester):
         feedback = {}
         feedback[harvester.name] = {}
         maxDocuments = False
-        response = requests.get(harvester.url + HarvesterApiConstantsV7.PG_HARVEST, timeout=5)
-        harvester_json = json.loads(response.text)
+        
         if harvester.enabled:
+            
+            response, x = self.a_response(harvester.name, harvester.url + HarvesterApiConstantsV7.PG_HARVEST, 'Get')
+            harvester_json = x
+
             feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
+            feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATE].lower()
             if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
                 maxDocuments = True
                 feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = harvester_json[HCCJC.MAX_DOCUMENT_COUNT]

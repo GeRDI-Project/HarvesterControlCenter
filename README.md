@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v3.3.8
+# Harvester Control Center (HCC) v3.4.8
 
 A Harvester Control Center GUI with REST-API written in Django.
 
@@ -128,7 +128,7 @@ First build the docker container...
 
 ### Environment variable configuration
 
-There are six ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container.
+There are seven ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container. Set a console LOGLEVEL (default: INFO)
 
 * name: "DEBUG" value: "False"
 * name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
@@ -136,9 +136,10 @@ There are six ENV variables which could be used to configure production use. Fee
 * name: "SECURE_PROXY_SSL_HEADER" value: "https"
 * name: "FORCE_SCRIPT_NAME" value: "/path/to/desired/endpoint"
 * name: "SECRET_KEY" value: "a 50bit string"
+* name: "LOGLEVEL" value: one of "[notset, debug, info, warning, error, critical]"
 
 Now run that container.
 
 ```bash
-    docker run --name=gerdi_hcc -it -p 80:8080 harvest/hccenter:latest
+    docker run --name=gerdi_hcc -it -p 8080:80 harvest/hccenter:latest
 ```

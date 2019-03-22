@@ -27,7 +27,7 @@ __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
 __maintainer__ = "Jan Frömberg"
-__email__ = "Jan.froemberg@tu-dresden.de"
+__email__ = "jan.froemberg@tu-dresden.de"
 
 
 # Get an instance of a logger
@@ -55,9 +55,11 @@ def toggle_harvester(request, name):
     harv = get_object_or_404(Harvester, name=name)
     if harv.enabled:
         harv.disable()
+        logger.info(harv.name + " disabled.")
         messages.add_message(request, messages.INFO, name + ' harvester disabled.')
     else:
         harv.enable()
+        logger.info(harv.name + " enabled.")
         messages.add_message(request, messages.INFO, name + ' harvester enabled.')
     return HttpResponseRedirect(reverse('hcc_gui'))
 
@@ -232,18 +234,18 @@ def home(request):
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 feedback[harvester.name][HCCJC.HEALTH] = 'Error : no response object'
         
+        # get total amount of docs
         sum_harvested = 0
         sum_max_docs = 0
-        for key, value in feedback.items():
-            try:
-                for k, v in value.items():
+        for harvester in feedback.values():
+            if isinstance(harvester, dict):
+                for (k, v) in harvester.items():
                     if k == HCCJC.CACHED_DOCS:
-                        sum_harvested += v
+                        sum_harvested += int(v)
                     if k == HCCJC.MAX_DOCUMENTS:
                         if v != 'N/A':
-                            sum_max_docs += v
-            except:
-                pass
+                            sum_max_docs += int(v)
+            
         feedback['sum_harvested'] = sum_harvested
         feedback['sum_maxdocs'] = sum_max_docs
         feedback['num_disabled_harvesters'] = num_disabled_harvesters
@@ -285,7 +287,6 @@ def start_harvest(request, name, format=None):
     Start Harvest via POST request to a harvester url
     """
     harvester = Harvester.objects.get(name=name)
-    logger.info('Starting Harvester ' + harvester.name + '(' + str(harvester.owner) + ')')
     api = InitHarvester(harvester).getHarvesterApi()
     return api.startHarvest()
 
@@ -400,6 +401,7 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView
         harv_w_user = Harvester(owner=self.request.user)
         form = HarvesterForm(self.request.POST, instance=harv_w_user)
         form.save()
+        # logger.info("new harvester created using the reg form: " + form.cleaned_data['name'])
         return super().form_valid(form)
 
 

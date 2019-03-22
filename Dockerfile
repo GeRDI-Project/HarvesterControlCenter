@@ -4,10 +4,11 @@
 
 # FROM directive instructing base image to build upon
 FROM python:alpine
+LABEL author="Jan Frömberg <jan.froemberg@tu-dresden.de>"
 
 WORKDIR /usr/src/app
 
-RUN mkdir /var/log/django && touch /var/log/django/debug.log
+RUN mkdir /usr/src/app/log && touch /usr/src/app/log/debug.log && touch /usr/src/app/log/info.log
 
 COPY requirements.txt ./
 
