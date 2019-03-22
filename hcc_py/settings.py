@@ -35,6 +35,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++
 # SECURITY WARNING: don't run with debug turned on in production!
 # There is a BUG?! If it will be settet via ENV Var, this is parsed as a string
 DEBUG = os.environ.get('DEBUG', False)
+TEMPLATE_DEBUG = False
 
 # A list/array of IPs and FQDNs
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
@@ -200,7 +201,7 @@ WSGI_APPLICATION = 'hcc_py.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # this setting (ading a subpath for db) causes a db creation failure on systems which uses manage.py runserver/test
+        # this setting (adding a subpath for db) maybe causes a db creation failure on systems which uses manage.py runserver/test
         'NAME': os.path.join(BASE_DIR, 'db/', 'db.sqlite3'),
     }
 }
