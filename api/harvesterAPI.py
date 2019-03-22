@@ -5,7 +5,7 @@ from requests.exceptions import RequestException
 from rest_framework import status
 from rest_framework.response import Response
 
-from api.harvesterAPIStrategy import HarvesterApiStrategy, VersionBased6Strategy, VersionBased7Strategy
+from api.harvesterAPIStrategy import HarvesterApiStrategy, BaseStrategy, VersionBased6Strategy, VersionBased7Strategy
 from api.constants import HarvesterApiConstants as HAC
 
 __author__ = "Jan Frömberg"
@@ -67,7 +67,7 @@ class InitHarvester:
         elif self._harvesterVersion == 7:
             api = HarvesterApiStrategy(self.harvester, v7)
         elif self._harvesterVersion == "not supported":
-            api = HarvesterApiStrategy(self.harvester, v6)
+            api = HarvesterApiStrategy(self.harvester, BaseStrategy())
 
         return api
 

@@ -113,6 +113,66 @@ class HarvesterApiStrategy:
         return self._strategy.get_harvesterProgress(self.harvester)
 
 
+class BaseStrategy(Strategy):
+    """
+    Fallback strategy alorithm for basic harvester support.
+    Just UP/DOWN information.
+    """
+    def get_harvesterStatus(self, harvester):
+        feedback = {}
+        response = None
+        if harvester.enabled:
+            try:
+                feedback[harvester.name] = {}
+                response = requests.get(harvester.url, timeout=5)
+
+                if response.status_code == status.HTTP_401_UNAUTHORIZED:
+                    feedback[harvester.name][HCCJC.HEALTH] = 'Authentication required.'
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                    return Response(feedback, status=status.HTTP_401_UNAUTHORIZED)
+
+                if response.status_code == status.HTTP_404_NOT_FOUND:
+                    feedback[harvester.name][HCCJC.HEALTH] = 'Resource on server not found. Check URL.'
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+                    return Response(feedback, status=status.HTTP_404_NOT_FOUND)
+
+                if response.status_code == status.HTTP_200_OK:
+                    feedback[harvester.name][HCCJC.HEALTH] = response.text
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
+
+                feedback[harvester.name][HCCJC.CRONTAB] = "cron not supported. basic mode."
+
+            except RequestException as e:
+                feedback[harvester.name][HCCJC.HEALTH] = str(e)
+                feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+
+            return Response(feedback, status=response.status_code if response is not None else status.HTTP_408_REQUEST_TIMEOUT)
+        else:
+            # logging.debug("Harvester disabled - got no info; returning a Response with JSON")
+            return Response({harvester.name: 'disabled'}, status=status.HTTP_423_LOCKED)
+
+    def post_startHarvest(self, harvester):
+        return Response({harvester.name : 'start not supported'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def post_resetHarvest(self, harvester):
+        return Response({harvester.name : 'reset not supported'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def post_stopHarvest(self, harvester):
+        return Response({harvester.name : 'stop not supported'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def get_harvesterLog(self, harvester):
+        return Response({harvester.name : {HCCJC.LOGS : 'log not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def get_harvesterProgress(self, harvester):
+        return Response({harvester.name : {HCCJC.PROGRESS : 'progress not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def post_addHarvesterSchedule(self, harvester, crontab):
+        return Response({harvester.name : {HCCJC.HEALTH : 'cron not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+    
+    def post_deleteHarvesterSchedule(self, harvester, crontab):
+        return Response({harvester.name : {HCCJC.HEALTH : 'cron not supported'}}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+
 class VersionBased6Strategy(Strategy):
     """
     Implement the algorithm using the Strategy interface.
