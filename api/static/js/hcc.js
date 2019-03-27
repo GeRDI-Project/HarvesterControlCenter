@@ -217,6 +217,27 @@ $( window ).ready( function(){
         return rhours + "h " + rminutes + "min " + rseconds + "sec";
     };
 
+    // this works only for one harvester at a time and w/o page refresh
+    // had to be implemented
+    function setTime(_harvester) {
+
+        var secs = pad(seconds % 60);
+        var mins = pad(parseInt(seconds / 60));
+        var hrs = pad( parseInt(seconds / 60 / 60) );
+        var time_string = 'elapsed time: ' + hrs + 'h ' + mins + 'm ' + secs + 's';
+        $( '#status-label-' + _harvester).html( time_string );
+        seconds++;
+    }
+
+    function pad(val) {
+        var valString = val + "";
+        if (valString.length < 2) {
+            return "0" + valString;
+        } else {
+            return valString;
+        }
+    }
+
     var lbl_status = document.querySelectorAll('*[id^="lbl-harvester-status-"]');
     var lblarray = Array.from(lbl_status);
     if ( lblarray.length > 0 ) {
@@ -225,6 +246,7 @@ $( window ).ready( function(){
             var obj = lblarray[key];
             var objid = obj.id;
             var me = objid.split('-')[3];
+            var seconds = 0;
 
             if ( obj.innerText == 'harvesting' || obj.innerText == 'queued' ) { 
         
@@ -232,7 +254,9 @@ $( window ).ready( function(){
                 is.addClass( "progress-bar-animated" );
                 is.removeClass ( "progress-bar-grey" );
                 var remember = is.attr("title");
-                var intervalid = setInterval( getProgress, 1982, remember, me );
+                var progressid = setInterval( getProgress, 1982, remember, me );
+                var timerid = setInterval( setTime, 1000, me);
+
             }
         }
     }
@@ -242,6 +266,7 @@ $( window ).ready( function(){
         var bar = $( '#progresshv-' + _harv);
         var timelabel = $( '#status-label-' + _harv);
         var statuslabel = $( '#lbl-harvester-status-' + _harv);
+        var btnhvstatus = document.getElementById('btn-harvester-status-' + _harv);
         var width = parseInt(bar[0].innerText.replace('%', ''));
         var state = statuslabel[0].innerText;
         var perc = "%";
@@ -264,6 +289,7 @@ $( window ).ready( function(){
             });
 
             request.done(function (data) {
+
                 for ( var key in data ) {
 
                     width = data[key].progress_cur;
@@ -274,6 +300,7 @@ $( window ).ready( function(){
 
                     $( '#btn-harvester-status-' + key ).attr('data-original-title',
                     cache + ' of ' + max);
+                    
                     statuslabel.html(state);
 
                     // referenced by context, this
@@ -284,10 +311,11 @@ $( window ).ready( function(){
                     if ( typeof remain !== "undefined" ) {
                         time = timeConvert(remain);
                         time_string = 'remaining time: ' + time;
+                        timelabel.html( time_string );
                     }
-                    timelabel.html( time_string );
                     bar.html(width + perc);
                 }
+
             });
 
         } else {
@@ -296,9 +324,13 @@ $( window ).ready( function(){
             bar.addClass( "progress-bar-grey" );
             bar.css("width", width + "%");
             bar.html(width + '%');
+            btnhvstatus.classList.toggle( "btn-info", false );
+            btnhvstatus.classList.toggle( "btn-primary", false );
+            btnhvstatus.classList.add( "btn-success" );
             timelabel.html( "" );
             statuslabel.html("finished");
-            clearInterval(intervalid);
+            clearInterval(progressid);
+            clearInterval(timerid);
 
         }
     }
