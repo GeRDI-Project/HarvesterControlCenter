@@ -65,6 +65,7 @@ Install the dependencies needed to run the app:
 
    1. Basic Authentication via Username and Password
    2. Token Authentication via Auth.-Token (see below)
+   3. SAML Auth will be implemented...
 
 ### Code testing
 
@@ -74,9 +75,9 @@ To use Django Testing Environment fire the following command in your Terminal
     python manage.py test
 ```
 
-### Running in dev mode
+### Running in developer mode
 
-First, create a super-user
+First, create a super-user and then swith DEBUG mode on in settings.py
 
 ```bash
     python manage.py createsuperuser
@@ -128,7 +129,7 @@ First build the docker container...
 
 ### Environment variable configuration
 
-There are seven ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container. Set a console LOGLEVEL (default: INFO)
+There are seven ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container. Set a console LOGLEVEL (default: INFO). GUI interaction will be logged to a file in log/debug.log
 
 * name: "DEBUG" value: "False"
 * name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
