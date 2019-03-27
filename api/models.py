@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -15,8 +16,12 @@ __email__ = "jan.froemberg@tu-dresden.de"
 
 
 class Harvester(models.Model):
-    """This class represents the Harvester model which is also used for serialization."""
-    name = models.CharField(max_length=255, blank=False, unique=True)
+    """
+    This class represents the Harvester model which is also used for serialization.
+    """
+    hRegExVal = RegexValidator(r'^[0-9a-zA-Z_]+$', 'Only alphanumeric characters and underscore are allowed.')
+
+    name = models.CharField(max_length=255, blank=False, unique=True, validators=[hRegExVal])
     metadataPrefix = models.CharField(max_length=255, blank=True)
     notes = models.CharField(max_length=255, blank=True)
     enabled = models.BooleanField(default=False)
