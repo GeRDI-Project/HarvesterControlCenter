@@ -341,6 +341,7 @@ class VersionBased7Strategy(Strategy):
         feedback = {}
         feedback[harvester_name] = {}
         response = None
+        harvester_json = {}
 
         try:
 
