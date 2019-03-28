@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-from django.contrib.messages import constants as messages
 from django.contrib.messages import constants as message_constants
 
 __author__ = "Jan Frömberg"
@@ -165,11 +164,11 @@ MIDDLEWARE = [
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
 MESSAGE_TAGS = {
-    messages.DEBUG: 'alert-dark',
-    messages.INFO: 'alert-info',
-    messages.SUCCESS: 'alert-success',
-    messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger',
+    message_constants.DEBUG: 'alert-dark',
+    message_constants.INFO: 'alert-info',
+    message_constants.SUCCESS: 'alert-success',
+    message_constants.WARNING: 'alert-warning',
+    message_constants.ERROR: 'alert-danger',
 }
 
 MESSAGE_LEVEL = message_constants.INFO
@@ -201,7 +200,8 @@ WSGI_APPLICATION = 'hcc_py.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # this setting (adding a subpath for db) maybe causes a db creation failure on systems which uses manage.py runserver/test
+        # this setting (adding a subpath for db) maybe causes a db creation failure
+        # on systems which uses manage.py runserver/test
         'NAME': os.path.join(BASE_DIR, 'db/', 'db.sqlite3'),
     }
 }
