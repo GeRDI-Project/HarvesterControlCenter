@@ -49,10 +49,6 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def post_resetHarvest(self, harvester):
         pass
-    
-    @abc.abstractmethod
-    def get_harvesterLog(self, harvester):
-        pass
 
     @abc.abstractmethod
     def post_addHarvesterSchedule(self, harvester, crontab):
@@ -354,7 +350,7 @@ class VersionBased7Strategy(Strategy):
             elif method == 'Delete':
                 response = requests.delete(url, timeout=5)
 
-            try:    
+            try:
                 harvester_json = json.loads(response.text)
 
                 if HCCJC.STATUS in harvester_json:
