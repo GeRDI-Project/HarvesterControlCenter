@@ -1,11 +1,15 @@
-import requests
-import logging
+"""
+This module initiaized a harvester and determines its version to decide the protocol language.
+"""
 import json
+import requests
 from requests.exceptions import RequestException
 from rest_framework import status
 from rest_framework.response import Response
 
-from api.harvesterAPIStrategy import HarvesterApiStrategy, BaseStrategy, VersionBased6Strategy, VersionBased7Strategy
+from api.harvesterAPIStrategy import HarvesterApiStrategy, BaseStrategy,\
+                                     VersionBased6Strategy,\
+                                     VersionBased7Strategy
 from api.constants import HarvesterApiConstants as HAC
 
 __author__ = "Jan Frömberg"
@@ -25,49 +29,56 @@ class InitHarvester:
     """
 
     def __init__(self, harvester):
-        self._harvesterVersion = "not defined"
+        self._harvester_version = "not defined"
         self.harvester = harvester
-        
+
         if harvester.enabled:
             try:
                 response = requests.get(harvester.url + HAC.G_VERSIONS, timeout=5)
             except RequestException as e:
-                response = Response("A Connection Error. Harvester initialization failed. " + str(e), status=status.HTTP_408_REQUEST_TIMEOUT)
+                response = Response("A Connection Error. Harvester initialization failed. "+str(e),
+                                    status=status.HTTP_408_REQUEST_TIMEOUT)
 
             if response.status_code == status.HTTP_401_UNAUTHORIZED:
-                response = Response('Authentication required.', status=status.HTTP_401_UNAUTHORIZED)
+                response = Response('Authentication required.',
+                                    status=status.HTTP_401_UNAUTHORIZED)
             if response.status_code == status.HTTP_404_NOT_FOUND:
-                response = Response('Resource on server not found. Check URL.', status=status.HTTP_404_NOT_FOUND)
+                response = Response('Resource on server not found. Check URL.',
+                                    status=status.HTTP_404_NOT_FOUND)
 
             if response.status_code == status.HTTP_200_OK:
                 harvester_json = json.loads(response.text)
-                versionString = harvester_json["value"][1]
-                libVersion = versionString.split("-")[2]
+                version_string = harvester_json["value"][1]
+                lib_version = version_string.split("-")[2]
 
-                if int(libVersion.split(".")[0]) >= 7:
-                    self._harvesterVersion = 7
+                if int(lib_version.split(".")[0]) >= 7:
+                    self._harvester_version = 7
                 else:
-                    self._harvesterVersion = 6
+                    self._harvester_version = 6
             else:
-                self._harvesterVersion = "not supported"
+                self._harvester_version = "not supported"
         else:
-            self._harvesterVersion = "harvester disabled"
+            self._harvester_version = "harvester disabled"
 
 
     def getVersion(self):
-        return self._harvesterVersion
-    
+        """
+        get the harvester Version.
+        """
+        return self._harvester_version
 
     def getHarvesterApi(self):
+        """
+        get the harvester API.
+        """
         v6 = VersionBased6Strategy()
         v7 = VersionBased7Strategy()
         api = HarvesterApiStrategy(self.harvester, v7)
-        if self._harvesterVersion == 6:
+        if self._harvester_version == 6:
             api = HarvesterApiStrategy(self.harvester, v6)
-        elif self._harvesterVersion == 7:
+        elif self._harvester_version == 7:
             api = HarvesterApiStrategy(self.harvester, v7)
-        elif self._harvesterVersion == "not supported":
+        elif self._harvester_version == "not supported":
             api = HarvesterApiStrategy(self.harvester, BaseStrategy())
 
         return api
-
