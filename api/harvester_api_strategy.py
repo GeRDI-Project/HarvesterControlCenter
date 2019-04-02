@@ -40,31 +40,31 @@ class Strategy(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def get_harvester_log(self, harvester):
-        pass
+        """abstract method for harvester log"""
 
     @abc.abstractmethod
     def post_start_harvest(self, harvester):
-        pass
+        """abstract method for harvester start"""
 
     @abc.abstractmethod
     def post_stop_harvest(self, harvester):
-        pass
+        """abstract method for harvester stop"""
 
     @abc.abstractmethod
     def post_reset_harvest(self, harvester):
-        pass
+        """abstract method for harvester reset"""
 
     @abc.abstractmethod
     def post_add_harvester_schedule(self, harvester, crontab):
-        pass
+        """abstract method for adding a harvester schedule"""
 
     @abc.abstractmethod
     def post_delete_harvester_schedule(self, harvester, crontab):
-        pass
+        """abstract method for deleting a harvester schedule"""
 
     @abc.abstractmethod
     def get_harvester_progress(self, harvester):
-        pass
+        """abstract method for harvester progress"""
 
 
 class HarvesterApiStrategy:
@@ -392,7 +392,7 @@ class VersionBased7Strategy(Strategy):
         """
         A uniform response method to encapsulate requests.
         """
-        feedback, harvester_json = {}
+        feedback, harvester_json = {}, {}
         feedback[harvester_name] = {}
         response = None
 
@@ -432,7 +432,7 @@ class VersionBased7Strategy(Strategy):
                                 else status.HTTP_408_REQUEST_TIMEOUT), harvester_json
 
     def get_harvester_status(self, harvester):
-        feedback, harvester_json = {}
+        feedback, harvester_json = {}, {}
         feedback[harvester.name] = {}
         max_documents = False
         response = None

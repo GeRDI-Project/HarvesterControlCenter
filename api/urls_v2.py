@@ -32,7 +32,7 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
 app_name = 'api'
-urlpatterns = {
+urlpatterns = [
     path('', views.index, name='home'),
     path('harvesters/',
          HarvesterCreateView.as_view(), name="create"),
@@ -57,6 +57,6 @@ urlpatterns = {
     path('users/<int:pk>/',
          UserDetailsView.as_view(), name="user-details"),
     path('get-token/', obtain_auth_token),
-}
+]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json'])
