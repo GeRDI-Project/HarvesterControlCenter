@@ -34,7 +34,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++
 # SECURITY WARNING: don't run with debug turned on in production!
 # There is a BUG?! If it will be settet via ENV Var, this is parsed as a string
 DEBUG = os.environ.get('DEBUG', False) == 'True'
-TEMPLATE_DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 # A list/array of IPs and FQDNs
