@@ -59,4 +59,4 @@ urlpatterns = [
     path('get-token/', obtain_auth_token),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json'])
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
