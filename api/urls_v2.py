@@ -1,9 +1,28 @@
+"""hcc_py API URL Configuration
+
+The `urlpatterns` list routes URLs to views_v2. For more information please see:
+    https://docs.djangoproject.com/en/2.0/topics/http/urls/
+Examples:
+Function views_v2
+    1. Add an import:  from my_app import views_v2
+    2. Add a URL to urlpatterns:  path('', views_v2.home, name='home')
+Class-based views_v2
+    1. Add an import:  from other_app.views_v2 import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
 from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views_v2 as views
-from .views_v2 import HarvesterCreateView, HarvesterDetailsView, UserView, UserDetailsView, ScheduleHarvesterView
+from .views_v2 import (
+    HarvesterCreateView,
+    HarvesterDetailsView,
+    UserView, UserDetailsView,
+    ScheduleHarvesterView)
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
