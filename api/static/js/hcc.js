@@ -40,14 +40,20 @@ $( function () {
         });
     }
     
-
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
     $('#btn-deploy-harvester').on('click', function (event) {
-        
-        var url = $(this).attr("title");
+        load_into_modal(this);
+    });
+
+    $('#btn-hcc-log').on('click', function (event) {
+        load_into_modal(this);
+    });
+
+    function load_into_modal (_this) {
+        var url = $(_this).attr("title");
         $('#loaderSpinnerLog').show();
         $.get(url, function (result) {
             var status = result;
@@ -65,7 +71,7 @@ $( function () {
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
         });
-    });
+    }
 
     $('#collapseChart').on('show.bs.collapse', function (event) {
         

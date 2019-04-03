@@ -73,7 +73,7 @@ LOGGING = {
             'filename': './log/debug.log',
             'maxBytes': 1024*1024*2, #2MB
             'backupCount': 3,
-            'formatter': 'verbose',
+            'formatter': 'simple',
         },
         'fileinfo': {
             'level': 'INFO',
@@ -81,7 +81,7 @@ LOGGING = {
             'filename': './log/info.log',
             'maxBytes': 1024*1024*1, #1MB
             'backupCount': 3,
-            'formatter': 'simple',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
