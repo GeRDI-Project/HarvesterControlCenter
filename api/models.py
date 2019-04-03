@@ -1,3 +1,6 @@
+"""
+Model Module; holds harvester model
+"""
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
@@ -19,7 +22,8 @@ class Harvester(models.Model):
     """
     This class represents the Harvester model which is also used for serialization.
     """
-    hRegExVal = RegexValidator(r'^[0-9a-zA-Z_]+$', 'Only alphanumeric characters and underscore are allowed.')
+    hRegExVal = RegexValidator(r'^[0-9a-zA-Z_]+$',
+                               'Only alphanumeric characters and underscore are allowed.')
 
     name = models.CharField(max_length=255, blank=False, unique=True, validators=[hRegExVal])
     metadataPrefix = models.CharField(max_length=255, blank=True)
@@ -41,10 +45,12 @@ class Harvester(models.Model):
         ordering = ['name']
 
     def enable(self):
+        """enable harvester"""
         self.enabled = True
         self.save()
 
     def disable(self):
+        """disbale harvester"""
         self.enabled = False
         self.save()
 
@@ -52,9 +58,8 @@ class Harvester(models.Model):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.name)
 
-
-# This receiver handles token creation immediately a new user is created.
 @receiver(post_save, sender=User)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
+    """ This receiver handles token creation immediately a new user is created."""
     if created:
         Token.objects.create(user=instance)

@@ -2,8 +2,8 @@
 This module does the serialization to (sqlite) DB operations.
 """
 from rest_framework import serializers
-from .models import Harvester
 from django.contrib.auth.models import User
+from .models import Harvester
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
