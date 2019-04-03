@@ -383,9 +383,7 @@ class VersionBased6Strategy(Strategy):
 
 class VersionBased7Strategy(Strategy):
     """
-
     Implement the algorithm for the harvester lib v7.x.x using the Strategy interface.
-
     """
 
     def a_response(self, harvester_name, url, method):
@@ -460,6 +458,7 @@ class VersionBased7Strategy(Strategy):
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 elif response.status_code == status.HTTP_408_REQUEST_TIMEOUT:
                     feedback[harvester.name][HCCJC.HEALTH] = response.status_text
+                    feedback[harvester.name][HCCJC.MESSAGE] = str(response.data)
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
                 else:
