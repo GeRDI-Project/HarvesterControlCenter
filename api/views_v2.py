@@ -3,6 +3,7 @@ The new views module
 """
 import logging
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -135,10 +136,11 @@ def get_all_harvester_log(request):
 
 @login_required
 def get_hcc_log(request):
-    """ get the hcc logfile """
-    filename = "./log/debug.log"
+    """ get the hcc logfile -> [settings.py] ./log/debug.log """
+    filename = settings.LOGGING['handlers']['filedebug']['filename']
+    content = filename + "<br>"
     with open(filename, 'r') as file:
-        content = file.read().replace('\n', '<br>')
+        content += file.read().replace('\n', '<br>')
     response = HttpResponse(content, content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
     return response
