@@ -564,8 +564,8 @@ class VersionBased7Strategy(Strategy):
                             + now.strftime(HarvesterApiConstantsV7.HARVESTER_LOG_FORMAT),
                             'Get')
 
-        feedback[harvester.name][HCCJC.LOGS] = \
-            str(hjson) if str(hjson) != "" else HCCJC.NO_LOGTEXT + ' for today: ' + str(now)
+        log_txt = str(hjson) if str(hjson) != "" else HCCJC.NO_LOGTEXT + ' for today: ' + str(now)
+        feedback[harvester.name][HCCJC.LOGS] = log_txt
         return Response(feedback, status=response.status_code)
 
     def get_harvester_progress(self, harvester):
@@ -579,7 +579,6 @@ class VersionBased7Strategy(Strategy):
                 self.a_response(harvester.name,
                                 harvester.url + HarvesterApiConstantsV7.PG_HARVEST,
                                 'Get')
-
 
             feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
             feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATE].lower()

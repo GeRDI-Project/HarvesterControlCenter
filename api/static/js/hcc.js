@@ -212,6 +212,9 @@ $( function () {
 
 });
 
+/*
+    Execute when Page/window is loaded
+*/
 $( window ).ready( function(){
 
     // milisec to hours, min, sec
