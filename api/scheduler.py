@@ -1,3 +1,4 @@
+# import schedule
 # import time
 
 __author__ = "Jan Frömberg"
@@ -5,11 +6,11 @@ __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache"
 __maintainer__ = "Jan Frömberg"
-__email__ = "Jan.froemberg@tu-dresden.de"
+__email__ = "jan.froemberg@tu-dresden.de"
 
 
 def job():
-    print("go on harvesting...")
+    print("poll the harvester api...")
 
 
 # schedule.every(10).minutes.do(job)
@@ -27,4 +28,4 @@ def job():
 
 
 class Scheduler:
-    """Custom Scheduler class to handle timed harvests."""
+    """Custom Scheduler class to handle timed events."""

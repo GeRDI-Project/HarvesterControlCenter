@@ -11,14 +11,14 @@ __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
 __maintainer__ = "Jan Frömberg"
-__email__ = "Jan.froemberg@tu-dresden.de"
+__email__ = "jan.froemberg@tu-dresden.de"
 
 
 class Harvester(models.Model):
     """This class represents the Harvester model which is also used for serialization."""
     name = models.CharField(max_length=255, blank=False, unique=True)
     metadataPrefix = models.CharField(max_length=255, blank=True)
-    repository = models.CharField(max_length=255, blank=True)
+    notes = models.CharField(max_length=255, blank=True)
     enabled = models.BooleanField(default=False)
     owner = models.ForeignKey(
         'auth.User',
