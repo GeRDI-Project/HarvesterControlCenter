@@ -136,7 +136,7 @@ def get_all_harvester_log(request):
 
 @login_required
 def get_hcc_log(request):
-    """ get the hcc logfile -> [settings.py] ./log/debug.log """
+    """ A function to get the hcc logfile -> [settings.py] ./log/debug.log """
     filename = settings.LOGGING['handlers']['filedebug']['filename']
     content = filename + "<br>"
     with open(filename, 'r') as file:
@@ -210,7 +210,7 @@ def abort_all_harvesters(request):
 # @login_required
 def home(request):
     """
-    Home entry point of Web-Application GUI
+    Home entry point of Web-Application GUI.
     """
     feedback = {}
     # init view-type for list and card view
@@ -303,7 +303,7 @@ def home(request):
 @permission_classes((IsAuthenticated,))
 def start_harvesters(request, format=None):
     """
-    Start all Harvesters via POST request
+    Start all harvesters via POST request.
     """
     feedback = {}
     harvesters = Harvester.objects.all()
@@ -318,7 +318,7 @@ def start_harvesters(request, format=None):
 @permission_classes((IsAuthenticated,))
 def start_harvest(request, name, format=None):
     """
-    Start Harvest via POST request to a harvester url
+    Start harvest via POST request to an harvester url-endpoint.
     """
     harvester = Harvester.objects.get(name=name)
     api = InitHarvester(harvester).get_harvester_api()
@@ -329,7 +329,7 @@ def start_harvest(request, name, format=None):
 @permission_classes((IsAuthenticated,))
 def stop_harvest(request, name, format=None):
     """
-    Stop Harvest via POST request to a harvester url
+    Stop harvest via POST request to an harvester url-endpoint.
     """
     harvester = Harvester.objects.get(name=name)
     api = InitHarvester(harvester).get_harvester_api()
@@ -340,7 +340,7 @@ def stop_harvest(request, name, format=None):
 @permission_classes((IsAuthenticated,))
 def stop_harvesters(request, format=None):
     """
-    Stop all Harvesters via POST request to a harvester url
+    Stop all harvesters via POST request.
     """
     feedback = {}
     harvesters = Harvester.objects.all()
@@ -355,7 +355,7 @@ def stop_harvesters(request, format=None):
 @permission_classes((IsAuthenticated,))
 def get_harvester_state(request, name, format=None):
     """
-    View to show a Harvester state via GET Request
+    View to show an harvester state via GET request.
     """
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).get_harvester_api()
@@ -366,7 +366,7 @@ def get_harvester_state(request, name, format=None):
 @permission_classes((IsAuthenticated,))
 def get_harvester_states(request, format=None):
     """
-    View to show all Harvester states via GET Request
+    View to show all harvester states via GET request.
     """
     feedback = {}
     harvesters = Harvester.objects.all()
@@ -379,7 +379,9 @@ def get_harvester_states(request, format=None):
 
 class HarvesterCreateView(generics.ListCreateAPIView):
     """
-    This class handles the GET and POST requests of our Harvester Control Center REST-API.
+    This class handles the GET and POST requests
+    to create/register a new harvester
+    to our Harvester Control Center REST-API.
     """
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     queryset = Harvester.objects.all()
@@ -394,6 +396,7 @@ class HarvesterCreateView(generics.ListCreateAPIView):
 class HarvesterDetailsView(generics.RetrieveUpdateDestroyAPIView):
     """
     This class handles GET, PUT, PATCH and DELETE requests.
+    To show, modify and delete an registered harvester.
     """
     authentication_classes = (BasicAuthentication,)
     lookup_field = 'name'
@@ -404,7 +407,7 @@ class HarvesterDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
 class UserView(generics.ListAPIView):
     """
-    View to list the user queryset.
+    View to list the control center registered users.
     """
     authentication_classes = (BasicAuthentication,)
     queryset = User.objects.all()
@@ -422,7 +425,7 @@ class UserDetailsView(generics.RetrieveAPIView):
 
 class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView):
     """
-    This class handles GUI Harvester registration.
+    This class handles GUI harvester registration.
     """
     template_name = 'hcc/hreg_form.html'
     form_class = HarvesterForm
@@ -441,7 +444,8 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView
 
 class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
     """
-    This class handles GET, DELETE and POST requests to control the scheduling of harvesters.
+    This class handles GET, DELETE and POST requests 
+    to control the scheduling of harvesters.
     """
     success_message = "Schedule for %(name) was created successfully"
 
