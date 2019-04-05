@@ -193,7 +193,8 @@ class BaseStrategy(Strategy):
 
 class VersionBased6Strategy(Strategy):
     """
-    Implement the algorithm using the Strategy interface.
+    The algorithm implemented using the Strategy interface.
+    For old/legacy harvesters prior to library version v7
     """
 
     def a_response(self, harvester_name, url, method):
@@ -383,7 +384,8 @@ class VersionBased6Strategy(Strategy):
 
 class VersionBased7Strategy(Strategy):
     """
-    Implement the algorithm for the harvester lib v7.x.x using the Strategy interface.
+    The algorithm/strategy implementation for the harvester
+    library v7.x.x using the strategy interface.
     """
 
     def a_response(self, harvester_name, url, method):
@@ -476,6 +478,7 @@ class VersionBased7Strategy(Strategy):
                     feedback[harvester.name][HCCJC.DATA_PROVIDER] = \
                         harvester_json[HCCJC.REPO_NAME]
 
+                    # harvester overall status
                     if harvester_json[HCCJC.HEALTH] == HCCJC.OK \
                         and harvester_json[HCCJC.STATE].lower() == HCCJC.IDLE:
                         feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
@@ -486,6 +489,7 @@ class VersionBased7Strategy(Strategy):
                     else:
                         feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
 
+                    # progress
                     if HCCJC.MAX_DOCUMENT_COUNT in harvester_json:
                         max_documents = True
                         feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = \
@@ -504,6 +508,7 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.PROGRESS_CURRENT] = \
                             int(harvester_json[HCCJC.HARVESTED_COUNT])
 
+                    # dates
                     if HCCJC.LAST_HARVEST_DATE in harvester_json:
                         feedback[harvester.name][HCCJC.LAST_HARVEST_DATE] = \
                             harvester_json[HCCJC.LAST_HARVEST_DATE]
@@ -526,6 +531,7 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
 
             except RequestException as _e:
+                
                 feedback[harvester.name][HCCJC.HEALTH] = str(_e)
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
