@@ -1,3 +1,6 @@
+"""
+The forms module.
+"""
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
@@ -5,7 +8,6 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
 from api.models import Harvester
-from api.constants import HCCJSONConstants as HCCJC
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -28,6 +30,7 @@ class HarvesterForm(forms.ModelForm):
 
     @property
     def helper(self):
+        """helper method to configure the form"""
         helper = FormHelper()
         helper.form_method = 'POST'
         helper.form_class = 'form-horizontal'
@@ -53,6 +56,7 @@ class LoginForm(AuthenticationForm):
 
     @property
     def helper(self):
+        """helper method to configure the form"""
         helper = FormHelper()
         helper.form_method = 'POST'
         helper.form_class = 'form-horizontal'
@@ -75,15 +79,16 @@ class SchedulerForm(forms.Form):
     """
     cronTab = forms.CharField(
         label="Scheduling Plan:",
-        max_length = 14,
+        max_length=14,
         required=False)
 
     @property
     def helper(self):
+        """helper to config the form"""
         helper = FormHelper()
         helper.form_tag = False
         helper.layout = Layout(
             FieldWithButtons('cronTab',
-                Submit('submit_cron', 'set!', css_class="btn-default btn-sm"))
+                             Submit('submit_cron', 'set!', css_class="btn-default btn-sm"))
         )
         return helper

@@ -1,3 +1,6 @@
+"""
+This Module holds constant classes
+"""
 # import base64
 
 __author__ = "Jan Frömberg"
@@ -39,26 +42,26 @@ class HCCJSONConstants:
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
 
-    OK      = "OK"
-    N_A     = "N/A"
+    OK = "OK"
+    N_A = "N/A"
     MESSAGE = "message"
 
-    INIT        = "initialization"
-    HARV        = "harvesting"
-    IDLE        = "idle"
-    IDLE_OLD    = "ideling"
+    INIT = "initialization"
+    HARV = "harvesting"
+    IDLE = "idle"
+    IDLE_OLD = "ideling"
     HARVESTER_STATES = [INIT, HARV, IDLE, IDLE_OLD]
 
     WARNING = "warning"
     SUCCESS = "success"
     PRIMARY = "primary"
-    INFO    = "info"
+    INFO = "info"
 
 
 class HarvesterApiConstants:
     """
 
-     This Class holds a list of Harvester Library API constants 
+     This Class holds a list of Harvester Library API constants
      which will be updated accordingly to the Harvester-BaseLibrary.
 
     """
@@ -68,7 +71,7 @@ class HarvesterApiConstants:
 class HarvesterApiConstantsV6:
     """
 
-     This Class holds a list of Harvester Library API constants 
+     This Class holds a list of Harvester Library API constants
      which will be updated accordingly to the Harvester-BaseLibrary.
 
     """
@@ -99,11 +102,11 @@ class HarvesterApiConstantsV6:
 class HarvesterApiConstantsV7:
     """
 
-     This Class holds a list of Harvester API constants 
+     This Class holds a list of Harvester API constants
      which will be updated accordingly to the Harvester-BaseLibrary.
-     Current version is 7.x.x See: 
+     Current version is 7.x.x See:
      https://wiki.gerdi-project.de/display/GeRDI/Harvester+Library+7.x.x
-     
+
     """
     PG_HARVEST = "/"
     P_HARVEST_ABORT = "/abort"

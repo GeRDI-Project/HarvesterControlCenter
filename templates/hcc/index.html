@@ -14,7 +14,7 @@
                         Harvester</a></h3>
                 <div class="card-body collapse" id="collapseRegister">
                     <a href="{% url 'hreg-form' %}" id="reg-button">
-                        <i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i>
+                        <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
                     </a>
                     <!-- <a id="register-button" href="{% url 'hreg-form' %}" data-toggle="modal" data-target="#form-modal">Register</a> -->
                 </div>
@@ -32,7 +32,10 @@
                 </h3>
                 <div class="card-body collapse" id="collapseLogfiles">
                     <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
-                        <i class="fa fa-cloud-download fa-5x" aria-hidden="true"></i>
+                        <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
+                    </a>&nbsp;
+                    <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
+                        <i class="fa fa-file-text-o fa-4x align-middle" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>
