@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, URLPatternsTestCase, APIClient
 
 from .models import Harvester
+from .forms import HarvesterForm
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -128,3 +129,28 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             follow=True)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class RegexTestCase(TestCase):
+    """This class defines the test for harvester name registration."""
+
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        User.objects.create(username='Prometheus')
+
+    def test_harvester_form_is_valid(self):
+        """Test the regex for harvester name."""
+        user = User.objects.get(id=1)
+        url = "http://www.isgoing.to/api"
+        data = {'name': "foo_bar1", 'owner': user, 'url': url,}
+        form = HarvesterForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_harvester_form_is_invalid(self):
+        """Test the regex for harvester name."""
+        user = User.objects.get(id=1)
+        url = "http://www.isgoing.to/api"
+        data = {'name': "foo bar@1", 'owner': user, 'url': url,}
+        form = HarvesterForm(data=data)
+        self.assertFalse(form.is_valid())

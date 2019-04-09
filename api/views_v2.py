@@ -444,7 +444,7 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView
 
 class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
     """
-    This class handles GET, DELETE and POST requests 
+    This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
     """
     success_message = "Schedule for %(name) was created successfully"
