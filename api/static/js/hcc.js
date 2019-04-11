@@ -313,3 +313,24 @@ $( window ).ready( function(){
     }
 
 });
+
+function filterFunction() {
+
+    // Declare variables
+    var input, filter, list, btns, a, i, txtValue;
+    input = document.getElementById('harvesterInput');
+    filter = input.value.toUpperCase();
+    list = document.getElementById("harvesterList");
+    btns = list.getElementsByTagName('button');
+  
+    // Loop through all list items, and hide those who don't match the search query
+    for (i = 0; i < btns.length; i++) {
+      a = btns[i];
+      txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "";
+      } else {
+        btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "none";
+      }
+    }
+}
