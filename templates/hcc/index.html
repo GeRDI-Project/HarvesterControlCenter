@@ -73,17 +73,13 @@
                         aria-expanded="true" aria-controls="collapseOne">
                         Enabled Harvesters
                         <span class="badge badge-light">
-                            {% for k, v in status.items %}
-                            {% if k == 'num_enabled_harvesters' %}
-                            {{ v }}
-                            {% endif %}
-                            {% endfor %}
+                        {% for k, v in status.items %}
+                        {% if k == 'num_enabled_harvesters' %}
+                        {{ v }}
+                        {% endif %}
+                        {% endfor %}
                         </span>
                     </button>
-                    <div class="btn-group" role="group" aria-label="ControlPanel">
-                        <a href="{% url 'start-harvesters' %}" role="button" class="btn btn-primary">start all</a>
-                        <a href="{% url 'abort-harvesters' %}" role="button" class="btn btn-dark">abort all</a>
-                    </div>
                     {% if vt == 'list' %}
                     <a href="{% url 'hcc_gui' %}"><i class="fa fa-id-card float-right" title="card view" data-toggle="tooltip"
                             data-placement="top" aria-hidden="true"></i></a>
@@ -91,11 +87,17 @@
                     <a href="{% url 'hcc_gui' %}?viewtype=list"><i class="fa fa-list float-right" title="list view"
                             data-toggle="tooltip" data-placement="top" aria-hidden="true"></i></a>
                     {% endif %}
+                    <div class="btn-group" role="group" aria-label="ControlPanel">
+                        <a href="{% url 'start-harvesters' %}" role="button" class="btn btn-primary">start all</a>
+                        <a href="{% url 'abort-harvesters' %}" role="button" class="btn btn-dark">abort all</a>
+                    </div>
+                    <input type="text" id="harvesterInput" onkeyup="filterFunction()" class="form-control" placeholder="search for harvester" aria-label="Harvester Name">
+                    
                 </h5>
             </div>
 
             <div id="collapseOne" class="collapse show" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
-                <div class="card-body">
+                <div id="harvesterList" class="card-body">
                     <div class="container">
                         <div class="row">
                             {% for harvester in harvesters %}
@@ -153,7 +155,8 @@
                                                 <a href="#" class="btn btn-primary btn-sm" data-toggle="collapse"
                                                     data-target="#collapseHarvester-{{ forloop.counter }}" role="button"
                                                     aria-expanded="false" aria-controls="collapseExample">
-                                                    <i class="fa fa-plus-square" aria-hidden="true"></i></a>
+                                                    <i class="fa fa-plus-square" aria-hidden="true"></i>
+                                                </a>
                                                 <div class="btn-group" role="group" aria-label="control harvester">
                                                     <a href="{% url 'toggle-harvester' name=harvester.name %}" class="btn btn-success btn-sm"
                                                         role="button">
@@ -165,10 +168,11 @@
                                                         {% for k, val in status.items %} 
                                                         {% if k == harvester.name %} 
                                                         class="btn btn-sm btn-{{ val.gui_status }}"
-                                                        {% if val.data_pvd %} title="{{ val.data_pvd }}
-                                                                                {% if val.cached_docs %} harvested and cached Documents: {{ val.cached_docs }}
-                                                                                {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
-                                                                                {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
+                                                        {% if val.data_pvd %}
+                                                        title="{{ val.data_pvd }}
+                                                        {% if val.cached_docs %} harvested and cached Documents: {{ val.cached_docs }}
+                                                        {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
+                                                        {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
                                                         {% endif %}
                                                         {% endif %} 
                                                         {% endfor %}>{{ harvester.name|lower|capfirst }}</button>
