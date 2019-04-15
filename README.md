@@ -117,9 +117,9 @@ For instance getting all harvesters (_/v1/harvesters/_) via Token-Authentication
 ## Deployment
 
 A Docker Container for production with nginx as buildin reverse proxy.
-If you do not have a SSL Configuration, please remove the line
-"proxy_set_header X-Forwarded-Proto https;" from the nginx configuration
-in folder nginx/nginx.conf.
+If you do have a SSL Configuration, please add the line
+"proxy_set_header X-Forwarded-Proto https;" in the nginx configuration
+found in folder nginx/nginx.conf.
 
 First build the docker container...
 
