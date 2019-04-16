@@ -241,8 +241,12 @@ def home(request):
                         # if a GET (or any other method) we'll create form
                         # initialized with a schedule for this harvester
                         jsonstr = {HCCJC.POSTCRONTAB : response.data[harvester.name][HCCJC.CRONTAB]}
-                        form = SchedulerForm(initial=jsonstr,
-                                             prefix=harvester.name)
+                        placehldr = response.data[harvester.name][HCCJC.CRONTAB]
+                        form = SchedulerForm(prefix=harvester.name)
+                        if isinstance(placehldr, list):
+                            placehldr = response.data[harvester.name][HCCJC.CRONTAB][0]
+                        form.fields[HCCJC.POSTCRONTAB].widget.attrs.update({
+                            'placeholder': placehldr})
                         forms[harvester.name] = form
                     else:
                         jsonstr = {HCCJC.POSTCRONTAB : '0 0 * * *'}
