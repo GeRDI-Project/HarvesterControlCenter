@@ -531,7 +531,7 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
 
             except RequestException as _e:
-                
+
                 feedback[harvester.name][HCCJC.HEALTH] = str(_e)
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
@@ -620,6 +620,7 @@ class VersionBased7Strategy(Strategy):
                                  json={HCCJC.POSTCRONTAB : crontab},
                                  timeout=5)
         harvester_response = response.text
+        LOGGER.info("created schedule for %s with crontab %s", harvester.name, crontab)
         feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
 
@@ -631,6 +632,7 @@ class VersionBased7Strategy(Strategy):
                                      HarvesterApiConstantsV7.DALL_HARVEST_CRON,
                                      timeout=5)
             harvester_response = response.text
+            LOGGER.info("deleted all schedules for %s", harvester.name)
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         else:
             response = requests.post(harvester.url +
@@ -638,5 +640,6 @@ class VersionBased7Strategy(Strategy):
                                      json={HCCJC.POSTCRONTAB : crontab},
                                      timeout=5)
             harvester_response = response.text
+            LOGGER.info("deleted cron %s for harvester %s", crontab, harvester.name)
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)
