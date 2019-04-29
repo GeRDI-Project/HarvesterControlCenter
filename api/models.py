@@ -22,16 +22,20 @@ class Harvester(models.Model):
     """
     This class represents the Harvester model which is also used for serialization.
     """
-    hRegExVal = RegexValidator(r'^[0-9a-zA-Z_]+$',
-                               'Only alphanumeric characters and underscore are allowed.')
+    hRegExVal = RegexValidator(
+        r'^[0-9a-zA-Z_]+$',
+        'Only alphanumeric characters and underscore are allowed.')
 
-    name = models.CharField(max_length=255, blank=False, unique=True, validators=[hRegExVal])
+    name = models.CharField(max_length=255,
+                            blank=False,
+                            unique=True,
+                            validators=[hRegExVal])
     metadataPrefix = models.CharField(max_length=255, blank=True)
     notes = models.CharField(max_length=255, blank=True)
     enabled = models.BooleanField(default=False)
-    owner = models.ForeignKey(
-        'auth.User',
-        related_name='harvester', on_delete=models.CASCADE)
+    owner = models.ForeignKey('auth.User',
+                              related_name='harvester',
+                              on_delete=models.CASCADE)
     url = models.URLField(max_length=255, blank=False, unique=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -57,6 +61,7 @@ class Harvester(models.Model):
     def __str__(self):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.name)
+
 
 @receiver(post_save, sender=User)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

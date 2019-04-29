@@ -33,7 +33,6 @@ __license__ = "Apache 2.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
-
 # Get an instance of a logger
 LOGGER = logging.getLogger(__name__)
 
@@ -60,11 +59,13 @@ def toggle_harvester(request, name):
     if harv.enabled:
         harv.disable()
         LOGGER.info("%s disabled.", harv.name)
-        messages.add_message(request, messages.INFO, name + ' harvester disabled.')
+        messages.add_message(request, messages.INFO,
+                             name + ' harvester disabled.')
     else:
         harv.enable()
         LOGGER.info("%s enabled.", harv.name)
-        messages.add_message(request, messages.INFO, name + ' harvester enabled.')
+        messages.add_message(request, messages.INFO,
+                             name + ' harvester enabled.')
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -80,7 +81,8 @@ def stop_harvester(request, name):
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).get_harvester_api()
     response = api.stop_harvest()
-    messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
+    messages.add_message(request, messages.INFO,
+                         name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -96,7 +98,8 @@ def start_harvester(request, name):
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).get_harvester_api()
     response = api.start_harvest()
-    messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
+    messages.add_message(request, messages.INFO,
+                         name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -112,7 +115,8 @@ def reset_harvester(request, name):
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).get_harvester_api()
     response = api.reset_harvest()
-    messages.add_message(request, messages.INFO, name + ': ' + str(response.data[harvester.name]))
+    messages.add_message(request, messages.INFO,
+                         name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -142,7 +146,8 @@ def get_hcc_log(request):
     with open(filename, 'r') as file:
         content += file.read().replace('\n', '<br>')
     response = HttpResponse(content, content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(
+        filename)
     return response
 
 
@@ -176,10 +181,12 @@ def start_all_harvesters(request):
             api = InitHarvester(harvester).get_harvester_api()
             response = api.start_harvest()
             if HCCJC.HEALTH in response.data[harvester.name]:
-                msg = harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH]
+                msg = harvester.name + ': ' + response.data[harvester.name][
+                    HCCJC.HEALTH]
                 messages.add_message(request, messages.INFO, msg)
             else:
-                msg = harvester.name + ': ' + str(response.data[harvester.name])
+                msg = harvester.name + ': ' + str(
+                    response.data[harvester.name])
                 messages.add_message(request, messages.INFO, msg)
 
     return HttpResponseRedirect(reverse('hcc_gui'))
@@ -199,10 +206,12 @@ def abort_all_harvesters(request):
             api = InitHarvester(harvester).get_harvester_api()
             response = api.stop_harvest()
             if HCCJC.HEALTH in response.data[harvester.name]:
-                msg = harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH]
+                msg = harvester.name + ': ' + response.data[harvester.name][
+                    HCCJC.HEALTH]
                 messages.add_message(request, messages.INFO, msg)
             else:
-                msg = harvester.name + ': ' + str(response.data[harvester.name])
+                msg = harvester.name + ': ' + str(
+                    response.data[harvester.name])
                 messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(reverse('hcc_gui'))
 
@@ -240,27 +249,33 @@ def home(request):
                     if HCCJC.CRONTAB in response.data[harvester.name]:
                         # if a GET (or any other method) we'll create form
                         # initialized with a schedule for this harvester
-                        jsonstr = {HCCJC.POSTCRONTAB : response.data[harvester.name][HCCJC.CRONTAB]}
-                        placehldr = response.data[harvester.name][HCCJC.CRONTAB]
+                        jsonstr = {
+                            HCCJC.POSTCRONTAB:
+                            response.data[harvester.name][HCCJC.CRONTAB]
+                        }
+                        placehldr = response.data[harvester.name][
+                            HCCJC.CRONTAB]
                         form = SchedulerForm(prefix=harvester.name)
                         if isinstance(placehldr, list):
-                            placehldr = response.data[harvester.name][HCCJC.CRONTAB][0]
-                        form.fields[HCCJC.POSTCRONTAB].widget.attrs.update({
-                            'placeholder': placehldr})
+                            placehldr = response.data[harvester.name][
+                                HCCJC.CRONTAB][0]
+                        form.fields[HCCJC.POSTCRONTAB].widget.attrs.update(
+                            {'placeholder': placehldr})
                         forms[harvester.name] = form
                     else:
-                        jsonstr = {HCCJC.POSTCRONTAB : '0 0 * * *'}
+                        jsonstr = {HCCJC.POSTCRONTAB: '0 0 * * *'}
                         form = SchedulerForm(initial=jsonstr,
                                              prefix=harvester.name)
                         forms[harvester.name] = form
                 else:
-                    jsonstr = {HCCJC.POSTCRONTAB : '0 0 * * *'}
+                    jsonstr = {HCCJC.POSTCRONTAB: '0 0 * * *'}
                     form = SchedulerForm(initial=jsonstr,
                                          prefix=harvester.name)
                     forms[harvester.name] = form
                     feedback[harvester.name] = {}
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-                    feedback[harvester.name][HCCJC.HEALTH] = 'Error : no response object'
+                    feedback[harvester.name][
+                        HCCJC.HEALTH] = 'Error : no response object'
             else:
                 num_disabled_harvesters += 1
 
@@ -282,10 +297,9 @@ def home(request):
         feedback['num_enabled_harvesters'] = num_enabled_harvesters
         feedback['num_harvesters'] = num_harvesters
         msg = '{} enabled Harvesters with total amount \
-               of harvested Items so far: {}'.format(num_enabled_harvesters, sum_harvested)
-        messages.add_message(request,
-                             messages.INFO,
-                             msg)
+               of harvested Items so far: {}'.format(num_enabled_harvesters,
+                                                     sum_harvested)
+        messages.add_message(request, messages.INFO, msg)
 
         # init form
         if request.method == 'POST':
@@ -293,18 +307,23 @@ def home(request):
             if form.is_valid():
                 return HttpResponseRedirect(reverse('hcc_gui'))
 
-        return render(request, 'hcc/index.html',
-                      {'harvesters': harvesters,
-                       'status': feedback,
-                       'forms': forms,
-                       'vt': view_type})
+        return render(
+            request, 'hcc/index.html', {
+                'harvesters': harvesters,
+                'status': feedback,
+                'forms': forms,
+                'vt': view_type
+            })
 
-    return render(request, 'hcc/index.html', {'status': feedback, 'vt': view_type})
+    return render(request, 'hcc/index.html', {
+        'status': feedback,
+        'vt': view_type
+    })
 
 
 @api_view(['POST'])
 # @authentication_classes((TokenAuthentication, BasicAuthentication))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, ))
 def start_harvesters(request, format=None):
     """
     Start all harvesters via POST request.
@@ -319,7 +338,7 @@ def start_harvesters(request, format=None):
 
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, ))
 def start_harvest(request, name, format=None):
     """
     Start harvest via POST request to an harvester url-endpoint.
@@ -330,7 +349,7 @@ def start_harvest(request, name, format=None):
 
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, ))
 def stop_harvest(request, name, format=None):
     """
     Stop harvest via POST request to an harvester url-endpoint.
@@ -341,7 +360,7 @@ def stop_harvest(request, name, format=None):
 
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, ))
 def stop_harvesters(request, format=None):
     """
     Stop all harvesters via POST request.
@@ -356,7 +375,7 @@ def stop_harvesters(request, format=None):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, ))
 def get_harvester_state(request, name, format=None):
     """
     View to show an harvester state via GET request.
@@ -367,7 +386,7 @@ def get_harvester_state(request, name, format=None):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, ))
 def get_harvester_states(request, format=None):
     """
     View to show all harvester states via GET request.
@@ -402,7 +421,7 @@ class HarvesterDetailsView(generics.RetrieveUpdateDestroyAPIView):
     This class handles GET, PUT, PATCH and DELETE requests.
     To show, modify and delete an registered harvester.
     """
-    authentication_classes = (BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, )
     lookup_field = 'name'
     queryset = Harvester.objects.all()
     serializer_class = HarvesterSerializer
@@ -413,7 +432,7 @@ class UserView(generics.ListAPIView):
     """
     View to list the control center registered users.
     """
-    authentication_classes = (BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, )
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -422,12 +441,13 @@ class UserDetailsView(generics.RetrieveAPIView):
     """
     View to retrieve a user instance.
     """
-    authentication_classes = (BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, )
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
-class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin, FormView):
+class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin,
+                                FormView):
     """
     This class handles GUI harvester registration.
     """
@@ -462,14 +482,15 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
         myname = kwargs['name']
         harvester = get_object_or_404(Harvester, name=myname)
         api = InitHarvester(harvester).get_harvester_api()
-        crontab = request.POST.get(harvester.name + "-" + HCCJC.POSTCRONTAB, False)
+        crontab = request.POST.get(harvester.name + "-" + HCCJC.POSTCRONTAB,
+                                   False)
         if crontab:
             response = api.add_schedule(crontab)
         else:
             response = api.delete_schedule(crontab)
-        messages.add_message(request,
-                             messages.INFO,
-                             harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
+        messages.add_message(
+            request, messages.INFO, harvester.name + ': ' +
+            response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))
 
     def delete(self, request, *args, **kwargs):
@@ -477,6 +498,7 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
         harvester = get_object_or_404(Harvester, name=myname)
         api = InitHarvester(harvester).get_harvester_api()
         response = api.delete_schedule(request.POST[HCCJC.POSTCRONTAB])
-        messages.add_message(request, messages.INFO,
-                             harvester.name + ': ' + response.data[harvester.name][HCCJC.HEALTH])
+        messages.add_message(
+            request, messages.INFO, harvester.name + ': ' +
+            response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))

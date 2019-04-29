@@ -7,10 +7,9 @@ from requests.exceptions import RequestException
 from rest_framework import status
 from rest_framework.response import Response
 
-from api.harvester_api_strategy import (
-    HarvesterApiStrategy, BaseStrategy,
-    VersionBased6Strategy,
-    VersionBased7Strategy)
+from api.harvester_api_strategy import (HarvesterApiStrategy, BaseStrategy,
+                                        VersionBased6Strategy,
+                                        VersionBased7Strategy)
 from api.constants import HarvesterApiConstants as HAC
 
 __author__ = "Jan Frömberg"
@@ -35,10 +34,13 @@ class InitHarvester:
 
         if harvester.enabled:
             try:
-                response = requests.get(harvester.url + HAC.G_VERSIONS, timeout=5)
+                response = requests.get(harvester.url + HAC.G_VERSIONS,
+                                        timeout=5)
             except RequestException as _e:
-                response = Response("A Connection Error. Harvester initialization failed. "+str(_e),
-                                    status=status.HTTP_408_REQUEST_TIMEOUT)
+                response = Response(
+                    "A Connection Error. Harvester initialization failed. " +
+                    str(_e),
+                    status=status.HTTP_408_REQUEST_TIMEOUT)
 
             if response.status_code == status.HTTP_401_UNAUTHORIZED:
                 response = Response('Authentication required.',
@@ -60,7 +62,6 @@ class InitHarvester:
                 self._harvester_version = "not supported"
         else:
             self._harvester_version = "harvester disabled"
-
 
     def get_version(self):
         """
