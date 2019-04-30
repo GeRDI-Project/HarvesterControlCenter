@@ -46,6 +46,7 @@ urlpatterns = [
     path('hcc/<str:name>/stop', views.stop_harvester, name='stop-harvester'),
     path('hcc/<str:name>/start', views.start_harvester, name='start-harvester'),
     path('hcc/<str:name>/reset', views.reset_harvester, name='reset-harvester'),
+    path('hcc/config/<str:name>', views.config_harvester, name='config-harvester'),
     path('hcc/startall', views.start_all_harvesters, name='start-harvesters'),
     path('hcc/abortall', views.abort_all_harvesters, name='abort-harvesters'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name='hreg-form'),

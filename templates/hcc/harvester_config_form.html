@@ -1,0 +1,18 @@
+{% load crispy_forms_tags %}
+
+<form class="harvester-config-form" method="post" action="">
+<div class="modal-content">
+  <div class="modal-header">
+    <h3 class="modal-title">Editing Harvester</h3>
+    <button type="button" class="close" data-dismiss="modal">×</button>
+  </div>
+  <div class="modal-body">
+       {% csrf_token %}
+       {{form|crispy}}
+  </div>
+  <div class="modal-footer">
+       <input class="btn btn-primary" type="submit" value="Save" />
+       <input name="cancel" class="btn" type="submit" value="Cancel"/>
+  </div>
+</div>
+</form>

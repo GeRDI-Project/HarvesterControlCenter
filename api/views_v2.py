@@ -121,6 +121,41 @@ def reset_harvester(request, name):
 
 
 @login_required
+def config_harvester(request, name):
+    """
+    This function configs an harvester.
+
+    :param request: the request
+    :param name: name of the harvester
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+
+    # api = InitHarvester(harvester).get_harvester_api()
+    # profile = request.user.get_profile()
+    if name is None:
+        harvester = Harvester(owner=request.user)
+        template_title = 'Add Harvester'
+    else:
+        harvester = get_object_or_404(Harvester, name=name)
+        template_title = 'Edit Harvester'
+    if request.POST:
+        if request.POST.get('cancel', None):
+            return HttpResponseRedirect(reverse('hcc_gui'))
+            
+        form = HarvesterForm(request.POST, instance=harvester)
+        if form.is_valid():
+            harvester = form.save()
+            return HttpResponseRedirect(reverse('hcc_gui'))
+    else:
+        form = HarvesterForm(instance=harvester)
+
+    return render(request, "hcc/harvester_config_form.html", {'form': form, 'template_title': template_title})
+    # response = api.reset_harvest()
+    # messages.add_message(request, messages.INFO,
+    #                     name + ': ' + str(response.data[harvester.name]))
+
+
+@login_required
 def get_all_harvester_log(request):
     """
     This function gets the logfile for each harvester.

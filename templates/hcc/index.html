@@ -94,7 +94,7 @@
                         <a href="{% url 'abort-harvesters' %}" role="button" class="btn btn-dark">abort all</a>
                     </div>
                     <input type="text" id="harvesterInput" onkeyup="filterFunction()" class="form-control" placeholder="search for harvester" aria-label="Harvester Name">
-                    
+
                 </h5>
             </div>
 
@@ -166,9 +166,9 @@
                                                     </a>
 
                                                     <button id="btn-harvester-status-{{ harvester.name }}" type="button"
-                                                        data-toggle="tooltip" data-placement="top" 
-                                                        {% for k, val in status.items %} 
-                                                        {% if k == harvester.name %} 
+                                                        data-toggle="tooltip" data-placement="top"
+                                                        {% for k, val in status.items %}
+                                                        {% if k == harvester.name %}
                                                         class="btn btn-sm btn-{{ val.gui_status }}"
                                                         {% if val.data_pvd %}
                                                         title="{{ val.data_pvd }}
@@ -176,7 +176,7 @@
                                                         {% if val.max_docs %} of {{ val.max_docs }}{% endif %}.{% endif %}
                                                         {% if val.lastHarvestDate %}Last harvest: {{ val.lastHarvestDate }}{% endif %}"
                                                         {% endif %}
-                                                        {% endif %} 
+                                                        {% endif %}
                                                         {% endfor %}>{{ harvester.name|lower|capfirst }}</button>
                                                 </div>
                                                 {% for k, val in status.items %}
@@ -236,10 +236,15 @@
                                                     <a href="{{ harvester.url }}">{{ harvester.name }}</a>
                                                 </li>
                                                 <li class="list-group-item">
-                                                    <p><a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseStatus{{ forloop.counter }}"
+                                                    <p>
+                                                      <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseStatus{{ forloop.counter }}"
                                                             role="button" aria-expanded="false" aria-controls="collapseStatus">
                                                             Status
-                                                        </a></p>
+                                                      </a>
+                                                      <a id="btn-config-{{ harvester.name }" class="btn btn-primary btn-sm hconfig" data-form="{% url 'config-harvester' name=harvester.name %}" href="#" role="button">
+                                                      Config
+                                                      </a>
+                                                    </p>
                                                     <div class="collapse" id="collapseStatus{{ forloop.counter }}">
                                                         <div class="card card-body">
                                                             <p class="card-text"><small id="hv-status-{{ harvester.name }}">
@@ -355,6 +360,7 @@
     {% endif %}
 </div>
 
+<div id="harvesterModal" class="modal fade" tabindex="-1" role="dialog"></div>
 <!-- Config Modal -->
 <div id="config-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
