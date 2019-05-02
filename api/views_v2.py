@@ -1,5 +1,5 @@
 """
-The new views module
+The is thw views module which encapsulates the backend logic
 """
 import logging
 
@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -118,41 +119,6 @@ def reset_harvester(request, name):
     messages.add_message(request, messages.INFO,
                          name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
-
-
-@login_required
-def config_harvester(request, name):
-    """
-    This function configs an harvester.
-
-    :param request: the request
-    :param name: name of the harvester
-    :return: an HttpResponseRedirect to the Main HCC page
-    """
-
-    # api = InitHarvester(harvester).get_harvester_api()
-    # profile = request.user.get_profile()
-    if name is None:
-        harvester = Harvester(owner=request.user)
-        template_title = 'Add Harvester'
-    else:
-        harvester = get_object_or_404(Harvester, name=name)
-        template_title = 'Edit Harvester'
-    if request.POST:
-        if request.POST.get('cancel', None):
-            return HttpResponseRedirect(reverse('hcc_gui'))
-            
-        form = HarvesterForm(request.POST, instance=harvester)
-        if form.is_valid():
-            harvester = form.save()
-            return HttpResponseRedirect(reverse('hcc_gui'))
-    else:
-        form = HarvesterForm(instance=harvester)
-
-    return render(request, "hcc/harvester_config_form.html", {'form': form, 'template_title': template_title})
-    # response = api.reset_harvest()
-    # messages.add_message(request, messages.INFO,
-    #                     name + ': ' + str(response.data[harvester.name]))
 
 
 @login_required
@@ -501,6 +467,39 @@ class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin,
         return super().form_valid(form)
 
 
+class EditHarvesterView(LoginRequiredMixin, SuccessMessageMixin, RedirectView):
+    """
+    This class handles GET, DELETE and POST requests
+    to control the config of the harvesters.
+    """
+    success_message = "%(name) was modified successfully"
+    # permission_classes = (permissions.IsAuthenticated, IsOwner)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        myname = kwargs['name']
+        if myname is None:
+            harvester = Harvester(owner=request.user)
+            template_title = 'Add Harvester'
+        else:
+            harvester = get_object_or_404(Harvester, name=myname)
+            template_title = 'Edit Harvester'
+        form = HarvesterForm(instance=harvester)
+        return render(request, "hcc/harvester_edit_form.html",
+                      {'form': form, 'template_title': template_title, 'hname': myname})
+
+    def post(self, request, *args, **kwargs):
+        myname = kwargs['name']
+        _h = Harvester.objects.get(name=myname)
+        if request.POST.get('cancel', None):
+            return HttpResponseRedirect(reverse('hcc_gui'))
+
+        form = HarvesterForm(self.request.POST, instance=_h)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect(reverse('hcc_gui'))
+
+
 class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
     """
     This class handles GET, DELETE and POST requests
@@ -510,7 +509,6 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        # harvester = get_object_or_404(Harvester, name=name)
         pass
 
     def post(self, request, *args, **kwargs):

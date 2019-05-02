@@ -27,7 +27,7 @@ from rest_framework.documentation import include_docs_urls
 
 from api import views_v2 as views
 from api.forms import LoginForm
-from api.views_v2 import RegisterHarvesterFormView
+from api.views_v2 import RegisterHarvesterFormView, EditHarvesterView
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -46,7 +46,7 @@ urlpatterns = [
     path('hcc/<str:name>/stop', views.stop_harvester, name='stop-harvester'),
     path('hcc/<str:name>/start', views.start_harvester, name='start-harvester'),
     path('hcc/<str:name>/reset', views.reset_harvester, name='reset-harvester'),
-    path('hcc/config/<str:name>', views.config_harvester, name='config-harvester'),
+    path('hcc/edit/<str:name>', EditHarvesterView.as_view(), name='edit-harvester'),
     path('hcc/startall', views.start_all_harvesters, name='start-harvesters'),
     path('hcc/abortall', views.abort_all_harvesters, name='abort-harvesters'),
     path('hcc/register', RegisterHarvesterFormView.as_view(), name='hreg-form'),

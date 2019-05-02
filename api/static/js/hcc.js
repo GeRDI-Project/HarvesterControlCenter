@@ -336,7 +336,6 @@ function filterFunction() {
 }
 
 $( window ).scroll(function(e) {
-
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
     if (scroll >= 270) {
@@ -344,10 +343,9 @@ $( window ).scroll(function(e) {
     } else {
         $('.navbar').removeClass("navbar-hide");
     }
-
 });
 
-$(".hconfig").click(function(ev) { // for each edit harvester url
+$(".harvesteredit").click(function(ev) { // for each edit harvester url
      ev.preventDefault(); // prevent navigation
      var url = $(this).data("form"); // get the harvester form url
      $("#harvesterModal").load(url, function() { // load the url into the modal
@@ -356,7 +354,7 @@ $(".hconfig").click(function(ev) { // for each edit harvester url
      return false; // prevent the click propagation
  });
 
- $('.harvester-config-form').on('submit', function() {
+ /*$('.harvester-edit-form').on('submit', function() {
      $.ajax({
          type: $(this).attr('method'),
          url: this.action,
@@ -367,4 +365,4 @@ $(".hconfig").click(function(ev) { // for each edit harvester url
          }
      });
      return false;
- });
+ });*/

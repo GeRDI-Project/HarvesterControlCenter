@@ -238,11 +238,16 @@
                                                 <li class="list-group-item">
                                                     <p>
                                                       <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseStatus{{ forloop.counter }}"
-                                                            role="button" aria-expanded="false" aria-controls="collapseStatus">
-                                                            Status
+                                                        role="button" aria-expanded="false" aria-controls="collapseStatus">
+                                                        Status
                                                       </a>
-                                                      <a id="btn-config-{{ harvester.name }" class="btn btn-primary btn-sm hconfig" data-form="{% url 'config-harvester' name=harvester.name %}" href="#" role="button">
-                                                      Config
+                                                      <a id="btn-edit-{{ harvester.name }" class="btn btn-primary btn-sm harvesteredit"
+                                                        data-form="{% url 'edit-harvester' name=harvester.name %}" href="#" role="button">
+                                                        Edit
+                                                      </a>
+                                                      <a id="btn-config-{{ harvester.name }" class="btn btn-primary btn-sm harvesterconfig"
+                                                        data-form="" href="#" role="button">
+                                                        Config
                                                       </a>
                                                     </p>
                                                     <div class="collapse" id="collapseStatus{{ forloop.counter }}">
