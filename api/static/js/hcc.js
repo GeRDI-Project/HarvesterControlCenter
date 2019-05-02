@@ -18,7 +18,7 @@ limitations under the License.
     Execute when DOM is ready
  */
 $( function () {
-    
+
     $('#loaderSpinnerLog').hide();
     $('#loaderSpinnerStat').hide();
 
@@ -39,7 +39,7 @@ $( function () {
             options: { cutoutPercentage: 45 }
         });
     }
-    
+
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -65,7 +65,7 @@ $( function () {
                 $( '#hv-status-' + key ).html( obj.log );
             }
             $('#loaderSpinnerLog').hide();
-        
+
         }).fail(function (response) {
             $( '#loaderSpinnerLog' ).hide();
             $( '#form-modal' ).modal('toggle');
@@ -74,19 +74,19 @@ $( function () {
     }
 
     $('#collapseChart').on('show.bs.collapse', function (event) {
-        
+
         var url = $(this).attr("title");
         $('#loaderSpinnerStat').show();
         $.get(url, function (result) {
-            
+
             updateGUI(result);
-        
+
         }).fail(function (response) {
 
             $('#loaderSpinnerStat').hide();
             $( '#form-modal' ).modal('toggle');
             $( '#form-modal-body' ).html( response.responseText );
-            
+
         });
     });
 
@@ -121,7 +121,7 @@ $( function () {
 
             var obj = status[key];
             if ( obj != 'disabled' ) {
-                
+
                 $( '#hv-status-' + key ).html( JSON.stringify(obj) );
                 var btnhvstatus = document.getElementById('btn-harvester-status-' + key);
                 if ( btnhvstatus ) {
@@ -155,10 +155,10 @@ $( function () {
                     //$( '#progresshv-' + key ).hide();
                 }
                 if ( obj.data_pvd ) {
-                    $( '#btn-harvester-status-' + key ).attr('data-original-title', obj.data_pvd + 
-                    ' harvested and cached documents: ' + 
-                    obj.cached_docs + ' of ' + 
-                    obj.max_docs + '. Last harvest: ' + 
+                    $( '#btn-harvester-status-' + key ).attr('data-original-title', obj.data_pvd +
+                    ' harvested and cached documents: ' +
+                    obj.cached_docs + ' of ' +
+                    obj.max_docs + '. Last harvest: ' +
                     obj.lastHarvestDate);
                 }
             }
@@ -235,8 +235,8 @@ $( window ).ready( function(){
             var objid = obj.id;
             var me = objid.split('-')[3];
 
-            if ( obj.innerText == 'harvesting' || obj.innerText == 'queued' ) { 
-        
+            if ( obj.innerText == 'harvesting' || obj.innerText == 'queued' ) {
+
                 var is = $( '#progresshv-' + me);
                 is.addClass( "progress-bar-animated" );
                 is.removeClass ( "progress-bar-grey" );
@@ -247,7 +247,7 @@ $( window ).ready( function(){
     }
 
     function getProgress(_url, _harv) {
-        
+
         var bar = $( '#progresshv-' + _harv);
         var timelabel = $( '#status-label-' + _harv);
         var statuslabel = $( '#lbl-harvester-status-' + _harv);
@@ -322,7 +322,7 @@ function filterFunction() {
     filter = input.value.toUpperCase();
     list = document.getElementById("harvesterList");
     btns = list.getElementsByTagName('button');
-  
+
     // Loop through all list items, and hide those who don't match the search query
     for (i = 0; i < btns.length; i++) {
       a = btns[i];
@@ -334,3 +334,35 @@ function filterFunction() {
       }
     }
 }
+
+$( window ).scroll(function(e) {
+    // add/remove class to navbar when scrolling to hide/show
+    var scroll = $(window).scrollTop();
+    if (scroll >= 270) {
+        $('.navbar').addClass("navbar-hide");
+    } else {
+        $('.navbar').removeClass("navbar-hide");
+    }
+});
+
+$(".harvesteredit").click(function(ev) { // for each edit harvester url
+     ev.preventDefault(); // prevent navigation
+     var url = $(this).data("form"); // get the harvester form url
+     $("#harvesterModal").load(url, function() { // load the url into the modal
+         $(this).modal('show'); // display the modal on url load
+     });
+     return false; // prevent the click propagation
+ });
+
+ /*$('.harvester-edit-form').on('submit', function() {
+     $.ajax({
+         type: $(this).attr('method'),
+         url: this.action,
+         data: $(this).serialize(),
+         context: this,
+         success: function(data, status) {
+             $('#harvesterModal').html(data);
+         }
+     });
+     return false;
+ });*/
