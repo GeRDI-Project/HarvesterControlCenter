@@ -77,7 +77,7 @@ To use Django Testing Environment fire the following command in your Terminal
 
 ### Running in developer mode
 
-First, create a super-user and then swith DEBUG mode on in settings.py
+First, create a super-user and then switch DEBUG mode on in settings.py
 
 ```bash
     python manage.py createsuperuser
@@ -86,7 +86,7 @@ First, create a super-user and then swith DEBUG mode on in settings.py
 Fire up the server using this one simple command:
 
 ```bash
-    python manage.py runserver
+    DEBUG=True python manage.py runserver
 ```
 
 You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
