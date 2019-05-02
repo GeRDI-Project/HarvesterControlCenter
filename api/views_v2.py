@@ -473,7 +473,6 @@ class EditHarvesterView(LoginRequiredMixin, SuccessMessageMixin, RedirectView):
     to control the config of the harvesters.
     """
     success_message = "%(name) was modified successfully"
-    # permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     @staticmethod
     def get(request, *args, **kwargs):
