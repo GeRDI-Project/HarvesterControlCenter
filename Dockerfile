@@ -6,7 +6,7 @@
 FROM python:alpine
 LABEL author="Jan Frömberg <jan.froemberg@tu-dresden.de>"
 LABEL project="GeRDI Project"
-LABEL version="3.7"
+LABEL version="3.8"
 
 WORKDIR /usr/src/app
 
