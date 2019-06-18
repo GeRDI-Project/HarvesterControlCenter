@@ -1,18 +1,20 @@
 {% load crispy_forms_tags %}
 
-<form class="harvester-edit-form" method="post" action="{% url 'edit-harvester' name=hname %}">
-<div class="modal-content">
-  <div class="modal-header">
-    <h3 class="modal-title">{{ template_title }} - {{ hname }}</h3>
-    <button type="button" class="close" data-dismiss="modal">&times;</button>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <form class="harvester-edit-form" method="post" action="{% url 'edit-harvester' name=hname %}">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">{{ template_title }} - {{ hname }}</h3>
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+        {% csrf_token %}
+        {{ form|crispy }}
+    </div>
+    <div class="modal-footer">
+        <input class="btn btn-primary" type="submit" value="Save" />
+        <button type="button" class="btn" data-dismiss="modal">Close</button>
+    </div>
   </div>
-  <div class="modal-body">
-       {% csrf_token %}
-       {{ form|crispy }}
-  </div>
-  <div class="modal-footer">
-       <input class="btn btn-primary" type="submit" value="Save" />
-       <input name="cancel" class="btn" type="submit" value="Cancel"/>
-  </div>
+  </form>
 </div>
-</form>
