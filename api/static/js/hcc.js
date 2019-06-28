@@ -218,6 +218,13 @@ $( function () {
         });
         return false; // prevent the click propagation
     });
+   
+    $(".harvesterconfig").click(function(ev) { 
+        ev.preventDefault(); // prevent navigation
+        $("#config-modal").modal('show'); 
+        return false; // prevent the click propagation
+   });
+   
    $('.crontab-edit-form').submit(function(ev) {
        ev.preventDefault();
        var serializedData = $(this).serialize();

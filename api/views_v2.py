@@ -496,6 +496,9 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
             success_message = "%s could not been %s!" % (myname, action)
             response = {'message':success_message}    
         return JsonResponse(response)
+
+        
+class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the config of the harvesters.
@@ -503,8 +506,10 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
 
     @staticmethod
     def get(request, *args, **kwargs):
+        pass
 
     def post(self, request, *args, **kwargs):
+        pass
 
 
 class ScheduleHarvesterView(SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
