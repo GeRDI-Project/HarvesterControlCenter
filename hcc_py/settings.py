@@ -17,7 +17,7 @@ __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "3.8.0"
+__version__ = "3.8.1"
 __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
@@ -144,7 +144,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

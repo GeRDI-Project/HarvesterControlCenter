@@ -260,8 +260,8 @@ def home(request):
                             HCCJC.CRONTAB]
                         form = SchedulerForm(prefix=harvester.name)
                         if isinstance(placehldr, list):
-                            placehldr = response.data[harvester.name][
-                                HCCJC.CRONTAB][0]
+                            if len(placehldr) > 0:
+                                placehldr = response.data[harvester.name][HCCJC.CRONTAB][0]
                         form.fields[HCCJC.POSTCRONTAB].widget.attrs.update(
                             {'placeholder': placehldr})
                         forms[harvester.name] = form
