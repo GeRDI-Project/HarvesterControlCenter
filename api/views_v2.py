@@ -500,31 +500,11 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
     This class handles GET, DELETE and POST requests
     to control the config of the harvesters.
     """
-    success_message = "%(name) was modified successfully"
 
     @staticmethod
     def get(request, *args, **kwargs):
-        myname = kwargs['name']
-        if myname is None:
-            harvester = Harvester(owner=request.user)
-            template_title = 'Add Harvester'
-        else:
-            harvester = get_object_or_404(Harvester, name=myname)
-            template_title = 'Edit Harvester'
-        form = HarvesterForm(instance=harvester)
-        return render(request, "hcc/harvester_edit_form.html",
-                      {'form': form, 'template_title': template_title, 'hname': myname})
 
     def post(self, request, *args, **kwargs):
-        myname = kwargs['name']
-        _h = Harvester.objects.get(name=myname)
-        if request.POST.get('cancel', None):
-            return HttpResponseRedirect(reverse('hcc_gui'))
-
-        form = HarvesterForm(self.request.POST, instance=_h)
-        if form.is_valid():
-            form.save()
-        return HttpResponseRedirect(reverse('hcc_gui'))
 
 
 class ScheduleHarvesterView(SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
