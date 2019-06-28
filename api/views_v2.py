@@ -13,6 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView, RedirectView
+from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
 from rest_framework import status, generics, permissions
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -448,27 +449,53 @@ class UserDetailsView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin,
-                                FormView):
+class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMixin):
+#class EditHarvesterView(LoginRequiredMixin, SuccessMessageMixin, RedirectView):
     """
-    This class handles GUI harvester registration.
+    This class handles AJAx, GET, DELETE and POST requests
+    to control the edit of the harvesters.
     """
-    template_name = 'hcc/hreg_form.html'
-    form_class = HarvesterForm
-    success_url = reverse_lazy('hcc_gui')
-    success_message = "New Harvester (%(name)s) successfully registered!"
 
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        harv_w_user = Harvester(owner=self.request.user)
-        form = HarvesterForm(self.request.POST, instance=harv_w_user)
-        form.save()
-        LOGGER.info("new harvester created: %s", form.cleaned_data['name'])
-        return super().form_valid(form)
+    @staticmethod
+    def get(request, *args, **kwargs): #the form that is load into the modal
+        myname = kwargs['name']
+        data={}
+        if myname == ' ':
+            harvester = Harvester(owner=request.user)
+            data['template_title'] = 'Add Harvester'
+        else:
+            harvester = Harvester.objects.get(name=myname)
+            data['template_title'] = 'Edit Harvester'
+        data['hname'] = myname
+        data['form'] = HarvesterForm(instance=harvester)
+        return render(request, "hcc/harvester_edit_form.html", data)
 
-
-class EditHarvesterView(LoginRequiredMixin, SuccessMessageMixin, RedirectView):
+    def post(self, request, *args, **kwargs): #the actual logic behind the form
+        myname = kwargs['name'] 
+        name = self.request.POST.get('name')    
+        notes = self.request.POST.get('notes')
+        url = self.request.POST.get('url')
+        if myname == ' ': #Add Harvester
+            if( len(Harvester.objects.filter(name=name)) == 0):#check if the name is not already used 
+                _h = Harvester(owner=self.request.user)
+                action = 'initialised'
+                myname = name
+            else: 
+                return JsonResponse({'message':'A Harvester named %s has already been initialised!' % (name)})  
+        else: #Edit Harvester   
+            _h = Harvester.objects.get(name=myname)  
+            action = 'modified'     
+        form = HarvesterForm(self.request.POST, instance=_h)
+        if form.is_valid():
+            form.save()
+            success_message = "%s has been %s successfully!" % (myname, action)
+            if(action == 'initialised'):
+                LOGGER.info("new harvester created: %s" % (name))
+            response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url} 
+        else: 
+            success_message = "%s could not been %s!" % (myname, action)
+            response = {'message':success_message}    
+        return JsonResponse(response)
     """
     This class handles GET, DELETE and POST requests
     to control the config of the harvesters.

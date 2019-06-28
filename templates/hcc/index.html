@@ -15,10 +15,10 @@
                         new Harvester</a>
                 </h3>
                 <div class="card-body collapse" id="collapseRegister">
-                    <a href="{% url 'hreg-form' %}" id="reg-button">
+                    <a id="btn-edit-{{ harvester.name }" class="btn btn-primary btn-sm harvesteredit"
+                        data-form="{% url 'edit-harvester' name=' ' %}" href="#" role="button">
                         <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
                     </a>
-                    <!-- <a id="register-button" href="{% url 'hreg-form' %}" data-toggle="modal" data-target="#form-modal">Register</a> -->
                 </div>
             </div>
         </div>
@@ -221,7 +221,7 @@
                                         <div class="collapse" id="collapseHarvester-{{ forloop.counter }}">
                                             <div class="card-body">
                                                 Control Center API:
-                                                <a class="card-title" href="{% url 'api:harvester-detail' name=harvester.name %}">
+                                                <a id="{{ harvester.name }}-name" class="card-title" href="{% url 'api:harvester-detail' name=harvester.name %}">
                                                     {{ harvester.name }}
                                                 </a>
                                                 <a id="" title="{% url 'reset-harvester' name=harvester.name %}" href="{% url 'reset-harvester' name=harvester.name %}"
@@ -230,10 +230,10 @@
                                                 </a>
                                             </div>
                                             <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">
+                                                <li id="{{ harvester.name }}-notes" class="list-group-item">
                                                     Notes: {{ harvester.notes }}</li>
                                                 <li class="list-group-item">API access:
-                                                    <a href="{{ harvester.url }}">{{ harvester.name }}</a>
+                                                    <a id='{{ harvester.name }}-url' href="{{ harvester.url }}">{{ harvester.name }}</a>
                                                 </li>
                                                 <li class="list-group-item">
                                                     <p>
@@ -365,7 +365,7 @@
     {% endif %}
 </div>
 
-<div id="harvesterModal" class="modal fade" tabindex="-1" role="dialog"></div>
+<div id="harvesterModal" class="modal fade" tabindex="-1" role="dialog"></div>     
 <!-- Config Modal -->
 <div id="config-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -378,6 +378,19 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
+        </div>
+    </div>
+</div>
+<!-- Message Modal -->
+<div id="message-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="message-modal-header" class="modal-title">
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div id="message-modal-body" class="modal-body"></div>
         </div>
     </div>
 </div>

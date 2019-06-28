@@ -30,6 +30,11 @@ class AjaxableResponseMixin:
     Must be used with an object-based FormView (e.g. CreateView)
     """
 
+    
+    #FormMixin must be inheritet in the class to use AjaxableResponseMixin.
+    #(RedirectView did not inherit FormMixin)
+
+
     def form_invalid(self, form):
         response = super().form_invalid(form)
         if self.request.is_ajax():

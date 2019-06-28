@@ -1,18 +1,61 @@
 {% load crispy_forms_tags %}
 
-<form class="harvester-edit-form" method="post" action="{% url 'edit-harvester' name=hname %}">
-<div class="modal-content">
-  <div class="modal-header">
-    <h3 class="modal-title">{{ template_title }} - {{ hname }}</h3>
-    <button type="button" class="close" data-dismiss="modal">&times;</button>
-  </div>
-  <div class="modal-body">
-       {% csrf_token %}
-       {{ form|crispy }}
-  </div>
-  <div class="modal-footer">
-       <input class="btn btn-primary" type="submit" value="Save" />
-       <input name="cancel" class="btn" type="submit" value="Cancel"/>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        {{ template_title }}  
+      </h3>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form id="harvester-edit-form" class="form-horizontal" action="{% url 'edit-harvester' name=hname %}" method="POST">
+      <div id="modal-body" class="modal-body">
+          {% csrf_token %}
+          {{ form|crispy }}
+      </div>
+      <div id="modal-footer" class="modal-footer">
+          <input class="btn btn-primary" type="submit" Value="Save"/>
+          <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+              Cancel
+          </button>
+      </div>
+    </form>
   </div>
 </div>
-</form>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#harvester-edit-form').submit(function(ev) {
+    ev.preventDefault();
+    var serializedData = $(this).serialize();
+    $.ajax({
+        type: $(this).attr('method'),
+        url: $(this).attr('action'),
+        data: serializedData,
+        context: this,
+        success: function(response){
+            $('#harvesterModal').modal('hide');
+            $('#message-modal').modal('show');
+            $('#message-modal-body').text(response.message);
+            if (typeof response.newname !== 'undefined'){ 
+              $('#message-modal-header').text('Success!');
+              $('#'+response.oldname+'-notes').text('Notes: '+response.notes);
+              $('#'+response.oldname+'-name').text(response.newname);
+              $('#'+response.oldname+'-url').attr('href',response.url);
+              $('#'+response.oldname+'-url').text(response.newname);
+            }else{
+              $('#message-modal-header').text('ERROR');
+            };   
+        },  
+        error: function(response){
+          $('#harvesterModal').modal('hide');
+          $('#message-modal').modal('show');
+          $('#message-modal-body').text(response);
+          $('#message-modal-header').text('ERROR');
+        },      
+    });
+    return false;
+  });
+});
+</script>  

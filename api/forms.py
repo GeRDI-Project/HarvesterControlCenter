@@ -34,13 +34,13 @@ class HarvesterForm(forms.ModelForm):
         helper = FormHelper()
         helper.form_method = 'POST'
         helper.form_class = 'form-horizontal'
-        helper.form_tag = True  # render form DOM element
+        helper.form_tag = False  # render form DOM element
         helper.render_unmentioned_fields = True  # render all fields
         helper.label_class = 'col-md-5'
         helper.field_class = 'col-md-10'
-        helper.layout = Layout(
-            FormActions(
-                Submit('hreg-form', 'Register', css_class="btn-primary")))
+        #helper.layout = Layout(
+        #    FormActions(
+        #        Submit('edit-harvester', 'Register', css_class="btn-primary")))
         return helper
 
 
