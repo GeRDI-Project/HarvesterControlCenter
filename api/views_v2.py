@@ -503,6 +503,7 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
     This class handles GET, DELETE and POST requests
     to control the config of the harvesters.
     """
+    success_message = "%(name) was modified successfully"
 
     @staticmethod
     def get(request, *args, **kwargs):

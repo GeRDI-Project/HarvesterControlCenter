@@ -253,7 +253,7 @@ $( function () {
        }else{
            $('i').attr('data-original-title','card view');
        }  
-   }); 
+   });
 });
 
 /*
@@ -389,12 +389,4 @@ $( window ).scroll(function(e) {
     }
 });
 
-$(".harvesteredit").click(function(ev) { // for each edit harvester url
-     ev.preventDefault(); // prevent navigation
-     var url = $(this).attr("data-form"); // get the harvester form url
-     $("#harvesterModal").load(url, function() { // load the url into the modal
-         $(this).modal('show'); // display the modal on url load
-     });
-     return false; // prevent the click propagation
- });
 
