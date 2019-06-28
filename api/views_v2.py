@@ -1,5 +1,5 @@
 """
-The is thw views module which encapsulates the backend logic
+The is the views module which encapsulates the backend logic
 """
 import logging
 
@@ -13,6 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView, RedirectView
+from django.views.generic.edit import FormMixin
 from rest_framework import status, generics, permissions
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view, permission_classes
@@ -20,7 +21,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.forms import HarvesterForm, SchedulerForm
-from api.mixins import AjaxTemplateMixin
+from api.mixins import AjaxTemplateMixin, AjaxableResponseMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
@@ -499,7 +500,8 @@ class EditHarvesterView(LoginRequiredMixin, SuccessMessageMixin, RedirectView):
         return HttpResponseRedirect(reverse('hcc_gui'))
 
 
-class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
+class ScheduleHarvesterView(SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
+#class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
     """
     This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
@@ -520,10 +522,8 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
             response = api.add_schedule(crontab)
         else:
             response = api.delete_schedule(crontab)
-        messages.add_message(
-            request, messages.INFO, harvester.name + ': ' +
-            response.data[harvester.name][HCCJC.HEALTH])
-        return HttpResponseRedirect(reverse('hcc_gui'))
+        data={'name':harvester.name , 'message': response.data[harvester.name][HCCJC.HEALTH]}
+        return JsonResponse(data)
 
     def delete(self, request, *args, **kwargs):
         myname = kwargs['name']

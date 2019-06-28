@@ -210,6 +210,26 @@ $( function () {
 
     $('#register-button').click(formButton.regClick);
 
+   $('.crontab-edit-form').submit(function(ev) {
+       ev.preventDefault();
+       var serializedData = $(this).serialize();
+       $.ajax({
+           type: $(this).attr('method'),
+           url: $(this).attr('action'),
+           data: serializedData,
+           context: this,
+           success: function(response){
+               //response.message: String looking like {status}
+               var m = response.message.split(',')[1];
+               m = m.split(':')[1];
+               m = m.split('}')[0];
+               m = m.split('"')[1]+'!';
+               $('#message-modal').modal('show');
+               $('#message-modal-body').text(m);
+           },      
+       });
+       return false;
+   });
 });
 
 /*

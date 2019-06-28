@@ -266,7 +266,7 @@
                                                     {% for k, val in status.items %}
                                                     {% if k == harvester.name %}
                                                     {% if val.cron %}
-                                                    <form action="{% url 'api:harvester-cron' name=harvester.name %}" method="post">
+                                                    <form class="crontab-edit-form" action="{% url 'api:harvester-cron' name=harvester.name %}" method="post">
                                                         {% csrf_token %}
                                                         {% for k, form in forms.items %}
                                                         {% if k == harvester.name %}
