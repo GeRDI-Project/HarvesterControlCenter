@@ -245,6 +245,15 @@ $( function () {
        });
        return false;
    });
+   
+   $('#btn-card-list-view').click(function() {
+       $('i').toggleClass('fa-id-card fa-list'); 
+       if ($('i').attr('data-original-title')=='card view'){
+           $('i').attr('data-original-title','list view');
+       }else{
+           $('i').attr('data-original-title','card view');
+       }  
+   }); 
 });
 
 /*

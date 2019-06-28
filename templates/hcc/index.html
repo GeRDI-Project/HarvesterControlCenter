@@ -82,13 +82,11 @@
                         {% endfor %}
                         </span>
                     </button>
-                    {% if vt == 'list' %}
-                    <a href="{% url 'hcc_gui' %}"><i class="fa fa-id-card float-right" title="card view" data-toggle="tooltip"
-                            data-placement="top" aria-hidden="true"></i></a>
-                    {% else %}
-                    <a href="{% url 'hcc_gui' %}?viewtype=list"><i class="fa fa-list float-right" title="list view"
-                            data-toggle="tooltip" data-placement="top" aria-hidden="true"></i></a>
-                    {% endif %}
+                    <a id="btn-card-list-view" data-toggle="collapse" 
+                            href=".card-list-view">
+                        <i class="fa fa-list float-right" title="list view" aria-hidden="true"
+                        data-toggle="tooltip" data-placement="top"></i>
+                    </a>
                     <div class="btn-group" role="group" aria-label="ControlPanel">
                         <a href="{% url 'start-harvesters' %}" role="button" class="btn btn-primary">start all</a>
                         <a href="{% url 'abort-harvesters' %}" role="button" class="btn btn-dark">abort all</a>
@@ -101,41 +99,40 @@
             <div id="collapseOne" class="collapse show" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
                 <div id="harvesterList" class="card-body">
                     <div class="container">
-                        <div class="row">
+                        <div class="row collapse card-list-view"><!--list-view-->
                             {% for harvester in harvesters %}
                             {% if forloop.first %}
-                            {% if vt == 'list' %}
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <ul class="list-group">
-                                    {% endif %}
-                                    {% endif %}
-
-                                    {% if harvester.enabled %}
-                                    {% if vt == 'list' %}
-
-                                    {% for k, val in status.items %}
-                                    {% if k == harvester.name %}
+                                {% endif %}
+                                {% if harvester.enabled %}
+                                {% for k, val in status.items %}
+                                {% if k == harvester.name %}
                                     <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip"
                                         data-placement="right" title="{{ val.health }}">
                                         <a href="{{ harvester.url }}">{{ harvester.name }}</a>
                                         <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
                                     </li>
-                                    {% endif %}
-                                    {% endfor %}
-
-                                    {% if forloop.counter|divisibleby:1 %}
-                                    {% if forloop.last %}
+                                {% endif %}
+                                {% endfor %}
+                        
+                                {% if forloop.counter|divisibleby:1 %}
+                                {% if forloop.last %}
                                 </ul><br>
                             </div>
-                            {% else %}
-                            </ul><br></div>
-                        <div class="col-lg-2 col-md-6 col-sm-12">
-                            <ul class="list-group">
-                                {% endif %}
-                                {% endif %}
-
                                 {% else %}
-
+                                </ul><br>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-sm-12">
+                                <ul class="list-group">
+                                {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="row collapse show card-list-view"><!--card-view-->
+                            {% for harvester in harvesters %}
+                            {% if harvester.enabled %}
                                 <div class="col-lg-4 col-md-6 col-sm-12"><br>
                                     <div class="card">
                                         {% for k, val in status.items %}
@@ -151,9 +148,9 @@
                                         {% endif %}
                                         {% endfor %}
                                         <h4 class="card-header">
-
+                            
                                             <div class="clearfix">
-
+                            
                                                 <a href="#" class="btn btn-primary btn-sm" data-toggle="collapse"
                                                     data-target="#collapseHarvester-{{ forloop.counter }}" role="button"
                                                     aria-expanded="false" aria-controls="collapseExample">
@@ -164,7 +161,7 @@
                                                         role="button">
                                                         <i class="fa fa-toggle-on" aria-hidden="true"></i>
                                                     </a>
-
+                            
                                                     <button id="btn-harvester-status-{{ harvester.name }}" type="button"
                                                         data-toggle="tooltip" data-placement="top"
                                                         {% for k, val in status.items %}
@@ -237,18 +234,18 @@
                                                 </li>
                                                 <li class="list-group-item">
                                                     <p>
-                                                      <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseStatus{{ forloop.counter }}"
+                                                        <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseStatus{{ forloop.counter }}"
                                                         role="button" aria-expanded="false" aria-controls="collapseStatus">
                                                         Status
-                                                      </a>
-                                                      <a id="btn-edit-{{ harvester.name }" class="btn btn-primary btn-sm harvesteredit"
+                                                        </a>
+                                                        <a id="btn-edit-{{ harvester.name }}" class="btn btn-primary btn-sm harvesteredit"
                                                         data-form="{% url 'edit-harvester' name=harvester.name %}" href="#" role="button">
                                                         Edit
-                                                      </a>
-                                                      <a id="btn-config-{{ harvester.name }" class="btn btn-primary btn-sm harvesterconfig"
+                                                        </a>
+                                                        <a id="btn-config-{{ harvester.name }}" class="btn btn-primary btn-sm harvesterconfig"
                                                         data-form="" href="#" role="button">
                                                         Config
-                                                      </a>
+                                                        </a>
                                                     </p>
                                                     <div class="collapse" id="collapseStatus{{ forloop.counter }}">
                                                         <div class="card card-body">
@@ -282,12 +279,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% endif %}
-
-                                {% endif %}
-
-                                {% endfor %}
-                        </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>   
                     </div>
                 </div>
             </div>
