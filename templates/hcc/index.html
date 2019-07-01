@@ -8,40 +8,46 @@
 <div class="container">
     {% if user.is_authenticated %}
     <div class="row">
+        
         <div class="col-sm">
             <div class="card">
                 <h3 class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapseRegister">
-                        new Harvester</a>
-                </h3>
-                <div class="card-body collapse" id="collapseRegister">
-                    <a id="btn-edit-{{ harvester.name }" class="btn btn-primary btn-sm harvesteredit"
-                        data-form="{% url 'edit-harvester' name=' ' %}" href="#" role="button">
-                        <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="card">
-                <h3 class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapseLogfiles">
-                        Logfiles
+                    <a href="#" data-toggle="collapse" data-target="#collapseToolbox">
+                        Toolbox
                         <div id="loaderSpinnerLog" class="spinner-border float-right align-middle" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </a>
                 </h3>
-                <div class="card-body collapse" id="collapseLogfiles">
-                    <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
-                        <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
-                    </a>&nbsp;
-                    <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
-                        <i class="fa fa-file-text-o fa-4x align-middle" aria-hidden="true"></i>
-                    </a>
+                <div class="card-body collapse" id="collapseToolbox">
+                    <table width="100%">
+                    <tr><td>
+                            <a id="btn-edit-{{ harvester.name }" class="btn btn-primary btn-sm harvesteredit"
+                            data-form="{% url 'edit-harvester' name=' ' %}" href="#" role="button">
+                                <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
+                                    <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
+                                    <i class="fa fa-file-text-o fa-4x align-middle" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Add Harvester</td>
+                        <td>Harvester Logs</td>
+                        <td>HCC Logs</td>
+                    </tr>
+                    </table>
                 </div>
             </div>
         </div>
+
     </div>
     <br>
     <div class="row">
@@ -49,7 +55,7 @@
             <div class="card">
                 <h3 class="card-header">
                     <a id="btn-get-stats" href="#" title="" data-toggle="collapse" data-target="#collapseChart">
-                        Statistics
+                        Chart
                         <div id="loaderSpinnerStat" class="spinner-border float-right align-middle" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
@@ -100,19 +106,19 @@
                 <div id="harvesterList" class="card-body">
                     <div class="container">
                         <div class="row collapse card-list-view"><!--list-view-->
-                            {% for harvester in harvesters %}
+                        {% for harvester in harvesters %}
                             {% if forloop.first %}
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <ul class="list-group">
-                                {% endif %}
-                                {% if harvester.enabled %}
+                            {% endif %}
+                            {% if harvester.enabled %}
                                 {% for k, val in status.items %}
                                 {% if k == harvester.name %}
-                                    <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip"
-                                        data-placement="right" title="{{ val.health }}">
-                                        <a href="{{ harvester.url }}">{{ harvester.name }}</a>
-                                        <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
-                                    </li>
+                                <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip"
+                                    data-placement="right" title="{{ val.health }}">
+                                    <a href="{{ harvester.url }}">{{ harvester.name }}</a>
+                                    <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
+                                </li>
                                 {% endif %}
                                 {% endfor %}
                         
@@ -128,8 +134,9 @@
                                 {% endif %}
                                 {% endif %}
                             {% endif %}
-                            {% endfor %}
-                        </div>
+                            
+                        {% endfor %}
+                        </div> <!-- BUG?! closing DIV missing -->
                         <div class="row collapse show card-list-view"><!--card-view-->
                             {% for harvester in harvesters %}
                             {% if harvester.enabled %}
