@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
- /*
-    Execute when DOM is ready
- */
-$( function () {
+/*
+   Execute when DOM is ready
+*/
+$(function () {
 
     $('#loaderSpinnerLog').hide();
     $('#loaderSpinnerStat').hide();
 
     var ctx = document.getElementById("harvesterChart");
-    if ( ctx != null ) {
+    if (ctx != null) {
         var myChart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -36,7 +36,9 @@ $( function () {
                     borderWidth: 1
                 }]
             },
-            options: { cutoutPercentage: 45 }
+            options: {
+                cutoutPercentage: 45
+            }
         });
     }
 
@@ -52,24 +54,24 @@ $( function () {
         load_into_modal(this);
     });
 
-    function load_into_modal (_this) {
+    function load_into_modal(_this) {
         var url = $(_this).attr("title");
         $('#loaderSpinnerLog').show();
         $.get(url, function (result) {
             var status = result;
             var data = JSON.stringify(result, undefined, 2);
-            $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html('<pre>' + data + '</pre>');
+            $('#form-modal').modal('toggle');
+            $('#form-modal-body').html('<pre>' + data + '</pre>');
             for (var key in status) {
                 var obj = status[key];
-                $( '#hv-status-' + key ).html( obj.log );
+                $('#hv-status-' + key).html(obj.log);
             }
             $('#loaderSpinnerLog').hide();
 
         }).fail(function (response) {
-            $( '#loaderSpinnerLog' ).hide();
-            $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html( response.responseText );
+            $('#loaderSpinnerLog').hide();
+            $('#form-modal').modal('toggle');
+            $('#form-modal-body').html(response.responseText);
         });
     }
 
@@ -84,8 +86,8 @@ $( function () {
         }).fail(function (response) {
 
             $('#loaderSpinnerStat').hide();
-            $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html( response.responseText );
+            $('#form-modal').modal('toggle');
+            $('#form-modal-body').html(response.responseText);
 
         });
     });
@@ -95,7 +97,7 @@ $( function () {
         $('#loaderSpinnerStat').hide();
 
         myChart.data.labels.pop();
-        myChart.data.datasets.forEach( function(dataset) {
+        myChart.data.datasets.forEach(function (dataset) {
             dataset.data.pop();
             dataset.backgroundColor.pop();
             dataset.borderColor.pop();
@@ -120,46 +122,46 @@ $( function () {
         for (var key in status) {
 
             var obj = status[key];
-            if ( obj != 'disabled' ) {
+            if (obj != 'disabled') {
 
-                $( '#hv-status-' + key ).html( JSON.stringify(obj) );
+                $('#hv-status-' + key).html(JSON.stringify(obj));
                 var btnhvstatus = document.getElementById('btn-harvester-status-' + key);
-                if ( btnhvstatus ) {
+                if (btnhvstatus) {
                     btnhvstatus.classList.toggle("btn-info", false);
                     btnhvstatus.classList.toggle("btn-warning", false);
                     btnhvstatus.classList.toggle("btn-success", false);
-                    btnhvstatus.classList.add( "btn-" + obj.gui_status );
+                    btnhvstatus.classList.add("btn-" + obj.gui_status);
                 }
-                if ( obj.status ) {
+                if (obj.status) {
                     var lbl_status = document.getElementById('lbl-harvester-status-' + key);
-                    lbl_status.innerHTML = obj.status ;
+                    lbl_status.innerHTML = obj.status;
                 }
-                if ( obj.cached_docs ) {
-                    vlabels.push( key );
-                    vdata.push( parseInt(obj.cached_docs) );
+                if (obj.cached_docs) {
+                    vlabels.push(key);
+                    vdata.push(parseInt(obj.cached_docs));
                     var r = (Math.floor(Math.random() * 256));
                     var g = (Math.floor(Math.random() * 256));
                     var b = (Math.floor(Math.random() * 256));
-                    gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.3)' );
-                    bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.4)' );
+                    gbcarray.push('rgba(' + r + ',' + g + ',' + b + ',0.3)');
+                    bcarray.push('rgba(' + r + ',' + g + ',' + b + ',0.4)');
                 }
-                if ( obj.health != 'OK' ) {
-                    $( '#health-exclamation-' + key ).show();
-                    $( '#health-exclamation-' + key ).prop('title', obj.health );
+                if (obj.health != 'OK') {
+                    $('#health-exclamation-' + key).show();
+                    $('#health-exclamation-' + key).prop('title', obj.health);
                 } else {
-                    $( '#health-exclamation-' + key ).hide();
+                    $('#health-exclamation-' + key).hide();
                 }
-                if ( obj.status == 'harvesting' ) {
+                if (obj.status == 'harvesting') {
                     //$( '#progresshv-' + key ).show();
                 } else {
                     //$( '#progresshv-' + key ).hide();
                 }
-                if ( obj.data_pvd ) {
-                    $( '#btn-harvester-status-' + key ).attr('data-original-title', obj.data_pvd +
-                    ' harvested and cached documents: ' +
-                    obj.cached_docs + ' of ' +
-                    obj.max_docs + '. Last harvest: ' +
-                    obj.lastHarvestDate);
+                if (obj.data_pvd) {
+                    $('#btn-harvester-status-' + key).attr('data-original-title', obj.data_pvd +
+                        ' harvested and cached documents: ' +
+                        obj.cached_docs + ' of ' +
+                        obj.max_docs + '. Last harvest: ' +
+                        obj.lastHarvestDate);
                 }
             }
         }
@@ -210,91 +212,94 @@ $( function () {
 
     $('#register-button').click(formButton.regClick);
 
-    $(".harvesteredit").click(function(ev) { // for each edit harvester url
+    $(".harvesteredit").click(function (ev) { // for each edit harvester url
         ev.preventDefault(); // prevent navigation
         var url = $(this).attr("data-form"); // get the harvester form url
-        $("#harvesterModal").load(url, function() { // load the url into the modal
+        $("#harvesterModal").load(url, function () { // load the url into the modal
             $(this).modal('show'); // display the modal on url load
         });
         return false; // prevent the click propagation
     });
-   
-    $(".harvesterconfig").click(function(ev) { 
+
+    $(".harvesterconfig").click(function (ev) {
         ev.preventDefault(); // prevent navigation
-        $("#config-modal").modal('show'); 
+        $("#config-modal").modal('show');
         return false; // prevent the click propagation
-   });
-   
-   $('.crontab-edit-form').submit(function(ev) {
-       ev.preventDefault();
-       var serializedData = $(this).serialize();
-       $.ajax({
-           type: $(this).attr('method'),
-           url: $(this).attr('action'),
-           data: serializedData,
-           context: this,
-           success: function(response){
-               //response.message: String looking like {status}
-               var m = response.message.split(',')[1];
-               m = m.split(':')[1];
-               m = m.split('}')[0];
-               m = m.split('"')[1]+'!';
-               $('#message-modal').modal('show');
-               $('#message-modal-body').text(m);
-           },      
-       });
-       return false;
-   });
-   
-   $('#btn-card-list-view').click(function() {
-       $('i').toggleClass('fa-id-card fa-list'); 
-       if ($('i').attr('data-original-title')=='card view'){
-           $('i').attr('data-original-title','list view');
-       }else{
-           $('i').attr('data-original-title','card view');
-       }  
-   });
+    });
+
+    $('.crontab-edit-form').submit(function (ev) {
+        ev.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: serializedData,
+            context: this,
+            success: function (response) {
+                //response.message: String looking like {status}
+                // TODO: access returned JSON Object via key/value
+                var m = response.message.split(',')[1];
+                m = m.split(':')[1];
+                m = m.split('}')[0];
+                m = m.split('"')[1] + '!';
+                $('#message-modal').modal('show');
+                $('#message-modal-body').text(m);
+            },
+        });
+        return false;
+    });
+
+    $('#btn-card-list-view').click(function () {
+        //TODO: BUG; some Icons changed, too!
+        // changing the class of element i is to general
+        $('i').toggleClass('fa-id-card fa-list');
+        if ($('i').attr('data-original-title') == 'card view') {
+            $('i').attr('data-original-title', 'list view');
+        } else {
+            $('i').attr('data-original-title', 'card view');
+        }
+    });
 });
 
 /*
     Execute when Page/window is loaded
 */
-$( window ).ready( function(){
+$(window).ready(function () {
 
     // milisec to hours, min, sec
     var timeConvert = function (milis) {
         var milisec = milis;
-        var rseconds = Math.floor( (milisec / 1000) % 60 );
-        var rminutes = Math.floor( (milisec / (1000*60)) % 60 );
-        var rhours   = Math.round( (milisec / (1000*60*60)) % 24 );
+        var rseconds = Math.floor((milisec / 1000) % 60);
+        var rminutes = Math.floor((milisec / (1000 * 60)) % 60);
+        var rhours = Math.round((milisec / (1000 * 60 * 60)) % 24);
         return rhours + "h " + rminutes + "min " + rseconds + "sec";
     };
 
     var lbl_status = document.querySelectorAll('*[id^="lbl-harvester-status-"]');
     var lblarray = Array.from(lbl_status);
-    if ( lblarray.length > 0 ) {
+    if (lblarray.length > 0) {
         for (var key in lblarray) {
 
             var obj = lblarray[key];
             var objid = obj.id;
             var me = objid.split('-')[3];
 
-            if ( obj.innerText == 'harvesting' || obj.innerText == 'queued' ) {
+            if (obj.innerText == 'harvesting' || obj.innerText == 'queued') {
 
-                var is = $( '#progresshv-' + me);
-                is.addClass( "progress-bar-animated" );
-                is.removeClass ( "progress-bar-grey" );
+                var is = $('#progresshv-' + me);
+                is.addClass("progress-bar-animated");
+                is.removeClass("progress-bar-grey");
                 var remember = is.attr("title");
-                var intervalid = setInterval( getProgress, 1982, remember, me );
+                var intervalid = setInterval(getProgress, 1982, remember, me);
             }
         }
     }
 
     function getProgress(_url, _harv) {
 
-        var bar = $( '#progresshv-' + _harv);
-        var timelabel = $( '#status-label-' + _harv);
-        var statuslabel = $( '#lbl-harvester-status-' + _harv);
+        var bar = $('#progresshv-' + _harv);
+        var timelabel = $('#status-label-' + _harv);
+        var statuslabel = $('#lbl-harvester-status-' + _harv);
         var width = parseInt(bar[0].innerText.replace('%', ''));
         var state = statuslabel[0].innerText;
         var perc = "%";
@@ -302,7 +307,7 @@ $( window ).ready( function(){
         var time = 0;
         var time_string = "";
 
-        if ( state == 'harvesting' || state == 'queued' || typeof state == "undefined" ) {
+        if (state == 'harvesting' || state == 'queued' || typeof state == "undefined") {
 
             var request = $.ajax({
                 url: _url,
@@ -317,7 +322,7 @@ $( window ).ready( function(){
             });
 
             request.done(function (data) {
-                for ( var key in data ) {
+                for (var key in data) {
 
                     width = data[key].progress_cur;
                     remain = data[key].remainingHarvestTime;
@@ -325,31 +330,31 @@ $( window ).ready( function(){
                     cache = data[key].progress;
                     state = data[key].state;
 
-                    $( '#btn-harvester-status-' + key ).attr('data-original-title',
-                    cache + ' of ' + max);
+                    $('#btn-harvester-status-' + key).attr('data-original-title',
+                        cache + ' of ' + max);
                     statuslabel.html(state);
 
                     // referenced by context, this
                     bar.css("width", width + "%");
-                    if ( max === "N/A" ) {
+                    if (max === "N/A") {
                         perc = "";
                     }
-                    if ( typeof remain !== "undefined" ) {
+                    if (typeof remain !== "undefined") {
                         time = timeConvert(remain);
                         time_string = 'remaining time: ' + time;
                     }
-                    timelabel.html( time_string );
+                    timelabel.html(time_string);
                     bar.html(width + perc);
                 }
             });
 
         } else {
 
-            bar.removeClass( "progress-bar-animated" );
-            bar.addClass( "progress-bar-grey" );
+            bar.removeClass("progress-bar-animated");
+            bar.addClass("progress-bar-grey");
             bar.css("width", width + "%");
             bar.html(width + '%');
-            timelabel.html( "" );
+            timelabel.html("");
             statuslabel.html("finished");
             clearInterval(intervalid);
 
@@ -369,17 +374,17 @@ function filterFunction() {
 
     // Loop through all list items, and hide those who don't match the search query
     for (i = 0; i < btns.length; i++) {
-      a = btns[i];
-      txtValue = a.textContent || a.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "";
-      } else {
-        btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "none";
-      }
+        a = btns[i];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "";
+        } else {
+            btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "none";
+        }
     }
 }
 
-$( window ).scroll(function(e) {
+$(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
     if (scroll >= 270) {
@@ -388,5 +393,3 @@ $( window ).scroll(function(e) {
         $('.navbar').removeClass("navbar-hide");
     }
 });
-
-
