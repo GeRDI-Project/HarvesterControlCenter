@@ -478,7 +478,7 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         if myname == ' ': #Add Harvester
             if( len(Harvester.objects.filter(name=name)) == 0):#check if the name is not already used 
                 _h = Harvester(owner=self.request.user)
-                action = 'initialised'
+                action = 'added'
                 myname = name
             else: 
                 return JsonResponse({'message':'A Harvester named %s has already been initialised!' % (name)})  

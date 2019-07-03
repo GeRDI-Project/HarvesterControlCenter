@@ -252,11 +252,11 @@ $(function () {
     $('#btn-card-list-view').click(function () {
         //TODO: BUG; some Icons changed, too!
         // changing the class of element i is to general
-        $('i').toggleClass('fa-id-card fa-list');
-        if ($('i').attr('data-original-title') == 'card view') {
-            $('i').attr('data-original-title', 'list view');
+        $('#card-list-view-sign').toggleClass('fa-id-card fa-list');
+        if ($('#card-list-view-sign').attr('data-original-title') == 'card view') {
+            $('i#card-list-view-sign').attr('data-original-title', 'list view');
         } else {
-            $('i').attr('data-original-title', 'card view');
+            $('#card-list-view-sign').attr('data-original-title', 'card view');
         }
     });
 });
