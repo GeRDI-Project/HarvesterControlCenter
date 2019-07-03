@@ -118,6 +118,7 @@
                                     data-placement="right" title="{{ val.health }}">
                                     <a href="{{ harvester.url }}">{{ harvester.name }}</a>
                                     <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
+                                    <!--Failed lookup for key [status] in {'health': "HTTPConnectionPool(host='172.22.1.27', port=8088): Read timed out. (read timeout=5)", 'gui_status': 'warning'}-->
                                 </li>
                                 {% endif %}
                                 {% endfor %}
@@ -136,7 +137,7 @@
                             {% endif %}
                             
                         {% endfor %}
-                        </div> <!-- BUG?! closing DIV missing -->
+                        </div> 
                         <div class="row collapse show card-list-view"><!--card-view-->
                             {% for harvester in harvesters %}
                             {% if harvester.enabled %}
@@ -148,7 +149,7 @@
                                             <div id="progresshv-{{ harvester.name }}" class="progress-bar progress-bar-striped progress-bar-grey"
                                                 title="{% url 'harvester-progress' name=harvester.name %}" style="width:{{val.progress_cur}}%;{% if val.gui_status == 'warning' %}display: none;{% endif %}"
                                                 role="progressbar" aria-valuenow="{{ val.progress_cur }}" aria-valuemin="0"
-                                                aria-valuemax="{{ val.progress_max }}">
+                                                aria-valuemax="{{ val.max_docs }}">
                                                 {{ val.progress_cur }}{% if val.max_docs != 'N/A' %}%{% endif %}
                                             </div>
                                         </div>
