@@ -535,8 +535,7 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView, AjaxableResponseM
             response = api.add_schedule(crontab)
         else:
             response = api.delete_schedule(crontab)
-        data={'name':harvester.name , 'message': response.data[harvester.name][HCCJC.HEALTH]}
-        return JsonResponse(data)
+        return JsonResponse(response.data[harvester.name][HCCJC.HEALTH])
 
     def delete(self, request, *args, **kwargs):
         myname = kwargs['name']

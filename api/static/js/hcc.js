@@ -236,14 +236,8 @@ $(function () {
             data: serializedData,
             context: this,
             success: function (response) {
-                //response.message: String looking like {status}
-                // TODO: access returned JSON Object via key/value
-                var m = response.message.split(',')[1];
-                m = m.split(':')[1];
-                m = m.split('}')[0];
-                m = m.split('"')[1] + '!';
                 $('#message-modal').modal('show');
-                $('#message-modal-body').text(m);
+                $('#message-modal-body').text(response.message);
             },
         });
         return false;

@@ -6,6 +6,7 @@ import json
 import logging
 import datetime
 import requests
+import json
 
 from requests.exceptions import RequestException
 from rest_framework import status
@@ -680,7 +681,7 @@ class VersionBased7Strategy(Strategy):
         response = requests.post(post_url,
                                  json={HCCJC.POSTCRONTAB: crontab},
                                  timeout=5)
-        harvester_response = response.text
+        harvester_response = json.loads(response.text)
         LOGGER.info("created schedule for %s with crontab %s", harvester.name,
                     crontab)
         feedback[harvester.name][HCCJC.HEALTH] = harvester_response
