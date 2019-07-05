@@ -114,11 +114,9 @@
                             {% if harvester.enabled %}
                                 {% for k, val in status.items %}
                                 {% if k == harvester.name %}
-                                <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip"
-                                    data-placement="right" title="{{ val.health }}">
+                                <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip" data-placement="right" title="{{ val.health }}">
                                     <a href="{{ harvester.url }}">{{ harvester.name }}</a>
                                     <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
-                                    <!--Failed lookup for key [status] in {'health': "HTTPConnectionPool(host='172.22.1.27', port=8088): Read timed out. (read timeout=5)", 'gui_status': 'warning'}-->
                                 </li>
                                 {% endif %}
                                 {% endfor %}
@@ -138,14 +136,14 @@
                             
                         {% endfor %}
                         </div> 
-                        <div class="row collapse show card-list-view"><!--card-view-->
+                        <div class="row collapse show card-list-view"><!-- card-view -->
                             {% for harvester in harvesters %}
                             {% if harvester.enabled %}
                                 <div class="col-lg-4 col-md-6 col-sm-12"><br>
                                     <div class="card">
                                         {% for k, val in status.items %}
                                         {% if k == harvester.name %}
-                                        <div class="progress" style="height: 10px; margin: 0px;">
+                                        <div class="progress" style="height: 10px; margin: 0px;"><!-- progress-bar -->
                                             <div id="progresshv-{{ harvester.name }}" class="progress-bar progress-bar-striped progress-bar-grey"
                                                 title="{% url 'harvester-progress' name=harvester.name %}" style="width:{{val.progress_cur}}%;{% if val.gui_status == 'warning' %}display: none;{% endif %}"
                                                 role="progressbar" aria-valuenow="{{ val.progress_cur }}" aria-valuemin="0"
@@ -165,8 +163,8 @@
                                                     <i class="fa fa-plus-square" aria-hidden="true"></i>
                                                 </a>
                                                 <div class="btn-group" role="group" aria-label="control harvester">
-                                                    <a href="{% url 'toggle-harvester' name=harvester.name %}" class="btn btn-success btn-sm"
-                                                        role="button">
+
+                                                    <a href="{% url 'toggle-harvester' name=harvester.name %}" class="btn btn-success btn-sm" role="button">
                                                         <i class="fa fa-toggle-on" aria-hidden="true"></i>
                                                     </a>
                             
@@ -225,19 +223,15 @@
                                         </h4>
                                         <div class="collapse" id="collapseHarvester-{{ forloop.counter }}">
                                             <div class="card-body">
-                                                Control Center API:
-                                                <a id="{{ harvester.name }}-name" class="card-title" href="{% url 'api:harvester-detail' name=harvester.name %}">
-                                                    {{ harvester.name }}
-                                                </a>
-                                                <a id="" title="{% url 'reset-harvester' name=harvester.name %}" href="{% url 'reset-harvester' name=harvester.name %}"
-                                                    role="button" class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-refresh" aria-hidden="true"></i>
-                                                </a>
+                                                <li id="{{ harvester.name }}-notes" class="list-group-item">
+                                                        Notes: {{ harvester.notes }}
+                                                </li>
                                             </div>
                                             <ul class="list-group list-group-flush">
-                                                <li id="{{ harvester.name }}-notes" class="list-group-item">
-                                                    Notes: {{ harvester.notes }}</li>
-                                                <li class="list-group-item">API access:
+                                                <li class="list-group-item">Control Center API:
+                                                    <a id="{{ harvester.name }}-name" class="card-title" href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a>
+                                                </li>
+                                                <li class="list-group-item">Harvester API:
                                                     <a id='{{ harvester.name }}-url' href="{{ harvester.url }}">{{ harvester.name }}</a>
                                                 </li>
                                                 <li class="list-group-item">
@@ -253,6 +247,10 @@
                                                         <a id="btn-config-{{ harvester.name }}" class="btn btn-primary btn-sm harvesterconfig"
                                                         data-form="" href="#" role="button">
                                                         Config
+                                                        </a>
+                                                        <a id="" title="{% url 'reset-harvester' name=harvester.name %}" href="{% url 'reset-harvester' name=harvester.name %}"
+                                                        role="button" class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;Reset
                                                         </a>
                                                     </p>
                                                     <div class="collapse" id="collapseStatus{{ forloop.counter }}">

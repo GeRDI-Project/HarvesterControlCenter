@@ -471,28 +471,29 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         return render(request, "hcc/harvester_edit_form.html", data)
 
     def post(self, request, *args, **kwargs): #the actual logic behind the form
-        myname = kwargs['name'] 
-        name = self.request.POST.get('name')    
+        myname = kwargs['name']
+        name = self.request.POST.get('name')
         notes = self.request.POST.get('notes')
         url = self.request.POST.get('url')
         if myname == ' ': #Add Harvester
-            if( len(Harvester.objects.filter(name=name)) == 0):#check if the name is not already used 
+        # TODO: do not user len(sequence) to check if a sequence is empty
+            if len(Harvester.objects.filter(name=name)) == 0: #check if the name is not already used 
                 _h = Harvester(owner=self.request.user)
                 action = 'added'
                 myname = name
-            else: 
-                return JsonResponse({'message':'A Harvester named %s has already been initialised!' % (name)})  
-        else: #Edit Harvester   
-            _h = Harvester.objects.get(name=myname)  
-            action = 'modified'     
+            else:
+                return JsonResponse({'message':'A Harvester named %s has already been initialised!' % (name)})
+        else: #Edit Harvester
+            _h = Harvester.objects.get(name=myname)
+            action = 'modified'
         form = HarvesterForm(self.request.POST, instance=_h)
         if form.is_valid():
             form.save()
             success_message = "%s has been %s successfully!" % (myname, action)
-            if(action == 'initialised'):
+            if action == 'initialised':
                 LOGGER.info("new harvester created: %s" % (name))
-            response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url} 
-        else: 
+            response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url}
+        else:
             success_message = "%s could not been %s!" % (myname, action)
             response = {'message':success_message}    
         return JsonResponse(response)
