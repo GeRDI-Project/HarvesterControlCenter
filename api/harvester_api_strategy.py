@@ -693,7 +693,7 @@ class VersionBased7Strategy(Strategy):
         if not crontab:
             delall_cron_url = harvester.url + HarvesterApiConstantsV7.DALL_HARVEST_CRON
             response = requests.post(delall_cron_url, timeout=5)
-            harvester_response = response.text
+            harvester_response = json.loads(response.text)
             LOGGER.info("deleted all schedules for %s", harvester.name)
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         else:
@@ -701,7 +701,7 @@ class VersionBased7Strategy(Strategy):
             response = requests.post(delcron_url,
                                      json={HCCJC.POSTCRONTAB: crontab},
                                      timeout=5)
-            harvester_response = response.text
+            harvester_response = json.loads(response.text)
             LOGGER.info("deleted cron %s for harvester %s", crontab,
                         harvester.name)
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
