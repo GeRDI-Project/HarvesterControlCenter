@@ -46,15 +46,15 @@ $(document).ready(function(){
               $('#'+response.oldname+'-url').attr('href',response.url);
               $('#'+response.oldname+'-url').text(response.newname);
             }else{
-              $('#message-modal-header').text('ERROR');
+              $('#message-modal-header').text('Error');
             };   
         },  
-        error: function(response){
-          $('#harvesterModal').modal('hide');
-          $('#message-modal').modal('show');
-          $('#message-modal-body').text(response);
-          $('#message-modal-header').text('ERROR');
-        },      
+        error: function (response){
+            $('#harvesterModal').modal('hide');
+            $('#message-modal').modal('show');
+            $('#message-modal-header').text('Error!');
+            $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+        },    
     });
     return false;
   });

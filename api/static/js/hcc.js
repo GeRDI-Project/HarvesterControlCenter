@@ -237,15 +237,19 @@ $(function () {
             context: this,
             success: function (response) {
                 $('#message-modal').modal('show');
+                $('#message-modal-header').text(response.status=='Ok' ? 'Success!' : 'Error');
                 $('#message-modal-body').text(response.message);
+            },
+            error: function (response){
+                $('#message-modal').modal('show');
+                $('#message-modal-header').text('Error!');
+                $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
             },
         });
         return false;
     });
 
     $('#btn-card-list-view').click(function () {
-        //TODO: BUG; some Icons changed, too!
-        // changing the class of element i is to general
         $('#card-list-view-sign').toggleClass('fa-id-card fa-list');
         if ($('#card-list-view-sign').attr('data-original-title') == 'card view') {
             $('i#card-list-view-sign').attr('data-original-title', 'list view');

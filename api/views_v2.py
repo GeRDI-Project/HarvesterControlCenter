@@ -476,12 +476,12 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         notes = self.request.POST.get('notes')
         url = self.request.POST.get('url')
         if myname == ' ': #Add Harvester
-            if( len(Harvester.objects.filter(name=name)) == 0):#check if the name is not already used 
+            if Harvester.objects.filter(name=name).exists():#check if the name is not already used 
+                return JsonResponse({'message':'A Harvester named %s already exists!' % (name)})
+            else: 
                 _h = Harvester(owner=self.request.user)
                 action = 'added'
-                myname = name
-            else: 
-                return JsonResponse({'message':'A Harvester named %s has already been initialised!' % (name)})  
+                myname = name 
         else: #Edit Harvester   
             _h = Harvester.objects.get(name=myname)  
             action = 'modified'     
