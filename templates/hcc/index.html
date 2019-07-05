@@ -107,9 +107,9 @@
                     <div class="container">
                         <div class="row collapse card-list-view"><!--list-view-->
                         {% for harvester in harvesters %}
+                            {% if harvester.enabled %}
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <ul class="list-group">
-                            {% if harvester.enabled %}
                                 {% for k, val in status.items %}
                                 {% if k == harvester.name %}
                                 <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip"
