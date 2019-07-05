@@ -471,8 +471,8 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         return render(request, "hcc/harvester_edit_form.html", data)
 
     def post(self, request, *args, **kwargs): #the actual logic behind the form
-        myname = kwargs['name'] 
-        name = self.request.POST.get('name')    
+        myname = kwargs['name']
+        name = self.request.POST.get('name')
         notes = self.request.POST.get('notes')
         url = self.request.POST.get('url')
         if myname == ' ': #Add Harvester
@@ -489,10 +489,10 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         if form.is_valid():
             form.save()
             success_message = "%s has been %s successfully!" % (myname, action)
-            if(action == 'initialised'):
+            if action == 'initialised':
                 LOGGER.info("new harvester created: %s" % (name))
-            response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url} 
-        else: 
+            response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url}
+        else:
             success_message = "%s could not been %s!" % (myname, action)
             response = {'message':success_message}    
         return JsonResponse(response)

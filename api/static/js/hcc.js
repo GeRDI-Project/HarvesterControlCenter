@@ -169,49 +169,6 @@ $(function () {
         updateChart(vlabels, vdata, gbcarray, bcarray);
     }
 
-    var formButton = {
-        regClick: function () {
-            $('#form-modal-body').load('/hcc/register #hreg-form-content', formButton.toggleModal);
-        },
-
-        toggleModal: function () {
-            $('#form-modal').modal('toggle');
-            formAjaxSubmit.init('#form-modal-body form', '#form-modal');
-        }
-    };
-
-    var formAjaxSubmit = {
-        init: function (form, modal) {
-            $(form).submit(formAjaxSubmit.ajax);
-        },
-
-        ajax: function (e) {
-            e.preventDefault();
-            $.ajax({
-                type: $(this).attr('method'),
-                url: $(this).attr('action'),
-                data: $(this).serialize(),
-                success: formAjaxSubmit.succFunc,
-                error: formAjaxSubmit.errorFunc,
-            });
-        },
-
-        succFunc: function (xhr, ajaxOptions, thrownError) {
-            if ($(xhr).find('.has-error').length > 0) {
-                $(modal).find('.modal-body').html(xhr);
-                formAjaxSubmit.init(form, modal);
-            } else {
-                $(modal).modal('toggle');
-            }
-        },
-
-        errorFunc: function (xhr, ajaxOptions, thrownError) {
-            // handle response errors here
-        }
-    };
-
-    $('#register-button').click(formButton.regClick);
-
     $(".harvesteredit").click(function (ev) { // for each edit harvester url
         ev.preventDefault(); // prevent navigation
         var url = $(this).attr("data-form"); // get the harvester form url
@@ -391,3 +348,47 @@ $(window).scroll(function (e) {
         $('.navbar').removeClass("navbar-hide");
     }
 });
+
+// good coding examples for non anonymous functions
+var formButton = {
+    regClick: function () {
+        $('#form-modal-body').load('/hcc/register #hreg-form-content', formButton.toggleModal);
+    },
+
+    toggleModal: function () {
+        $('#form-modal').modal('toggle');
+        formAjaxSubmit.init('#form-modal-body form', '#form-modal');
+    }
+};
+
+var formAjaxSubmit = {
+    init: function (form, modal) {
+        $(form).submit(formAjaxSubmit.ajax);
+    },
+
+    ajax: function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            success: formAjaxSubmit.succFunc,
+            error: formAjaxSubmit.errorFunc,
+        });
+    },
+
+    succFunc: function (xhr, ajaxOptions, thrownError) {
+        if ($(xhr).find('.has-error').length > 0) {
+            $(modal).find('.modal-body').html(xhr);
+            formAjaxSubmit.init(form, modal);
+        } else {
+            $(modal).modal('toggle');
+        }
+    },
+
+    errorFunc: function (xhr, ajaxOptions, thrownError) {
+        // handle response errors here
+    }
+};
+
+$('#register-button').click(formButton.regClick);
