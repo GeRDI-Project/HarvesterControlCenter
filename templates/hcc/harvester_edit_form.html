@@ -37,23 +37,23 @@ $(document).ready(function(){
         context: this,
         success: function(response){
             $('#harvesterModal').modal('hide');
-            $('#message-modal').modal('show');
             $('#message-modal-body').text(response.message);
-            if (typeof response.newname !== 'undefined'){ 
+            if (typeof response.newname !== 'undefined') {
               $('#message-modal-header').text('Success!');
               $('#'+response.oldname+'-notes').text('Notes: '+response.notes);
               $('#'+response.oldname+'-name').text(response.newname);
               $('#'+response.oldname+'-url').attr('href',response.url);
               $('#'+response.oldname+'-url').text(response.newname);
-            }else{
+            } else {
               $('#message-modal-header').text('Error');
-            };   
-        },  
-        error: function (response){
-            $('#harvesterModal').modal('hide');
+            };
             $('#message-modal').modal('show');
+        },  
+        error: function (response) {
+            $('#harvesterModal').modal('hide');
             $('#message-modal-header').text('Error!');
             $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+            $('#message-modal').modal('show');
         },    
     });
     return false;

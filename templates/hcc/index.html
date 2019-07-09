@@ -28,7 +28,7 @@
                             </a>
                         </td>
                         <td>
-                            <a id="btn-deploy-harvester" href="#" title="{% url 'harvesters-log' %}">
+                            <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
                                     <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
                             </a>
                         </td>
@@ -287,9 +287,7 @@
                         Disabled Harvesters
                         <span class="badge badge-light">
                             {% for k, v in status.items %}
-                            {% if k == 'num_disabled_harvesters' %}
-                            {{ v }}
-                            {% endif %}
+                            {% if k == 'num_disabled_harvesters' %}{{ v }}{% endif %}
                             {% endfor %}
                         </span>
                     </button>

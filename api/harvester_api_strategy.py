@@ -6,7 +6,6 @@ import json
 import logging
 import datetime
 import requests
-import json
 
 from requests.exceptions import RequestException
 from rest_framework import status
