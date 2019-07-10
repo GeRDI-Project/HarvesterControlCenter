@@ -1,0 +1,14 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title"> {{ hname }} Harvester Configuration</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">{{ response|crispy }}</div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+</div>

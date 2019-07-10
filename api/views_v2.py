@@ -21,7 +21,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.forms import HarvesterForm, SchedulerForm
+from api.forms import HarvesterForm, SchedulerForm, create_config_form
 from api.mixins import AjaxTemplateMixin, AjaxableResponseMixin
 from api.models import Harvester
 from api.permissions import IsOwner
@@ -507,7 +507,19 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
 
     @staticmethod
     def get(request, *args, **kwargs):
-        pass
+        myname = kwargs['name']
+        data = {}
+        harvester = get_object_or_404(Harvester, name=myname)
+        api = InitHarvester(harvester).get_harvester_api()
+        response = api.harvester_config()
+        if response.status_code != status.HTTP_200_OK:
+            data["response"] = response.data["error_message"]
+        else:
+            form = create_config_form(response.data)
+            data["response"] = form      
+        data["hname"] = myname
+        return render(request, "hcc/harvester_config_form.html", data)
+
 
     def post(self, request, *args, **kwargs):
         pass

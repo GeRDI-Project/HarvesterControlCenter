@@ -190,9 +190,12 @@ $(function () {
         return false; // prevent the click propagation
     });
 
-    $(".harvesterconfig").click(function (ev) {
+    $(".harvesterconfig").click(function (ev) { // for each edit harvester url
         ev.preventDefault(); // prevent navigation
-        $("#config-modal").modal('show');
+        var url = $(this).attr("data-form"); // get the harvester form url
+        $("#config-modal").load(url, function () { // load the url into the modal
+            $(this).modal('show'); // display the modal on url load
+        });
         return false; // prevent the click propagation
     });
 

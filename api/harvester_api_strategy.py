@@ -65,6 +65,10 @@ class Strategy(metaclass=abc.ABCMeta):
     def get_harvester_progress(self, harvester):
         """abstract method for harvester progress"""
 
+    @abc.abstractmethod
+    def get_harvester_config(self, harvester):
+        """abstract method for harvester configuration"""
+
 
 class HarvesterApiStrategy:
     """
@@ -124,6 +128,10 @@ class HarvesterApiStrategy:
     def harvester_progress(self):
         """get harvesting progress"""
         return self._strategy.get_harvester_progress(self.harvester)
+
+    def harvester_config(self):
+        """get configuration data"""    
+        return self._strategy.get_harvester_config(self.harvester)
 
 
 def a_response(harvester_name, url, method):
@@ -190,18 +198,19 @@ class BaseStrategy(Strategy):
                     feedback[harvester.name][
                         HCCJC.HEALTH] = 'Authentication required.'
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-                    return Response(feedback,
-                                    status=status.HTTP_401_UNAUTHORIZED)
 
                 if response.status_code == status.HTTP_404_NOT_FOUND:
                     feedback[harvester.name][HCCJC.HEALTH] = \
                         'Resource on server not found. Check URL.'
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-                    return Response(feedback, status=status.HTTP_404_NOT_FOUND)
 
                 if response.status_code == status.HTTP_200_OK:
                     feedback[harvester.name][HCCJC.HEALTH] = response.text
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
+
+                if response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE:
+                    feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)["message"]
+                    feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
                 feedback[harvester.name][
                     HCCJC.CRONTAB] = "cron not supported. basic mode."
@@ -222,8 +231,8 @@ class BaseStrategy(Strategy):
                         status=status.HTTP_501_NOT_IMPLEMENTED)
 
     def post_reset_harvest(self, harvester):
-        return Response({harvester.name: 'reset not supported'},
-                        status=status.HTTP_501_NOT_IMPLEMENTED)
+        
+        return VersionBased7Strategy.post_reset_harvest(self, harvester)
 
     def post_stop_harvest(self, harvester):
         return Response({harvester.name: 'stop not supported'},
@@ -247,6 +256,9 @@ class BaseStrategy(Strategy):
             HCCJC.HEALTH: 'cron not supported'
         }},
                         status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def get_harvester_config(self, harvester):
+        pass                    
 
     def post_delete_harvester_schedule(self, harvester, crontab):
         return Response({harvester.name: {
@@ -468,6 +480,9 @@ class VersionBased6Strategy(Strategy):
                                        timeout=5)
             feedback[harvester.name][HCCJC.HEALTH] = response.text
         return Response(feedback, status=response.status_code)
+
+    def get_harvester_config(self, harvester):
+        pass    
 
 
 class VersionBased7Strategy(Strategy):
@@ -704,4 +719,12 @@ class VersionBased7Strategy(Strategy):
             LOGGER.info("deleted cron %s for harvester %s", crontab,
                         harvester.name)
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
+        return Response(feedback, status=response.status_code)
+
+    def get_harvester_config(self, harvester):
+        get_url = harvester.url + HarvesterApiConstantsV7.G_HARVEST_CONFIG
+        response = requests.get( get_url)
+        feedback = json.loads(response.text)
+        if response.status_code != status.HTTP_200_OK:
+            feedback["error_message"] = "unable do get configuration data of harvester %s" % (harvester.name)
         return Response(feedback, status=response.status_code)

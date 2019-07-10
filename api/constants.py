@@ -120,6 +120,8 @@ class HarvesterApiConstantsV7:
     DALL_HARVEST_CRON = "/schedule/_deleteAll"
     G_HEALTH = "/health"
     G_BOOLEAN_OUTDATED = "/outdated"
+    G_HARVEST_CONFIG = "/config"
+    P_HARVEST_CONFIG = "/config/_set"
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""

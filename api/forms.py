@@ -43,6 +43,35 @@ class HarvesterForm(forms.ModelForm):
         #        Submit('edit-harvester', 'Register', css_class="btn-primary")))
         return helper
 
+class ConfigForm(forms.Form):
+    """
+    This class represents a dynamic Harvester Configuration Form.
+    """
+    pass
+
+def create_config_form(config_data):
+    """
+    This function creates a dynamic Form for Harvester Configuration
+    """
+    fields = {}
+    data= {}
+    keys = []
+
+    for key in config_data:
+        keys.append(key)
+    for key in keys:
+        for field in config_data[key]["parameters"]:
+            if "value" in field:
+                data["%s %s" % (key, field["key"])] = field["value"] 
+                if field["type"] == "IntegerParameter":
+                    fields["%s %s" % (key, field["key"])] = forms.IntegerField()
+                elif field["type"] == "StringParameter":
+                    fields["%s %s" % (key, field["key"])] = forms.CharField()    
+                elif field["type"] == "BooleanParameter":
+                    fields["%s %s" % (key, field["key"])] = forms.BooleanField()    
+
+    DynamicConfigForm = type('DynamicConfigForm',(ConfigForm,), fields)
+    return DynamicConfigForm(data)
 
 class LoginForm(AuthenticationForm):
     """
