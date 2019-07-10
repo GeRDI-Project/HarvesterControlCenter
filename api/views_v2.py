@@ -21,13 +21,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-<<<<<<< HEAD
 from api.forms import HarvesterForm, SchedulerForm, create_config_form
 from api.mixins import AjaxTemplateMixin, AjaxableResponseMixin
-=======
-from api.forms import HarvesterForm, SchedulerForm
-from api.mixins import AjaxableResponseMixin
->>>>>>> d40edffd7919ab04ef7e4e7d5e694a0edb6dc01a
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
