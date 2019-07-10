@@ -23,7 +23,7 @@ from django.urls import path, include
 #from django.conf.urls.static import static
 # end here
 from rest_framework_swagger.views import get_swagger_view
-from rest_framework.documentation import include_docs_urls
+#from rest_framework.documentation import include_docs_urls
 
 from api import views_v2 as views
 from api.forms import LoginForm
@@ -56,10 +56,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', SCHEMA_VIEW, name='swagger-docs'),
-    path('docs2/',
-         include_docs_urls(title='HCC API Documentation',
-                           schema_url=os.environ.get('FORCE_SCRIPT_NAME', '')),
-         name='doc'),
+    # switch to internal docs if swagger is insufficient
+    # path('docs2/', include_docs_urls(title='HCC API Documentation',
+    # schema_url=os.environ.get('FORCE_SCRIPT_NAME', '')), name='doc'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('accounts/login/', auth_views.LoginView.as_view(authentication_form=LoginForm)),
     path('accounts/', include('django.contrib.auth.urls')),
