@@ -485,64 +485,44 @@ class VersionBased7Strategy(Strategy):
         if harvester.enabled:
             try:
                 status_url = harvester.url + HarvesterApiConstantsV7.PG_HARVEST
-                response, harvester_json = a_response(harvester.name,
-                                                      status_url, 'Get')
+                response, harvester_json = a_response(harvester.name, status_url, 'Get')
 
                 if response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE:
-                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[
-                        HCCJC.MESSAGE]
+                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
                     feedback[harvester.name][HCCJC.STATUS] = HCCJC.INIT
-                    feedback[harvester.name][HCCJC.STATE] = harvester_json[
-                        HCCJC.STATUS]
+                    feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
                 elif response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:
-                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[
-                        HCCJC.MESSAGE]
+                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.MESSAGE]
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[
-                        HCCJC.STATUS]
-                    feedback[harvester.name][HCCJC.STATE] = harvester_json[
-                        HCCJC.STATUS]
+                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATUS]
+                    feedback[harvester.name][HCCJC.STATE] = harvester_json[HCCJC.STATUS]
                 elif response.status_code == status.HTTP_401_UNAUTHORIZED:
-                    feedback[harvester.name][
-                        HCCJC.HEALTH] = response.status_text
+                    feedback[harvester.name][HCCJC.HEALTH] = response.status_text
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                 elif response.status_code == status.HTTP_408_REQUEST_TIMEOUT:
-                    feedback[harvester.name][
-                        HCCJC.HEALTH] = response.status_text
-                    feedback[harvester.name][HCCJC.MESSAGE] = str(
-                        response.data)
+                    feedback[harvester.name][HCCJC.HEALTH] = response.status_text
+                    feedback[harvester.name][HCCJC.MESSAGE] = str(response.data)
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
                 else:
 
                     # this line may produce a servererror 500 -> keyerror: health
-                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[
-                        HCCJC.HEALTH]
+                    feedback[harvester.name][HCCJC.HEALTH] = harvester_json[HCCJC.HEALTH]
                     # to be legacy (prior lib v7) compatible in html template
                     # set the old STATUS key to STATE
-                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[
-                        HCCJC.STATE].lower()
-                    feedback[harvester.name][
-                        HCCJC.CACHED_DOCS] = harvester_json[
-                            HCCJC.HARVESTED_COUNT]
-                    feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[
-                        HCCJC.HARVESTED_COUNT]
-                    feedback[harvester.name][
-                        HCCJC.DATA_PROVIDER] = harvester_json[HCCJC.REPO_NAME]
+                    feedback[harvester.name][HCCJC.STATUS] = harvester_json[HCCJC.STATE].lower()
+                    feedback[harvester.name][HCCJC.CACHED_DOCS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                    feedback[harvester.name][HCCJC.PROGRESS] = harvester_json[HCCJC.HARVESTED_COUNT]
+                    feedback[harvester.name][HCCJC.DATA_PROVIDER] = harvester_json[HCCJC.REPO_NAME]
 
                     # harvester overall status
-                    if harvester_json[
-                            HCCJC.HEALTH] == HCCJC.OK and harvester_json[
-                                HCCJC.STATE].lower() == HCCJC.IDLE:
-                        feedback[harvester.name][
-                            HCCJC.GUI_STATUS] = HCCJC.SUCCESS
+                    if harvester_json[HCCJC.HEALTH] == HCCJC.OK and harvester_json[HCCJC.STATE].lower() == HCCJC.IDLE:
+                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.SUCCESS
                     elif harvester_json[HCCJC.HEALTH] != HCCJC.OK:
-                        feedback[harvester.name][
-                            HCCJC.GUI_STATUS] = HCCJC.WARNING
+                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                     elif harvester_json[HCCJC.STATE].lower() in [HCCJC.HARV]:
-                        feedback[harvester.name][
-                            HCCJC.GUI_STATUS] = HCCJC.PRIMARY
+                        feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.PRIMARY
                     else:
                         feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.INFO
 
@@ -554,8 +534,7 @@ class VersionBased7Strategy(Strategy):
                         feedback[harvester.name][HCCJC.PROGRESS_MAX] = \
                             harvester_json[HCCJC.MAX_DOCUMENT_COUNT]
                     else:
-                        feedback[harvester.name][
-                            HCCJC.MAX_DOCUMENTS] = HCCJC.N_A
+                        feedback[harvester.name][HCCJC.MAX_DOCUMENTS] = HCCJC.N_A
 
                     if max_documents:
                         if int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) > 0:
@@ -579,8 +558,7 @@ class VersionBased7Strategy(Strategy):
 
                     # schedules
                     cron_url = harvester.url + HarvesterApiConstantsV7.G_HARVEST_CRON
-                    response, harvester_json = a_response(
-                        harvester.name, cron_url, 'Get')
+                    response, harvester_json = a_response(harvester.name, cron_url, 'Get')
 
                     if HCCJC.SCHEDULE in harvester_json:
                         if len(harvester_json[HCCJC.SCHEDULE]) > 0:
@@ -701,7 +679,6 @@ class VersionBased7Strategy(Strategy):
                                      json={HCCJC.POSTCRONTAB: crontab},
                                      timeout=5)
             harvester_response = json.loads(response.text)
-            LOGGER.info("deleted cron %s for harvester %s", crontab,
-                        harvester.name)
+            LOGGER.info("deleted cron %s for harvester %s", crontab, harvester.name)
             feedback[harvester.name][HCCJC.HEALTH] = harvester_response
         return Response(feedback, status=response.status_code)

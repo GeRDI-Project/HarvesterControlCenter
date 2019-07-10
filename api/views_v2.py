@@ -11,8 +11,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.views.generic import FormView, RedirectView
+from django.urls import reverse
+from django.views.generic import RedirectView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
 from rest_framework import status, generics, permissions
@@ -22,7 +22,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.forms import HarvesterForm, SchedulerForm
-from api.mixins import AjaxTemplateMixin, AjaxableResponseMixin
+from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
@@ -459,7 +459,7 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
     @staticmethod
     def get(request, *args, **kwargs): #the form that is load into the modal
         myname = kwargs['name']
-        data={}
+        data = {}
         if myname == ' ':
             harvester = Harvester(owner=request.user)
             data['template_title'] = 'Add Harvester'
@@ -476,28 +476,28 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         notes = self.request.POST.get('notes')
         url = self.request.POST.get('url')
         if myname == ' ': #Add Harvester
-            if Harvester.objects.filter(name=name).exists():#check if the name is not already used 
+            if Harvester.objects.filter(name=name).exists():#check if the name is not already used
                 return JsonResponse({'message':'A Harvester named %s already exists!' % (name)})
-            else: 
+            else:
                 _h = Harvester(owner=self.request.user)
                 action = 'added'
-                myname = name 
-        else: #Edit Harvester   
-            _h = Harvester.objects.get(name=myname)  
-            action = 'modified'     
+                myname = name
+        else: #Edit Harvester
+            _h = Harvester.objects.get(name=myname)
+            action = 'modified'
         form = HarvesterForm(self.request.POST, instance=_h)
         if form.is_valid():
             form.save()
             success_message = "%s has been %s successfully!" % (myname, action)
             if action == 'initialised':
-                LOGGER.info("new harvester created: %s" % (name))
+                LOGGER.info("new harvester created: %s", name)
             response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url}
         else:
             success_message = "%s could not been %s!" % (myname, action)
-            response = {'message':success_message}    
+            response = {'message':success_message}
         return JsonResponse(response)
 
-        
+
 class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
