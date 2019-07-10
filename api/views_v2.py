@@ -512,7 +512,7 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
         harvester = get_object_or_404(Harvester, name=myname)
         api = InitHarvester(harvester).get_harvester_api()
         response = api.harvester_config()
-        if response.status_code != status.HTTP_200_OK:
+        if response.status_code != status.HTTP_200_OK: #AttributeError: 'NoneType' object has no attribute 'status_code'
             data["response"] = response.data["error_message"]
         else:
             form = create_config_form(response.data)
