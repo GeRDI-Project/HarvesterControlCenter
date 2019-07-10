@@ -493,7 +493,7 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
                 LOGGER.info("new harvester created: %s", name)
             response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url}
         else:
-            success_message = "%s could not been %s!" % (myname, action)
+            success_message = "{} could not been {}!".format(myname, action)
             response = {'message':success_message}
         return JsonResponse(response)
 
