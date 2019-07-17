@@ -458,24 +458,23 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
 
     @staticmethod
     def get(request, *args, **kwargs): #the form that is load into the modal
-        myname = kwargs['name']
         data = {}
-        if myname == ' ':
+        if "name" not in kwargs:
             harvester = Harvester(owner=request.user)
             data['template_title'] = 'Add Harvester'
         else:
+            myname = kwargs['name']
             harvester = Harvester.objects.get(name=myname)
-            data['template_title'] = 'Edit Harvester'
-        data['hname'] = myname
+            data['template_title'] = "Edit Harvester - {}".format(myname)
+            data['hname'] = myname
         data['form'] = HarvesterForm(instance=harvester)
         return render(request, "hcc/harvester_edit_form.html", data)
 
     def post(self, request, *args, **kwargs): #the actual logic behind the form
-        myname = kwargs['name']
         name = self.request.POST.get('name')
         notes = self.request.POST.get('notes')
         url = self.request.POST.get('url')
-        if myname == ' ': #Add Harvester
+        if "name" not in kwargs: #Add Harvester
             if Harvester.objects.filter(name=name).exists():#check if the name is not already used
                 return JsonResponse({'message':'A Harvester named {} already exists!'.format(name)})
             else:
@@ -483,6 +482,7 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
                 action = 'added'
                 myname = name
         else: #Edit Harvester
+            myname = kwargs['name']
             _h = Harvester.objects.get(name=myname)
             action = 'modified'
         form = HarvesterForm(self.request.POST, instance=_h)
@@ -490,7 +490,7 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
             form.save()
             success_message = "{} has been {} successfully!".format(myname, action)
             if action == 'initialised':
-                LOGGER.info("new harvester created: %s", name)
+                LOGGER.info("new harvester created: {}".format(name))
             response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url}
         else:
             success_message = "{} could not been {}!".format(myname, action)
