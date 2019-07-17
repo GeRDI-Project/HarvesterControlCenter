@@ -67,7 +67,11 @@ class Strategy(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def get_harvester_config(self, harvester):
-        """abstract method for harvester configuration"""
+        """abstract method for getting harvester configuration data"""
+
+    @abc.abstractmethod
+    def set_harvester_config(self, harvester, changes):
+        """abstract method for setting harvester configuration"""
 
 
 class HarvesterApiStrategy:
@@ -129,9 +133,13 @@ class HarvesterApiStrategy:
         """get harvesting progress"""
         return self._strategy.get_harvester_progress(self.harvester)
 
-    def harvester_config(self):
-        """get configuration data"""    
+    def get_harvester_config_data(self):
+        """get configuration data"""
         return self._strategy.get_harvester_config(self.harvester)
+
+    def save_harvester_config_data(self, changes):
+        """set configuration data"""
+        return self._strategy.set_harvester_config(self.harvester, changes)
 
 
 def a_response(harvester_name, url, method):
@@ -257,14 +265,23 @@ class BaseStrategy(Strategy):
         }},
                         status=status.HTTP_501_NOT_IMPLEMENTED)
 
-    def get_harvester_config(self, harvester):
-        pass                    
-
     def post_delete_harvester_schedule(self, harvester, crontab):
         return Response({harvester.name: {
             HCCJC.HEALTH: 'cron not supported'
         }},
                         status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def get_harvester_config(self, harvester):
+        return Response({harvester.name: {
+            HCCJC.HEALTH: 'config not supported'
+        }},
+                        status=status.HTTP_501_NOT_IMPLEMENTED)                    
+
+    def set_harvester_config(self, harvester, changes):
+        return Response({harvester.name: {
+            HCCJC.HEALTH: 'config not supported'
+        }},
+                        status=status.HTTP_501_NOT_IMPLEMENTED)                    
 
 
 class VersionBased6Strategy(Strategy):
@@ -482,7 +499,26 @@ class VersionBased6Strategy(Strategy):
         return Response(feedback, status=response.status_code)
 
     def get_harvester_config(self, harvester):
-        pass    
+        get_url = harvester.url + HarvesterApiConstantsV7.G_HARVEST_CONFIG
+        response = requests.get( get_url)
+        feedback = {}
+        feedback[harvester.name] = {}
+        if response.status_code == status.HTTP_200_OK:
+            feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)
+        else:
+            feedback[harvester.name][HCCJC.HEALTH] = "unable do get configuration data of harvester {}".format(harvester.name)
+        return Response(feedback, status=response.status_code)
+
+    def set_harvester_config(self, harvester, changes):
+        set_url = harvester.url + HarvesterApiConstantsV7.P_HARVEST_CONFIG
+        response = requests.post( set_url, json=changes)
+        feedback = {}
+        feedback[harvester.name] = {}
+        if response.status_code == status.HTTP_200_OK:
+            feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)
+        else:
+            feedback[harvester.name][HCCJC.HEALTH] = "unable do set configuration data of harvester {}".format(harvester.name)
+        return Response(feedback, status=response.status_code)
 
 
 class VersionBased7Strategy(Strategy):
@@ -700,8 +736,26 @@ class VersionBased7Strategy(Strategy):
 
     def get_harvester_config(self, harvester):
         get_url = harvester.url + HarvesterApiConstantsV7.G_HARVEST_CONFIG
-        response = requests.get( get_url)
-        feedback = json.loads(response.text)
-        if response.status_code != status.HTTP_200_OK:
-            feedback["error_message"] = "unable do get configuration data of harvester %s" % (harvester.name)
+        response = requests.get(get_url, timeout=5)
+        feedback = {}
+        feedback[harvester.name] = {}
+        if response.status_code == status.HTTP_200_OK:
+            feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)
+        else:
+            feedback[harvester.name][HCCJC.HEALTH] = "unable do get configuration data of harvester {}".format(harvester.name)
         return Response(feedback, status=response.status_code)
+
+    def set_harvester_config(self, harvester, changes):
+        set_url = harvester.url + HarvesterApiConstantsV7.P_HARVEST_CONFIG
+        response = requests.post(set_url, json=changes, timeout=5)
+        feedback = {}
+        feedback[harvester.name] = {}
+        if response.status_code == status.HTTP_200_OK:
+            feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)
+        else:
+            feedback[harvester.name][HCCJC.HEALTH] = {
+                "status": "failed",
+                "message": "unable do set configuration data of harvester {}".format(harvester.name),
+            }
+            
+        return Response(feedback, status=response.status_code)    

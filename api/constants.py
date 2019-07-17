@@ -93,6 +93,8 @@ class HarvesterApiConstantsV6:
     G_DATA_PROVIDER = "/status/data-provider"
     G_HARVESTED_DOCS = "/status/harvested-documents"
     G_BOOLEAN_OUTDATED_DOCS = "/outdated"
+    G_HARVEST_CONFIG = "/config"
+    P_HARVEST_CONFIG = "/config/_set"
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""

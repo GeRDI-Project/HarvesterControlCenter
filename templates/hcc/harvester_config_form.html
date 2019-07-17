@@ -6,9 +6,56 @@
             <h4 class="modal-title"> {{ hname }} Harvester Configuration</h4>
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         </div>
-        <div class="modal-body">{{ response|crispy }}</div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <form id="harvester-config-form" class="form-horizontal" action="{% url 'config-harvester' name=hname %}" method="POST">
+        <div class="modal-body">
+        {% if form %}
+            {% csrf_token %}
+            {{ form|crispy }}
+        {% else %}
+            {{ message }}
+        {% endif %}
         </div>
+        <div class="modal-footer">
+            {% if form %}    
+            <input class="btn btn-primary" type="submit" Value="Save"/>
+            {% endif %}    
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+                Cancel
+            </button>
+        </div>
+        </form>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('#harvester-config-form').submit(function(ev) {
+        ev.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: serializedData,
+            context: this,
+            success: function(response){
+                $('#config-modal').modal('hide');
+                $('#message-modal-body').text(response.message);
+                console.log(response.changes);
+                if (response.status == "Ok") {
+                  $('#message-modal-header').text('Success!');
+                } else {
+                  $('#message-modal-header').text('Error');
+                };
+                $('#message-modal').modal('show');
+            },  
+            error: function (response) {
+                $('#harvesterModal').modal('hide');
+                $('#message-modal-header').text('Error!');
+                $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+                $('#message-modal').modal('show');
+            },    
+        });
+        return false;
+      });
+    });
+    </script>  

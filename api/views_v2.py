@@ -21,7 +21,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.forms import HarvesterForm, SchedulerForm, create_config_form
+from api.forms import HarvesterForm, SchedulerForm, create_config_form, create_config_fields
 from api.mixins import AjaxTemplateMixin, AjaxableResponseMixin
 from api.models import Harvester
 from api.permissions import IsOwner
@@ -503,7 +503,6 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
     This class handles GET, DELETE and POST requests
     to control the config of the harvesters.
     """
-    success_message = "%(name) was modified successfully"
 
     @staticmethod
     def get(request, *args, **kwargs):
@@ -511,18 +510,53 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
         data = {}
         harvester = get_object_or_404(Harvester, name=myname)
         api = InitHarvester(harvester).get_harvester_api()
-        response = api.harvester_config()
-        if response.status_code != status.HTTP_200_OK: #AttributeError: 'NoneType' object has no attribute 'status_code'
-            data["response"] = response.data["error_message"]
+        response = api.get_harvester_config_data()
+        if response.status_code != status.HTTP_200_OK:
+            data["message"] = response.data[harvester.name][HCCJC.HEALTH]
         else:
-            form = create_config_form(response.data)
-            data["response"] = form      
+            form = create_config_form(response.data[harvester.name][HCCJC.HEALTH])
+            data["form"] = form
         data["hname"] = myname
         return render(request, "hcc/harvester_config_form.html", data)
 
 
     def post(self, request, *args, **kwargs):
-        pass
+        myname = kwargs['name']
+        harvester = get_object_or_404(Harvester, name=myname)
+        api = InitHarvester(harvester).get_harvester_api()
+        response = api.get_harvester_config_data()
+        old_config_data = response.data[harvester.name][HCCJC.HEALTH]
+        (fields, old_data) = create_config_fields(old_config_data)
+        data = {}
+        changes = {} #before-after data
+        config_changes = {} #only after data so send to api
+        for key in fields:
+            # In the response all boolean fields are either set "on" if True or 
+            # None if false. -> convert it
+            if self.request.POST.get(key) == "on":
+                new_data = "true"
+            elif self.request.POST.get(key) == None:
+                new_data = "false"
+            else:
+                new_data = self.request.POST.get(key)  
+              
+            if(old_data[key] != new_data):
+                changes[key] = {"before": old_data[key], "after": new_data}
+                config_changes[key] = new_data
+
+        if len(changes) > 0:
+            response = api.save_harvester_config_data(config_changes)
+            data["changes"] = changes
+        else:
+            return JsonResponse({"status":"failed", "message": "There have been no changes!"})    
+        
+        data["status"] = response.data[harvester.name][HCCJC.HEALTH]["status"]
+        if response.status_code != status.HTTP_200_OK:
+            data["message"] = response.data[harvester.name][HCCJC.HEALTH]["message"]
+        else:
+            data["message"] = "{} has been configurated successfully!".format(myname)
+        
+        return JsonResponse(data)       
 
 
 class ScheduleHarvesterView(SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):

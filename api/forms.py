@@ -45,13 +45,20 @@ class HarvesterForm(forms.ModelForm):
 
 class ConfigForm(forms.Form):
     """
-    This class represents a dynamic Harvester Configuration Form.
+    This class represents a dynamic Harvester Configuration Form. It is created every
+    time create_config_form is called.
     """
     pass
 
-def create_config_form(config_data):
+def create_config_fields(config_data):
     """
-    This function creates a dynamic Form for Harvester Configuration
+    This function validates the input data to data and fields used for 
+    create_config_form(config_data) to create a ConfigForm
+    INPUT:
+     - config_data : JSON configuration data
+    OUTPUT:
+     - fields : dictionary of field names with fields type
+     - data : dictionary of field names with current value
     """
     fields = {}
     data= {}
@@ -61,15 +68,41 @@ def create_config_form(config_data):
         keys.append(key)
     for key in keys:
         for field in config_data[key]["parameters"]:
-            if "value" in field:
-                data["%s %s" % (key, field["key"])] = field["value"] 
-                if field["type"] == "IntegerParameter":
-                    fields["%s %s" % (key, field["key"])] = forms.IntegerField()
-                elif field["type"] == "StringParameter":
-                    fields["%s %s" % (key, field["key"])] = forms.CharField()    
-                elif field["type"] == "BooleanParameter":
-                    fields["%s %s" % (key, field["key"])] = forms.BooleanField()    
+            if field["type"] == "IntegerParameter":
+                fields["{}.{}".format(key, field["key"])] = forms.IntegerField(required=False)
+                field_type = "integer"
+            elif field["type"] == "StringParameter":
+                fields["{}.{}".format(key, field["key"])] = forms.CharField(required=False)
+                field_type = "string"
+            elif field["type"] == "BooleanParameter":
+                fields["{}.{}".format(key, field["key"])] = forms.BooleanField(required=False)
+                field_type = "boolean"
+            elif field["type"] == "PasswordParameter":
+                fields["{}.{}".format(key, field["key"])] = forms.CharField(required=False, widget=forms.PasswordInput())
+                field_type = "password"
+            else:
+                fields["{}.{}".format(key, field["key"])] = forms.CharField(required=False)
 
+            if "value" in field:
+                data["{}.{}".format(key, field["key"])] = field["value"] 
+            else: #set default values, if value is not set
+                if field_type == "integer":
+                    data["{}.{}".format(key, field["key"])] = 0
+                elif field_type == "string":
+                    data["{}.{}".format(key, field["key"])] = ""
+                elif field_type == "boolean":
+                    data["{}.{}".format(key, field["key"])] = False
+                elif field_type == "password":
+                    data["{}.{}".format(key, field["key"])] = ""
+                else:
+                    data["{}.{}".format(key, field["key"])] = None
+    return (fields, data)
+
+def create_config_form(config_data):
+    """
+    This function creates a ConfigForm: a dynamic Form for Harvester Configuration.
+    """
+    (fields, data) = create_config_fields(config_data)
     DynamicConfigForm = type('DynamicConfigForm',(ConfigForm,), fields)
     return DynamicConfigForm(data)
 
