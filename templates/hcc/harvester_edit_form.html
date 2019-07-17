@@ -10,7 +10,11 @@
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
+    {% if hname %}
     <form id="harvester-edit-form" class="form-horizontal" action="{% url 'edit-harvester' name=hname %}" method="POST">
+    {% else %} 
+    <form id="harvester-edit-form" class="form-horizontal" action="{% url 'add-harvester' %}" method="POST">
+    {% endif %}
       <div id="modal-body" class="modal-body">
           {% csrf_token %}
           {{ form|crispy }}
