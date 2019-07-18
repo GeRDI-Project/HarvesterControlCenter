@@ -529,7 +529,7 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
         (fields, old_data) = create_config_fields(old_config_data)
         data = {}
         changes = {} #before-after data
-        config_changes = {} #only after data so send to api
+        config_changes = {} #only after data to send to api
         for key in fields:
             # In the response all boolean fields are either set "on" if True or 
             # None if false. -> convert it
@@ -548,7 +548,7 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
             response = api.save_harvester_config_data(config_changes)
             data["changes"] = changes
         else:
-            return JsonResponse({"status":"failed", "message": "There have been no changes!"})    
+            return JsonResponse({"status":"unchanged", "message": "There have been no changes!"})    
         
         data["status"] = response.data[harvester.name][HCCJC.HEALTH]["status"]
         if response.status_code != status.HTTP_200_OK:

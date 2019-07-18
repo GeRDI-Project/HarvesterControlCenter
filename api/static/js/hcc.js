@@ -46,6 +46,10 @@ $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
+    $(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+
     function load_into_modal(_this) {
         var url = $(_this).attr("title");
         $('#loaderSpinnerLog').show();
@@ -147,7 +151,12 @@ $(function () {
     /*
         Buttons
     */
-   $('#btn-harvester-log').on('click', function (event) {
+
+    $('#div-list-view').hide();
+    $('#div-table-view').hide();
+    $('#btn-card-view').hide();
+    
+    $('#btn-harvester-log').on('click', function (event) {
     load_into_modal(this);
     });
 
@@ -155,13 +164,34 @@ $(function () {
         load_into_modal(this);
     });
 
-    $('#btn-card-list-view').click(function () {
-        $('#card-list-view-sign').toggleClass('fa-id-card fa-list');
-        if ($('#card-list-view-sign').attr('data-original-title') == 'card view') {
-            $('i#card-list-view-sign').attr('data-original-title', 'list view');
-        } else {
-            $('#card-list-view-sign').attr('data-original-title', 'card view');
-        }
+    $('#btn-list-view').click(function () {
+        $('#div-card-view').hide();
+        $('#div-table-view').hide();
+        $('#div-list-view').show();
+
+        $('#btn-list-view').hide();
+        $('#btn-card-view').show();
+        $('#btn-table-view').show();
+    });
+
+    $('#btn-card-view').click(function () {
+        $('#div-list-view').hide();
+        $('#div-table-view').hide();
+        $('#div-card-view').show();
+
+        $('#btn-card-view').hide();
+        $('#btn-list-view').show();
+        $('#btn-table-view').show();
+    });
+
+    $('#btn-table-view').click(function () {
+        $('#div-card-view').hide();
+        $('#div-list-view').hide();
+        $('#div-table-view').show();
+
+        $('#btn-table-view').hide();
+        $('#btn-card-view').show();
+        $('#btn-list-view').show();
     });
 
     $('#collapseChart').on('show.bs.collapse', function (event) {
@@ -221,6 +251,21 @@ $(function () {
         return false;
     });
 
+    $('#table-checkbox-disable-harvesters').click(function(){
+        if($(this).hasClass("active")){
+            $('#message-modal-header').text('Work in progress');
+            $('#message-modal-body').text('Nothing to see here...');
+            $('#message-modal').modal('show');
+        }    
+    });
+
+    $('#table-checkbox-start-harvesters').click(function(){
+        if($(this).hasClass("active")){
+            $('#message-modal-header').text('Work in progress');
+            $('#message-modal-body').text('Nothing to see here...');
+            $('#message-modal').modal('show');
+        }    
+    });
 });
 
 /*
@@ -328,23 +373,102 @@ $(window).ready(function () {
 function filterFunction() {
 
     // Declare variables
-    var input, filter, list, btns, a, i, txtValue;
+    var input, filter,list, card, table, divs, trs, tbody, a, i, txtValue;
     input = document.getElementById('harvesterInput');
     filter = input.value.toUpperCase();
-    list = document.getElementById("harvesterList");
-    btns = list.getElementsByTagName('button');
+    list = document.getElementById("div-list-view");
+    card = document.getElementById("div-card-view");
+    table = document.getElementById("div-table-view");
 
-    // Loop through all list items, and hide those who don't match the search query
-    for (i = 0; i < btns.length; i++) {
-        a = btns[i];
-        txtValue = a.textContent || a.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "";
-        } else {
-            btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "none";
+    // first: check which div is visible (same implementation like jQuerys :visible)
+    // after: Loop through divs/trs and compare id names
+    if (list.offsetWidth > 0 && list.offsetHeight > 0){
+        divs = list.getElementsByClassName('harvester-list-div');//direct child divs of div-list-view
+        for (i=0; i<divs.length; i++){
+            a = divs[i];
+            txtValue = a.id.split("-")[0]; //divs are named {{harvester.name}}-div-list
+            if(txtValue.toUpperCase().includes(filter)){
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
+        }
+    } else if (card.offsetWidth > 0 && card.offsetHeight > 0){
+        divs = card.getElementsByClassName('harvester-card-div');//direct child divs of div-card-view
+        for (i=0; i<divs.length; i++){
+            a = divs[i];
+            txtValue = a.id.split("-")[0]; //divs are named {{harvester.name}}-div-card
+            if(txtValue.toUpperCase().includes(filter)){
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
+        }
+    } else if (table.offsetWidth > 0 && table.offsetHeight > 0){
+        tbody = table.getElementsByTagName('tbody')[0];//only tbody changes, thead should always be visible
+        trs = tbody.getElementsByTagName('tr');
+        for (i=0; i<trs.length; i++){
+            a = trs[i];
+            txtValue = a.id.split("-")[0]; //trs are named {{harvester.name}}-tr-table
+            if(txtValue.toUpperCase().includes(filter)){
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
         }
     }
 }
+
+function checkboxFunction(){
+    //enables/disables buttons in table-view if checkboxes are checked/not checked
+
+    var checkBoxes, isChecked, i, startHButton, disableHButton;
+    checkBoxes = document.getElementsByClassName("table-view-checkbox");
+    isChecked = false;
+    for (i=0; i<checkBoxes.length; i++){
+        if (checkBoxes[i].checked){
+            isChecked = true;
+        }
+    }
+    startHButton = document.getElementById("table-checkbox-start-harvesters");
+    disableHButton = document.getElementById("table-checkbox-disable-harvesters");
+    if(isChecked){
+        removeClass(startHButton, "disabled");
+        addClass(startHButton, "active");
+
+        removeClass(disableHButton, "disabled");
+        addClass(disableHButton, "active");
+    }else{
+        removeClass(startHButton, "active");
+        addClass(startHButton, "disabled");
+
+        removeClass(disableHButton, "active");
+        addClass(disableHButton, "disabled");
+    }
+}
+//implement own add/remove class methods to avoid jquery
+function hasClass(el, className) {
+    if (el.classList)
+      return el.classList.contains(className)
+    else
+      return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))
+}
+  
+function addClass(el, className) {
+    if (el.classList)
+        el.classList.add(className)
+    else if (!hasClass(el, className)) el.className += " " + className
+}
+  
+function removeClass(el, className) {
+    if (el.classList)
+        el.classList.remove(className)
+    else if (hasClass(el, className)) {
+        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
+        el.className=el.className.replace(reg, ' ')
+    }
+}
+  
 
 $(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show

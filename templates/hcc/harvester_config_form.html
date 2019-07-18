@@ -43,8 +43,10 @@
                 console.log(response.changes);
                 if (response.status == "Ok") {
                   $('#message-modal-header').text('Success!');
+                } else if (response.status == "unchanged"){
+                  $('#message-modal-header').text('Info');
                 } else {
-                  $('#message-modal-header').text('Error');
+                  $('#message-modal-header').text('Error!');
                 };
                 $('#message-modal').modal('show');
             },  
