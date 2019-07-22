@@ -1,3 +1,6 @@
+"""
+Testing Module
+"""
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import include, path, reverse, resolve
@@ -6,6 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, URLPatternsTestCase, APIClient
 
 from .models import Harvester
+from .forms import HarvesterForm
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -59,21 +63,23 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             'owner': user.id,
             'url': 'http://somewhere.url/v1'
         }
-        self.response = self.client.post(
-            reverse('api:create'),
-            self.harvester_data,
-            format="json")
+        self.response = self.client.post(reverse('api:create'),
+                                         self.harvester_data,
+                                         format="json")
 
-    # due to new APIStrategy-Interface this test had been disabled 
+    # due to new APIStrategy-Interface this test had been disabled
     # because we need a real or mocking harvester API to initialize
-    #def test_start_harvesters_view_status_code(self):
+    # def test_start_harvesters_view_status_code(self):
     #    """Test the API command start all harvesters with reverse lookup of the resource."""
     #    url = reverse('api:run-harvesters')
     #    response = self.client.post(url)
     #    self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_harvesters_go_url_resolves_run_harvesters_view(self):
-        """Check if the harvester API command <<start all harvesters>> resolves to the correct view."""
+        """
+        Check if the harvester API command <<start all harvesters>>
+        resolves to the correct view.
+        """
         view = resolve('/v1/harvesters/start')
         self.assertEqual(view.url_name, 'run-harvesters')
 
@@ -84,20 +90,18 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
     def test_authorization_is_enforced(self):
         """Test that the api has user authorization."""
         new_client = APIClient()
-        res = new_client.get(
-            '/v1/harvesters/',
-            kwargs={'pk': 3},
-            format="json")
+        res = new_client.get('/v1/harvesters/',
+                             kwargs={'pk': 3},
+                             format="json")
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_api_can_get_a_harvester(self):
         """Test the api can get a given harvester."""
         harvester = Harvester.objects.get(id=1)
-        response = self.client.get(
-            '/v1/harvesters/',
-            kwargs={'pk': harvester.id},
-            format="json")
+        response = self.client.get('/v1/harvesters/',
+                                   kwargs={'pk': harvester.id},
+                                   format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, harvester)
@@ -105,20 +109,56 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
     def test_api_can_update_harvester(self):
         """Test the api can update a given harvester."""
         harvester = Harvester.objects.get()
-        change_harvester = {'name': 'newHarSilvester', 'url': 'http://somewhat.url/v2/'}
-        res = self.client.put(
-            reverse('api:harvester-detail', kwargs={'name': harvester.name}),
-            change_harvester,
-            format='json')
+        change_harvester = {
+            'name': 'newHarSilvester',
+            'url': 'http://somewhat.url/v2/'
+        }
+        res = self.client.put(reverse('api:harvester-detail',
+                                      kwargs={'name': harvester.name}),
+                              change_harvester,
+                              format='json')
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_api_can_delete_harvester(self):
         """Test the api can delete a harvester."""
         harvester = Harvester.objects.get()
-        response = self.client.delete(
-            reverse('api:harvester-detail', kwargs={'name': harvester.name}),
-            format='json',
-            follow=True)
+        response = self.client.delete(reverse('api:harvester-detail',
+                                              kwargs={'name': harvester.name}),
+                                      format='json',
+                                      follow=True)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class RegexTestCase(TestCase):
+    """This class defines the test for harvester name registration."""
+
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        User.objects.create(username='Prometheus')
+
+    def test_harvester_form_is_valid(self):
+        """Test the regex for harvester name."""
+        user = User.objects.get(id=1)
+        url = "http://www.isgoing.to/api"
+        data = {
+            'name': "foo_bar1",
+            'owner': user,
+            'url': url,
+        }
+        form = HarvesterForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_harvester_form_is_invalid(self):
+        """Test the regex for harvester name."""
+        user = User.objects.get(id=1)
+        url = "http://www.isgoing.to/api"
+        data = {
+            'name': "foo bar@1",
+            'owner': user,
+            'url': url,
+        }
+        form = HarvesterForm(data=data)
+        self.assertFalse(form.is_valid())

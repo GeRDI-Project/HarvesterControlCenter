@@ -1,3 +1,6 @@
+"""
+Permission Module
+"""
 from rest_framework import permissions
 from .models import Harvester
 
@@ -16,6 +19,6 @@ class IsOwner(permissions.BasePermission):
         """Return True if permission is granted to the harvester owner."""
         if isinstance(obj, Harvester):
             return obj.owner == request.user
-        
+
         # Write permissions are only allowed to the owner of the harvester.
         return obj.owner == request.user

@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v3.4.8
+# Harvester Control Center (HCC) v3.7.2
 
 A Harvester Control Center GUI with REST-API written in Django.
 
@@ -65,6 +65,7 @@ Install the dependencies needed to run the app:
 
    1. Basic Authentication via Username and Password
    2. Token Authentication via Auth.-Token (see below)
+   3. SAML Auth will be implemented...
 
 ### Code testing
 
@@ -74,9 +75,9 @@ To use Django Testing Environment fire the following command in your Terminal
     python manage.py test
 ```
 
-### Running in dev mode
+### Running in developer mode
 
-First, create a super-user
+First, create a super-user and then switch DEBUG mode on in settings.py
 
 ```bash
     python manage.py createsuperuser
@@ -85,7 +86,7 @@ First, create a super-user
 Fire up the server using this one simple command:
 
 ```bash
-    python manage.py runserver
+    DEBUG=True python manage.py runserver
 ```
 
 You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
@@ -116,9 +117,9 @@ For instance getting all harvesters (_/v1/harvesters/_) via Token-Authentication
 ## Deployment
 
 A Docker Container for production with nginx as buildin reverse proxy.
-If you do not have a SSL Configuration, please remove the line
-"proxy_set_header X-Forwarded-Proto https;" from the nginx configuration
-in folder nginx/nginx.conf.
+If you do have a SSL Configuration, please add the line
+"proxy_set_header X-Forwarded-Proto https;" in the nginx configuration
+found in folder nginx/nginx.conf.
 
 First build the docker container...
 
@@ -128,7 +129,7 @@ First build the docker container...
 
 ### Environment variable configuration
 
-There are seven ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container. Set a console LOGLEVEL (default: INFO)
+There are seven ENV variables which could be used to configure production use. Feel free to set them as needed when starting the docker container. Set a console LOGLEVEL (default: INFO). GUI interaction will be logged to a file in log/debug.log
 
 * name: "DEBUG" value: "False"
 * name: "ALLOWED_HOSTS" value: "xxx.xxx.xxx.xxx,www.domainname.org"
