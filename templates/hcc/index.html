@@ -285,12 +285,12 @@
                         <div id="div-table-view" class="row"><!-- table-view -->
                             <div class="table-responsive">
                                 <div>
-                                    <button id="table-checkbox-disable-harvesters" class="btn btn-success btn-sm disabled">
+                                    <a id="table-checkbox-disable-harvesters" class="btn btn-success btn-sm disabled" href="#" role="button">
                                         Disable Harvesters
-                                    </button>
-                                    <button id="table-checkbox-start-harvesters" class="btn btn-success btn-sm disabled">
+                                    </a>
+                                    <a id="table-checkbox-start-harvesters" class="btn btn-success btn-sm disabled" href="#" role="button">
                                         Start Harvesters
-                                    </button>
+                                    </a>
                                 </div><br>
                                 <table class="table">
                                     <thead id="table-view-thead">
@@ -313,6 +313,9 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <a id ="table-hcc-button-{{harvester.name}}" href="{% url 'api:harvester-detail' name=harvester.name %}" role="button" class="btn btn-sm btn-primary">
+                                                    <i class="fa fa-search" aria-hidden="true" title="Details" data-toggle="tooltip"></i>
+                                                </a>
                                                 <button id ="table-info-button-{{harvester.name}}" type="button" class="btn btn-sm btn-outline-primary" data-container="body" data-toggle="popover" title="Info" data-content="{{ val }}">
                                                 <i class="fa fa-info" aria-hidden="true"></i> 
                                                 </button>
@@ -334,6 +337,24 @@
                                                 <i class="fa fa-refresh" title="Reset" aria-hidden="true"
                                                 data-toggle="tooltip"></i>
                                                 </a>
+                                                {% if val.status == 'harvesting' %}
+                                                <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
+                                                    role="button" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-ban" aria-hidden="true" title="Stop Harvester" data-toggle="tooltip"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if val.status == 'idle' or val.status == 'idling' %}
+                                                <a id="" title="{% url 'api:start-harvest' name=harvester.name %}" href="{% url 'start-harvester' name=harvester.name %}"
+                                                    role="button" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-play-circle" aria-hidden="true" title="Start Harvester" data-toggle="tooltip"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if val.status == 'submitting' %}
+                                                <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
+                                                    role="button" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-ban" aria-hidden="true" title="Stop Harvester" data-toggle="tooltip"></i>
+                                                </a>
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 {{val.status}}

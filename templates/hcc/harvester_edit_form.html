@@ -46,6 +46,7 @@ $(document).ready(function(){
               $('#message-modal-header').text('Success!');
               $('#'+response.oldname+'-notes').text('Notes: '+response.notes);
               $('#'+response.oldname+'-name').text(response.newname);
+              $('#'+response.oldname+'-name-table').text(response.newname);
               $('#'+response.oldname+'-url').attr('href',response.url);
               $('#'+response.oldname+'-url').text(response.newname);
             } else {

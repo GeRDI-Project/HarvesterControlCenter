@@ -71,6 +71,30 @@ def toggle_harvester(request, name):
                              name + ' harvester enabled.')
     return HttpResponseRedirect(reverse('hcc_gui'))
 
+@login_required
+def toggle_harvesters(request, hnames):
+    """
+    This function toggles the enabled and disabled status of selected harvester.
+
+    :param request: the request
+    :param hnames: names of the harvesters
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+    names = hnames.split('-')
+    for name in names:
+        harv = get_object_or_404(Harvester, name=name)
+        if harv.enabled:
+            harv.disable()
+            LOGGER.info("%s disabled.", harv.name)
+            messages.add_message(request, messages.INFO,
+                                name + ' harvester disabled.')
+        else:
+            harv.enable()
+            LOGGER.info("%s enabled.", harv.name)
+            messages.add_message(request, messages.INFO,
+                                name + ' harvester enabled.')
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
 
 @login_required
 def stop_harvester(request, name):
@@ -103,6 +127,24 @@ def start_harvester(request, name):
     response = api.start_harvest()
     messages.add_message(request, messages.INFO,
                          name + ': ' + str(response.data[harvester.name]))
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
+@login_required
+def start_selected_harvesters(request, hnames):
+    """
+    This function starts selected harvester.
+
+    :param request: the request
+    :param hnames: names of the harvesters
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+    names = hnames.split('-')
+    for name in names:
+        harvester = get_object_or_404(Harvester, name=name)
+        api = InitHarvester(harvester).get_harvester_api()
+        response = api.start_harvest()
+        messages.add_message(request, messages.INFO,
+                            name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 

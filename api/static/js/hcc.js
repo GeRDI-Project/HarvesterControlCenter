@@ -250,22 +250,6 @@ $(function () {
         });
         return false;
     });
-
-    $('#table-checkbox-disable-harvesters').click(function(){
-        if($(this).hasClass("active")){
-            $('#message-modal-header').text('Work in progress');
-            $('#message-modal-body').text('Nothing to see here...');
-            $('#message-modal').modal('show');
-        }    
-    });
-
-    $('#table-checkbox-start-harvesters').click(function(){
-        if($(this).hasClass("active")){
-            $('#message-modal-header').text('Work in progress');
-            $('#message-modal-body').text('Nothing to see here...');
-            $('#message-modal').modal('show');
-        }    
-    });
 });
 
 /*
@@ -420,30 +404,47 @@ function filterFunction() {
 }
 
 function checkboxFunction(){
-    //enables/disables buttons in table-view if checkboxes are checked/not checked
+    /*
+    Enables/disables links in table-view if checkboxes are checked/not checked
+    and adds url with the name of the harvesters
+    */
 
-    var checkBoxes, isChecked, i, startHButton, disableHButton;
+    var checkBoxes, isChecked, harvs, i, startHButton, disableHButton, tr, hname, slug;
     checkBoxes = document.getElementsByClassName("table-view-checkbox");
     isChecked = false;
+    harvs = [];
     for (i=0; i<checkBoxes.length; i++){
         if (checkBoxes[i].checked){
             isChecked = true;
+            tr = $(checkBoxes[i]).closest('tr');//get row, where checkBox[i] is in
+            hname = $(tr).attr('id').split("-")[0]; //trs are named {{harvester.name}}-tr-table
+            harvs.push(hname);
         }
     }
+    slug = '';
+    for (i=0; i<harvs.length; i++){
+        if (i < harvs.length - 1){
+            slug += harvs[i] + '-';
+        }else{
+            slug += harvs[i];
+        }
+    }
+    
     startHButton = document.getElementById("table-checkbox-start-harvesters");
     disableHButton = document.getElementById("table-checkbox-disable-harvesters");
     if(isChecked){
         removeClass(startHButton, "disabled");
-        addClass(startHButton, "active");
-
         removeClass(disableHButton, "disabled");
-        addClass(disableHButton, "active");
-    }else{
-        removeClass(startHButton, "active");
-        addClass(startHButton, "disabled");
 
-        removeClass(disableHButton, "active");
+        $(disableHButton).attr('href', "toggle/" + slug);
+        $(startHButton).attr('href', "start/" + slug);
+        // note: not the best solution, might be changed later
+        // to a version with dynamic url
+    }else{
+        addClass(startHButton, "disabled");
         addClass(disableHButton, "disabled");
+
+        $(this).attr('href', "#");
     }
 }
 //implement own add/remove class methods to avoid jquery
