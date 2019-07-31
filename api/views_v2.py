@@ -585,18 +585,25 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
             if(old_data[key] != new_data):
                 changes[key] = {"before": old_data[key], "after": new_data}
                 config_changes[key] = new_data
-
         if len(changes) > 0:
             response = api.save_harvester_config_data(config_changes)
             data["changes"] = changes
         else:
-            return JsonResponse({"status":"unchanged", "message": "There have been no changes!"})    
+            return JsonResponse({"status":"unchanged", "message": "There have been no changes!"})
         
+        message = response.data[harvester.name][HCCJC.HEALTH]["message"]
+        response_message = "Warning!"
+        for m in message.split(";"): # check if a parameter could not been set and handle this
+            if "Cannot change value of parameter" in m:
+                response_message += m + "\n"
+                key = m.split("'")[1]
+                key = key[0].upper() + key[1:]
+                data["changes"].pop(key, None)
+        if response_message == "Warning!": # no errors
+            data["message"] = "Configuration was successfull!"
+        else: # handle the errors and show them 
+            data["message"] = response_message
         data["status"] = response.data[harvester.name][HCCJC.HEALTH]["status"]
-        if response.status_code != status.HTTP_200_OK:
-            data["message"] = response.data[harvester.name][HCCJC.HEALTH]["message"]
-        else:
-            data["message"] = "{} has been configurated successfully!".format(myname)
         
         return JsonResponse(data)       
 

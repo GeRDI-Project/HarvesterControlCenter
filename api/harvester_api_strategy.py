@@ -750,12 +750,5 @@ class VersionBased7Strategy(Strategy):
         response = requests.post(set_url, json=changes, timeout=5)
         feedback = {}
         feedback[harvester.name] = {}
-        if response.status_code == status.HTTP_200_OK:
-            feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)
-        else:
-            feedback[harvester.name][HCCJC.HEALTH] = {
-                "status": "failed",
-                "message": "unable do set configuration data of harvester {}".format(harvester.name),
-            }
-            
+        feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)    
         return Response(feedback, status=response.status_code)    

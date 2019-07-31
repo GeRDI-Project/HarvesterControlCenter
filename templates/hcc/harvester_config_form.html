@@ -15,14 +15,14 @@
             {{ message }}
         {% endif %}
         </div>
-        <div class="modal-footer">
-            {% if form %}    
+        {% if form %} 
+        <div class="modal-footer">   
             <input class="btn btn-primary" type="submit" Value="Save"/>
-            {% endif %}    
             <button type="button" class="btn btn-default" data-dismiss="modal">
                 Cancel
             </button>
         </div>
+        {% endif %}
         </form>
     </div>
 </div>
@@ -39,14 +39,20 @@
             context: this,
             success: function(response){
                 $('#config-modal').modal('hide');
-                $('#message-modal-body').text(response.message);
                 console.log(response.changes);
                 if (response.status == "Ok") {
-                  $('#message-modal-header').text('Success!');
+                    var changes = "";
+                    for (const [key, value] of Object.entries(response.changes)) {
+                        changes += key + ":<br> before: " + value["before"] + ", after: " + value["after"] + "<br>";
+                    }
+                    $('#message-modal-header').text('Success!');
+                    $('#message-modal-body').html("<p>" + response.message + "<br><br> Changed parameters: <br><br>" + changes + "</p>");
                 } else if (response.status == "unchanged"){
-                  $('#message-modal-header').text('Info');
-                } else {
-                  $('#message-modal-header').text('Error!');
+                    $('#message-modal-header').text('Info');
+                    $('#message-modal-body').text(response.message);
+                }else {
+                    $('#message-modal-header').text('Error!');
+                    $('#message-modal-body').text(response.message);
                 };
                 $('#message-modal').modal('show');
             },  
