@@ -514,8 +514,6 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
 
     def post(self, request, *args, **kwargs): #the actual logic behind the form
         name = self.request.POST.get('name')
-        notes = self.request.POST.get('notes')
-        url = self.request.POST.get('url')
         if "name" not in kwargs: #Add Harvester
             if Harvester.objects.filter(name=name).exists():#check if the name is not already used
                 return JsonResponse({'message':'A Harvester named {} already exists!'.format(name)})
@@ -530,12 +528,12 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         form = HarvesterForm(self.request.POST, instance=_h)
         if form.is_valid():
             form.save()
-            success_message = "{} has been {} successfully!".format(myname, action)
+            success_message = "{} has been {} successfully! Please hold on while the page is reloading.".format(myname, action)
             if action == 'initialised':
                 LOGGER.info("new harvester created: {}".format(name))
-            response = {'message':success_message, 'oldname':myname, 'newname':name, 'notes':notes, 'url':url}
+            response = {'message':success_message, 'name':myname}
         else:
-            success_message = "{} could not been {}!".format(myname, action)
+            success_message = "{} could not been {}! Please hold on while the page is reloading.".format(myname, action)
             response = {'message':success_message}
         return JsonResponse(response)
 

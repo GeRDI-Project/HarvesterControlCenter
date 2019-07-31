@@ -42,17 +42,13 @@ $(document).ready(function(){
         success: function(response){
             $('#harvesterModal').modal('hide');
             $('#message-modal-body').text(response.message);
-            if (typeof response.newname !== 'undefined') {
+            if (typeof response.name !== 'undefined') {
               $('#message-modal-header').text('Success!');
-              $('#'+response.oldname+'-notes').text('Notes: '+response.notes);
-              $('#'+response.oldname+'-name').text(response.newname);
-              $('#'+response.oldname+'-name-table').text(response.newname);
-              $('#'+response.oldname+'-url').attr('href',response.url);
-              $('#'+response.oldname+'-url').text(response.newname);
             } else {
               $('#message-modal-header').text('Error');
             };
             $('#message-modal').modal('show');
+            location.reload();
         },  
         error: function (response) {
             $('#harvesterModal').modal('hide');
