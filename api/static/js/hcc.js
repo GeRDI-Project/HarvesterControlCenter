@@ -463,26 +463,90 @@ function checkboxFunction(){
         $(this).attr('href', "#");
     }
 }
+
+function checkboxMasterFunction(){
+    var masterCheckbox, checkboxes, i;
+    masterCheckbox = document.getElementById("table-checkbox-master");
+    checkboxes = document.getElementsByClassName("table-view-checkbox");
+
+    for (i=0; i<checkboxes.length; i++){
+        checkboxes[i].checked = (masterCheckbox.checked) ? true : false;
+    }
+    checkboxFunction();
+}
+
+function checkboxOnlyShowIdle(){
+    var checkBox, table, tbody, trs, status, hname;
+    table = document.getElementById("div-table-view");
+    checkBox = document.getElementById("checkbox-show-idle");
+    tbody = table.getElementsByTagName('tbody')[0];
+    trs = tbody.getElementsByTagName('tr');
+
+    if (checkBox.checked){
+        for (i=0; i<trs.length; i++){
+            a = trs[i];
+            hname = a.id.split("-")[0];
+            status = a.getElementsByClassName("tv-status-" + hname)[0];
+            if(status.innerText == "idle"){
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
+        }
+    }else{
+        for (i=0; i<trs.length; i++){
+            a = trs[i];
+            a.style.display = "";
+        }    
+    }
+}
+
+function checkboxHideIdle(){
+    var checkBox, table, tbody, trs, status, hname, i;
+    table = document.getElementById("div-table-view");
+    checkBox = document.getElementById("checkbox-hide-idle");
+    tbody = table.getElementsByTagName('tbody')[0];
+    trs = tbody.getElementsByTagName('tr');
+
+    if (checkBox.checked){
+        for (i=0; i<trs.length; i++){
+            a = trs[i];
+            hname = a.id.split("-")[0];
+            status = a.getElementsByClassName("tv-status-" + hname)[0];
+            if(status.innerText == "idle"){
+                a.style.display = "none";
+            } else {
+                a.style.display = "";
+            }
+        }
+    }else{
+        for (i=0; i<trs.length; i++){
+            a = trs[i];
+            a.style.display = "";
+        }    
+    }
+}
+
 //implement own add/remove class methods to avoid jquery
 function hasClass(el, className) {
     if (el.classList)
-      return el.classList.contains(className)
+      return el.classList.contains(className);
     else
-      return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))
+      return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
 }
   
 function addClass(el, className) {
     if (el.classList)
-        el.classList.add(className)
+        el.classList.add(className);
     else if (!hasClass(el, className)) el.className += " " + className
 }
   
 function removeClass(el, className) {
     if (el.classList)
-        el.classList.remove(className)
+        el.classList.remove(className);
     else if (hasClass(el, className)) {
-        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
-        el.className=el.className.replace(reg, ' ')
+        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+        el.className=el.className.replace(reg, ' ');
     }
 }
   

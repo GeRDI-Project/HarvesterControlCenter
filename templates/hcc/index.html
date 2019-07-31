@@ -291,11 +291,13 @@
                                     <a id="table-checkbox-start-harvesters" class="btn btn-success btn-sm disabled" href="#" role="button">
                                         Start Harvesters
                                     </a>
+                                    <label class="checkbox-inline"><input id="checkbox-show-idle" type="checkbox" onclick="checkboxOnlyShowIdle()"> only show idle </label>
+                                    <label class="checkbox-inline"><input id="checkbox-hide-idle"type="checkbox" onclick="checkboxHideIdle()"> hide idle </label>
                                 </div><br>
                                 <table class="table">
                                     <thead id="table-view-thead">
                                         <tr>
-                                            <th></th>
+                                            <th><input id="table-checkbox-master" type="checkbox" onclick="checkboxMasterFunction()"> select all </th>
                                             <th>Harvester Name</th>
                                             <th>Actions</th>
                                             <th>Status</th>
@@ -356,7 +358,7 @@
                                                 </a>
                                                 {% endif %}
                                             </td>
-                                            <td>
+                                            <td class="tv-status-{{harvester.name}}">
                                                 {{val.status}}
                                                 <i id="health-exclamation-{{ harvester.name }}" class="fa fa-exclamation-triangle"
                                                 style="color: #ffc107;{% if val.health == 'OK' %}display: none{% endif %};"
