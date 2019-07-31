@@ -14,6 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
+var listView, cardView, tableView;
+// which view is shown at the moment (especially at the beginning)
+listView = false;
+tableView = false;
+cardView = true;
+
 /*
    Execute when DOM is ready
 */
@@ -21,6 +27,7 @@ $(function () {
 
     $('#loaderSpinnerLog').hide();
     $('#loaderSpinnerStat').hide();
+    toggleViews();
 
     var ctx = document.getElementById("harvesterChart");
     if (ctx != null) {
@@ -151,10 +158,6 @@ $(function () {
     /*
         Buttons
     */
-
-    $('#div-list-view').hide();
-    $('#div-table-view').hide();
-    $('#btn-card-view').hide();
     
     $('#btn-harvester-log').on('click', function (event) {
     load_into_modal(this);
@@ -165,33 +168,27 @@ $(function () {
     });
 
     $('#btn-list-view').click(function () {
-        $('#div-card-view').hide();
-        $('#div-table-view').hide();
-        $('#div-list-view').show();
-
-        $('#btn-list-view').hide();
-        $('#btn-card-view').show();
-        $('#btn-table-view').show();
+        listView = true;
+        cardView = false;
+        tableView = false;
+        toggleViews();
+        filterFunction();
     });
 
     $('#btn-card-view').click(function () {
-        $('#div-list-view').hide();
-        $('#div-table-view').hide();
-        $('#div-card-view').show();
-
-        $('#btn-card-view').hide();
-        $('#btn-list-view').show();
-        $('#btn-table-view').show();
+        listView = false;
+        cardView = true;
+        tableView = false;
+        toggleViews();
+        filterFunction();
     });
 
     $('#btn-table-view').click(function () {
-        $('#div-card-view').hide();
-        $('#div-list-view').hide();
-        $('#div-table-view').show();
-
-        $('#btn-table-view').hide();
-        $('#btn-card-view').show();
-        $('#btn-list-view').show();
+        listView = false;
+        cardView = false;
+        tableView = true;
+        toggleViews();
+        filterFunction();
     });
 
     $('#collapseChart').on('show.bs.collapse', function (event) {
@@ -366,7 +363,7 @@ function filterFunction() {
 
     // first: check which div is visible (same implementation like jQuerys :visible)
     // after: Loop through divs/trs and compare id names
-    if (list.offsetWidth > 0 && list.offsetHeight > 0){
+    if (listView){
         divs = list.getElementsByClassName('harvester-list-div');//direct child divs of div-list-view
         for (i=0; i<divs.length; i++){
             a = divs[i];
@@ -377,7 +374,7 @@ function filterFunction() {
                 a.style.display = "none";
             }
         }
-    } else if (card.offsetWidth > 0 && card.offsetHeight > 0){
+    } else if (cardView){
         divs = card.getElementsByClassName('harvester-card-div');//direct child divs of div-card-view
         for (i=0; i<divs.length; i++){
             a = divs[i];
@@ -388,7 +385,7 @@ function filterFunction() {
                 a.style.display = "none";
             }
         }
-    } else if (table.offsetWidth > 0 && table.offsetHeight > 0){
+    } else if (tableView){
         tbody = table.getElementsByTagName('tbody')[0];//only tbody changes, thead should always be visible
         trs = tbody.getElementsByTagName('tr');
         for (i=0; i<trs.length; i++){
@@ -401,6 +398,25 @@ function filterFunction() {
             }
         }
     }
+}
+
+function toggleViews(){
+    var listDiv, listBtn, cardDiv, cardBtn,tableDiv, tableBtn;
+    listDiv = document.getElementById("div-list-view");
+    cardDiv = document.getElementById("div-card-view");
+    tableDiv = document.getElementById("div-table-view");
+
+    listBtn = document.getElementById("btn-list-view");
+    cardBtn = document.getElementById("btn-card-view");
+    tableBtn = document.getElementById("btn-table-view");
+
+    listDiv.style.display = listView ? "" : "none";
+    cardDiv.style.display = cardView ? "" : "none";
+    tableDiv.style.display = tableView ? "" : "none";
+
+    listBtn.style.display = listView ? "none" : "";
+    cardBtn.style.display = cardView ? "none" : "";
+    tableBtn.style.display = tableView ? "none" : "";
 }
 
 function checkboxFunction(){
