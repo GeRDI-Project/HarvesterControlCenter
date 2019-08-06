@@ -360,7 +360,7 @@
                                             </td>
                                             <td class="tv-status-{{harvester.name}}">
                                                 {{val.status}}
-                                                <i id="health-exclamation-{{ harvester.name }}" class="fa fa-exclamation-triangle"
+                                                <i id="health-exclamation-{{ harvester.name }}" class="fa fa-exclamation-triangle float-right"
                                                 style="color: #ffc107;{% if val.health == 'OK' %}display: none{% endif %};"
                                                 data-toggle="tooltip" data-placement="top" title="{{ val.health }}"
                                                 aria-hidden="true"></i>
@@ -481,5 +481,21 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
+<!-- Submission Modal -->
+<div id="submission-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="submission-modal-header" class="modal-title">
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div id="submission-modal-body" class="modal-body"></div>
+                <div class="modal-footer">
+                    <button id="submission-modal-submit-button" type="button" class="btn btn-primary">Save</button>
+                    <button id="submission-modal-cancel-button" type="button" class="btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

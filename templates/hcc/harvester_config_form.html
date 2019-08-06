@@ -6,64 +6,134 @@
             <h4 class="modal-title"> {{ hname }} Harvester Configuration</h4>
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         </div>
-        <form id="harvester-config-form" class="form-horizontal" action="{% url 'config-harvester' name=hname %}" method="POST">
-        <div class="modal-body">
-        {% if form %}
-            {% csrf_token %}
-            {{ form|crispy }}
-        {% else %}
-            {{ message }}
-        {% endif %}
-        </div>
-        {% if form %} 
-        <div class="modal-footer">   
-            <input class="btn btn-primary" type="submit" Value="Save"/>
-            <button type="button" class="btn btn-default" data-dismiss="modal">
-                Cancel
-            </button>
-        </div>
-        {% endif %}
+        <form id="harvester-config-form" class="form-horizontal" action="{% url 'config-harvester' name=hname %}"
+            method="POST">
+            <div class="modal-body">
+                {% if form %}
+                {% csrf_token %}
+                {{ form|crispy }}
+                {% else %}
+                {{ message }}
+                {% endif %}
+            </div>
+            {% if form %}
+            <div class="modal-footer">
+                <input class="btn btn-primary" type="submit" Value="Save" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+            {% endif %}
         </form>
     </div>
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function(){
-      $('#harvester-config-form').submit(function(ev) {
-        ev.preventDefault();
-        var serializedData = $(this).serialize();
-        $.ajax({
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: serializedData,
-            context: this,
-            success: function(response){
+    $(document).ready(function () {
+
+        var originalConfigData = $('#harvester-config-form').serialize();
+        var serializedConfigData;
+
+        $('#harvester-config-form').submit(function (ev) {
+            ev.preventDefault();
+            serializedConfigData = $(this).serialize();
+            var changes = compareData(); //changes[i] = [key, oldValue, newValue]
+            if (changes.length > 0) {
+                //open a modal to show the changes and ask for submit
+                $('#submission-modal-header').text('Info');
+
+                var text = 'You are about to make the following changes. Please submit to continue.<br>';
+                for (var i = 0; i < changes.length; i++) {
+                    text += '<br>' + changes[i][0] + ': ' + changes[i][1] + ' to ' + changes[i][2];
+                }
+                $('#submission-modal-body').html(text);
+                $('#submission-modal').modal('show');
+
+                $('#submission-modal-submit-button').click(function () {
+                    $('#submission-modal').modal('hide');
+                    $.ajax({
+                        type: $('#harvester-config-form').attr('method'),
+                        url: $('#harvester-config-form').attr('action'),
+                        data: serializedConfigData,
+                        context: $('#harvester-config-form'),
+                        success: function (response) {
+                            $('#config-modal').modal('hide');
+                            console.log(response.changes);
+                            if (response.status == "Ok") {
+                                $('#message-modal-header').text('Success!');
+                            } else if (response.status == "unchanged") {
+                                $('#message-modal-header').text('Info');
+                            } else {
+                                $('#message-modal-header').text('Error!');
+                            };
+                            //give response.message a nicer output with linebreaks
+                            var message = response.message.replace(";", "<br>");
+                            $('#message-modal-body').html(message);
+                            $('#message-modal').modal('show');
+                        },
+                        error: function (response) {
+                            $('#harvesterModal').modal('hide');
+                            $('#message-modal-header').text('Error!');
+                            $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+                            $('#message-modal').modal('show');
+                        },
+                    });
+                });
+
+                $('#submission-modal-cancel-button').click(function () {
+                    $('#submission-modal').modal('hide');
+                    $('#config-modal').modal('hide');
+                });
+            } else {
                 $('#config-modal').modal('hide');
-                console.log(response.changes);
-                if (response.status == "Ok") {
-                    var changes = "";
-                    for (const [key, value] of Object.entries(response.changes)) {
-                        changes += key + ":<br> before: " + value["before"] + ", after: " + value["after"] + "<br>";
-                    }
-                    $('#message-modal-header').text('Success!');
-                    $('#message-modal-body').html("<p>" + response.message + "<br><br> Changed parameters: <br><br>" + changes + "</p>");
-                } else if (response.status == "unchanged"){
-                    $('#message-modal-header').text('Info');
-                    $('#message-modal-body').text(response.message);
-                }else {
-                    $('#message-modal-header').text('Error!');
-                    $('#message-modal-body').text(response.message);
-                };
+                $('#message-modal-header').text('Info');
+                $('#message-modal-body').text("There have been no changes!");
                 $('#message-modal').modal('show');
-            },  
-            error: function (response) {
-                $('#harvesterModal').modal('hide');
-                $('#message-modal-header').text('Error!');
-                $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
-                $('#message-modal').modal('show');
-            },    
+            }
+            return false;
         });
-        return false;
-      });
+
+        function compareData() {
+            var changes, oldData, newData, i, temp, keys;
+
+            //convert the serialized data (key1=value1&key2=value2&...) to a dictionary
+            oldData = {};
+            temp = originalConfigData.split("&");
+            for (i = 0; i < temp.length; i++) {
+                oldData[temp[i].split("=")[0]] = temp[i].split("=")[1];
+            }
+            newData = {};
+            temp = serializedConfigData.split("&");
+            for (i = 0; i < temp.length; i++) {
+                newData[temp[i].split("=")[0]] = temp[i].split("=")[1];
+            }
+
+            //if a checkbox is not checked, then it did not appear in the serialized data
+            //-> make a list of all keys and remove the duplicates
+            temp = Object.keys(oldData).concat(Object.keys(newData));
+            keys = [];
+            for (i = 0; i < temp.length; i++) {
+                if ($.inArray(temp[i], keys) == -1) {
+                    keys.push(temp[i]);
+                }
+            }
+
+            //loop over all keys to detect changes
+            changes = [];
+            for (i = 0; i < keys.length; i++) {
+                temp = [];
+                if (oldData[keys[i]] != newData[keys[i]]) {
+                    if (oldData[keys[i]] == null) {
+                        temp = [keys[i], false, true];
+                    } else if (newData[keys[i]] == null) {
+                        temp = [keys[i], true, false];
+                    } else {
+                        temp = [keys[i], oldData[keys[i]], newData[keys[i]]];
+                    }
+                    changes.push(temp);
+                }
+            }
+            return changes;
+        }
     });
-    </script>  
+</script>

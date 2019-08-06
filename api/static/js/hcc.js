@@ -538,7 +538,7 @@ function hasClass(el, className) {
 function addClass(el, className) {
     if (el.classList)
         el.classList.add(className);
-    else if (!hasClass(el, className)) el.className += " " + className
+    else if (!hasClass(el, className)) el.className += " " + className;
 }
 
 function removeClass(el, className) {
