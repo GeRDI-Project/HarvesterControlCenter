@@ -169,10 +169,15 @@ def a_response(harvester_name, url, method):
                     HCCJC.STATUS]
                 feedback[harvester_name][HCCJC.STATE] = harvester_json[
                     HCCJC.STATUS]
+            else:
+                feedback[harvester_name][HCCJC.STATUS] = "no status"
+                feedback[harvester_name][HCCJC.STATE] =  "no status"
 
             if HCCJC.MESSAGE in harvester_json:
                 feedback[harvester_name][HCCJC.HEALTH] = harvester_json[
                     HCCJC.MESSAGE]
+            else:
+                feedback[harvester_name][HCCJC.HEALTH] = "health unknown"
 
         except ValueError:
             harvester_json = response.text
@@ -222,9 +227,11 @@ class BaseStrategy(Strategy):
 
                 feedback[harvester.name][
                     HCCJC.CRONTAB] = "cron not supported. basic mode."
+                feedback[harvester.name][HCCJC.STATUS] = "no status"
 
             except RequestException as _e:
                 feedback[harvester.name][HCCJC.HEALTH] = str(_e)
+                feedback[harvester.name][HCCJC.STATUS] = "no status"
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,
@@ -304,6 +311,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester_name] = response.text
             except RequestException as _e:
                 feedback[harvester_name][HCCJC.HEALTH] = str(_e)
+                feedback[harvester.name][HCCJC.STATUS] = "no status"
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,
@@ -316,6 +324,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester_name] = response.text
             except RequestException as _e:
                 feedback[harvester_name][HCCJC.HEALTH] = str(_e)
+                feedback[harvester.name][HCCJC.STATUS] = "no status"
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,
@@ -328,6 +337,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester_name] = response.text
             except RequestException as _e:
                 feedback[harvester_name][HCCJC.HEALTH] = str(_e)
+                feedback[harvester.name][HCCJC.STATUS] = "no status"
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,
@@ -348,6 +358,7 @@ class VersionBased6Strategy(Strategy):
                 if response.status_code == status.HTTP_401_UNAUTHORIZED:
                     feedback[harvester.name][
                         HCCJC.HEALTH] = 'Authentication required.'
+                    feedback[harvester.name][HCCJC.STATUS] = "no status"
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                     return Response(feedback,
                                     status=status.HTTP_401_UNAUTHORIZED)
@@ -355,6 +366,7 @@ class VersionBased6Strategy(Strategy):
                 if response.status_code == status.HTTP_404_NOT_FOUND:
                     feedback[harvester.name][HCCJC.HEALTH] = \
                         'Resource on server not found. Check URL.'
+                    feedback[harvester.name][HCCJC.STATUS] = "no status"
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
                     return Response(feedback, status=status.HTTP_404_NOT_FOUND)
 
@@ -620,6 +632,7 @@ class VersionBased7Strategy(Strategy):
             except RequestException as _e:
 
                 feedback[harvester.name][HCCJC.HEALTH] = str(_e)
+                feedback[harvester.name][HCCJC.STATUS] = "no status"
                 feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,
