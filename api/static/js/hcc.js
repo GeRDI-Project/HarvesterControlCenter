@@ -210,6 +210,20 @@ $( function () {
 
     $('#register-button').click(formButton.regClick);
 
+    $('#toggle-mode-button').click(function(){
+
+        if ($('#toggle-mode-sign').attr("data-original-title") == "dark mode"){
+            $('#toggle-mode-sign').attr("data-original-title","light mode");
+            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+        } else {
+            $('#toggle-mode-sign').attr("data-original-title","dark mode");
+            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
+        }
+        $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
+        $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+        $('input').toggleClass("dark-input-fields");
+
+    });
 });
 
 /*

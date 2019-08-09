@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/hcc.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
     {% block bootstrap_theme %}
-        <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css" type="text/css">
+        <link id="toggle-mode-link" rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css" type="text/css">
     {% endblock %}
 
     <title>Harvester Control Center</title>
@@ -24,6 +24,10 @@
 
 <nav class="navbar navbar-expand-sm bg-custom-1 fixed-top" role="navigation">
 
+    <a id="toggle-mode-button" role="button" class="btn btn-lg">
+        <i id="toggle-mode-sign" class="fa fa-lg fa-adjust" title="dark mode" aria-hidden="true" data-toggle="tooltip" data-placement="top"></i>
+    </a>
+    
     <a class="navbar-brand" href="#">
         <h2>{% block title %}{% endblock %}</h2>
     </a>
