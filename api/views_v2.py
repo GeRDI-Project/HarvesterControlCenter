@@ -592,6 +592,8 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
         message = response.data[harvester.name][HCCJC.HEALTH]["message"]
         data["message"] = message
         data["status"] = response.data[harvester.name][HCCJC.HEALTH]["status"]
+        if ("Cannot change value" in message) and ("Set parameter" in message):
+            data["status"] = "some issues"
         
         return JsonResponse(data)       
 

@@ -18,7 +18,7 @@
             </div>
             {% if form %}
             <div class="modal-footer">
-                <input class="btn btn-primary" type="submit" Value="Save" />
+                <input class="btn btn-primary" type="submit" Value="Ok" />
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     Cancel
                 </button>
@@ -63,6 +63,8 @@
                                 $('#message-modal-header').text('Success!');
                             } else if (response.status == "unchanged") {
                                 $('#message-modal-header').text('Info');
+                            } else if (response.status == "some issues"){
+                                $('#message-modal-header').text('There have been some issues!');
                             } else {
                                 $('#message-modal-header').text('Error!');
                             };
