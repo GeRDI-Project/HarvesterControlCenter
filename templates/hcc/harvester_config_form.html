@@ -18,7 +18,9 @@
             </div>
             {% if form %}
             <div class="modal-footer">
-                <input class="btn btn-primary" type="submit" Value="Ok" />
+                <button id="config-ok-button" type="button" class="btn btn-primary">
+                    Ok
+                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     Cancel
                 </button>
@@ -30,58 +32,56 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-
         var originalConfigData = $('#harvester-config-form').serialize();
-        var serializedConfigData;
 
-        $('#harvester-config-form').submit(function (ev) {
-            ev.preventDefault();
-            serializedConfigData = $(this).serialize();
-            var changes = compareData(); //changes[i] = [key, oldValue, newValue]
+        // remove all former event handlers -> otherwise ajax is sent several times
+        $("#submission-modal-submit-button").off("click");
+
+        $('#config-ok-button').click(function () {
+            var serializedConfigData = $("#harvester-config-form").serialize();
+            var changes = compareData(originalConfigData, serializedConfigData);
             if (changes.length > 0) {
-                //open a modal to show the changes and ask for submit
+                // open a modal to show the changes and ask for submit
                 $('#submission-modal-header').text('Info');
-
                 var text = 'You are about to make the following changes. Please submit to continue.<br>';
                 for (var i = 0; i < changes.length; i++) {
+                    // changes[i] looks like [key, oldValue, newValue]
                     text += '<br>' + changes[i][0] + ': ' + changes[i][1] + ' to ' + changes[i][2];
                 }
                 $('#submission-modal-body').html(text);
                 $('#submission-modal').modal('show');
 
-                $('#submission-modal-submit-button').click(function () {
+                $('#submission-modal-submit-button').click(function (ev) {
+                    ev.preventDefault();
                     $('#submission-modal').modal('hide');
+                    $('#config-modal').modal('hide');
                     $.ajax({
-                        type: $('#harvester-config-form').attr('method'),
-                        url: $('#harvester-config-form').attr('action'),
+                        type: $("#harvester-config-form").attr('method'),
+                        url: $("#harvester-config-form").attr('action'),
                         data: serializedConfigData,
-                        context: $('#harvester-config-form'),
+                        context: $("#harvester-config-form"),
                         success: function (response) {
-                            $('#config-modal').modal('hide');
-                            console.log(response.changes);
                             if (response.status == "Ok") {
                                 $('#message-modal-header').text('Success!');
                             } else if (response.status == "unchanged") {
                                 $('#message-modal-header').text('Info');
-                            } else if (response.status == "some issues"){
+                            } else if (response.status == "some issues") {
                                 $('#message-modal-header').text('There have been some issues!');
                             } else {
                                 $('#message-modal-header').text('Error!');
                             };
-                            //give response.message a nicer output with linebreaks
+                            // give response.message a nicer output with linebreaks
                             var message = response.message.replace(";", "<br>");
                             $('#message-modal-body').html(message);
                             $('#message-modal').modal('show');
                         },
                         error: function (response) {
-                            $('#harvesterModal').modal('hide');
                             $('#message-modal-header').text('Error!');
                             $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
                             $('#message-modal').modal('show');
                         },
                     });
                 });
-
                 $('#submission-modal-cancel-button').click(function () {
                     $('#submission-modal').modal('hide');
                     $('#config-modal').modal('hide');
@@ -92,13 +92,14 @@
                 $('#message-modal-body').text("There have been no changes!");
                 $('#message-modal').modal('show');
             }
+            $("config-modal").find("input,textarea,select").val('').end();
             return false;
         });
 
-        function compareData() {
+        function compareData(originalConfigData, serializedConfigData) {
             var changes, oldData, newData, i, temp, keys;
 
-            //convert the serialized data (key1=value1&key2=value2&...) to a dictionary
+            // convert the serialized data (key1=value1&key2=value2&...) to a dictionary
             oldData = {};
             temp = originalConfigData.split("&");
             for (i = 0; i < temp.length; i++) {
@@ -110,17 +111,16 @@
                 newData[temp[i].split("=")[0]] = temp[i].split("=")[1];
             }
 
-            //if a checkbox is not checked, then it did not appear in the serialized data
-            //-> make a list of all keys and remove the duplicates
-            temp = Object.keys(oldData).concat(Object.keys(newData));
-            keys = [];
-            for (i = 0; i < temp.length; i++) {
-                if ($.inArray(temp[i], keys) == -1) {
-                    keys.push(temp[i]);
+            // if a checkbox is not checked, then it did not appear in the serialized data
+            // -> make a list of all keys
+            keys = Object.keys(oldData);
+            for (i = 0; i < Object.keys(newData).length; i++) {
+                if ($.inArray(Object.keys(newData)[i], keys) == -1) {
+                    keys.push(Object.keys(newData)[i]);
                 }
             }
 
-            //loop over all keys to detect changes
+            // loop over all keys to detect changes
             changes = [];
             for (i = 0; i < keys.length; i++) {
                 temp = [];
