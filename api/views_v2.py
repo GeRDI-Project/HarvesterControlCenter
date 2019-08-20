@@ -71,6 +71,7 @@ def toggle_harvester(request, name):
                              name + ' harvester enabled.')
     return HttpResponseRedirect(reverse('hcc_gui'))
 
+
 @login_required
 def toggle_harvesters(request, hnames):
     """
@@ -87,12 +88,12 @@ def toggle_harvesters(request, hnames):
             harv.disable()
             LOGGER.info("%s disabled.", harv.name)
             messages.add_message(request, messages.INFO,
-                                name + ' harvester disabled.')
+                                 name + ' harvester disabled.')
         else:
             harv.enable()
             LOGGER.info("%s enabled.", harv.name)
             messages.add_message(request, messages.INFO,
-                                name + ' harvester enabled.')
+                                 name + ' harvester enabled.')
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -129,6 +130,7 @@ def start_harvester(request, name):
                          name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
+
 @login_required
 def start_selected_harvesters(request, hnames):
     """
@@ -144,7 +146,7 @@ def start_selected_harvesters(request, hnames):
         api = InitHarvester(harvester).get_harvester_api()
         response = api.start_harvest()
         messages.add_message(request, messages.INFO,
-                            name + ': ' + str(response.data[harvester.name]))
+                             name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -267,11 +269,6 @@ def home(request):
     Home entry point of Web-Application GUI.
     """
     feedback = {}
-    # init view-type for list and card view
-    if 'viewtype' in request.GET:
-        view_type = request.GET['viewtype']
-    else:
-        view_type = False
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -356,13 +353,11 @@ def home(request):
             request, 'hcc/index.html', {
                 'harvesters': harvesters,
                 'status': feedback,
-                'forms': forms,
-                'vt': view_type
+                'forms': forms
             })
 
     return render(request, 'hcc/index.html', {
-        'status': feedback,
-        'vt': view_type
+        'status': feedback
     })
 
 
@@ -492,14 +487,13 @@ class UserDetailsView(generics.RetrieveAPIView):
 
 
 class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMixin):
-#class EditHarvesterView(LoginRequiredMixin, SuccessMessageMixin, RedirectView):
     """
     This class handles AJAx, GET, DELETE and POST requests
     to control the edit of the harvesters.
     """
 
     @staticmethod
-    def get(request, *args, **kwargs): #the form that is load into the modal
+    def get(request, *args, **kwargs):  # the form that is load into the modal
         data = {}
         if "name" not in kwargs:
             harvester = Harvester(owner=request.user)
@@ -512,29 +506,38 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         data['form'] = HarvesterForm(instance=harvester)
         return render(request, "hcc/harvester_edit_form.html", data)
 
-    def post(self, request, *args, **kwargs): #the actual logic behind the form
+    def post(self, request, *args, **kwargs):  # the actual logic behind the form
         name = self.request.POST.get('name')
-        if "name" not in kwargs: #Add Harvester
-            if Harvester.objects.filter(name=name).exists():#check if the name is not already used
-                return JsonResponse({'message':'A Harvester named {} already exists!'.format(name)})
+        if "name" not in kwargs:  # Add Harvester
+            # check if the name is not already used
+            if Harvester.objects.filter(name=name).exists():
+                return JsonResponse({'message': 'A Harvester named {} already exists!'.format(name)})
             else:
                 _h = Harvester(owner=self.request.user)
                 action = 'added'
                 myname = name
-        else: #Edit Harvester
+        else:  # Edit Harvester
             myname = kwargs['name']
             _h = Harvester.objects.get(name=myname)
             action = 'modified'
         form = HarvesterForm(self.request.POST, instance=_h)
         if form.is_valid():
             form.save()
-            success_message = "{} has been {} successfully! Please hold on while the page is reloading.".format(myname, action)
+            success_message = (
+                "{} has been {} successfully!"
+                " Please hold on while the page"
+                " is reloading.".format(myname, action)
+            )
             if action == 'initialised':
                 LOGGER.info("new harvester created: {}".format(name))
-            response = {'message':success_message, 'name':myname}
+            response = {'message': success_message, 'name': myname}
         else:
-            success_message = "{} could not been {}! Please hold on while the page is reloading.".format(myname, action)
-            response = {'message':success_message}
+            success_message = (
+                "{} could not been {}!"
+                " Please hold on while the page"
+                " is reloading.".format(myname, action)
+            )
+            response = {'message': success_message}
         return JsonResponse(response)
 
 
@@ -554,11 +557,11 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
         if response.status_code != status.HTTP_200_OK:
             data["message"] = response.data[harvester.name][HCCJC.HEALTH]
         else:
-            form = create_config_form(response.data[harvester.name][HCCJC.HEALTH])
+            form = create_config_form(
+                response.data[harvester.name][HCCJC.HEALTH])
             data["form"] = form
         data["hname"] = myname
         return render(request, "hcc/harvester_config_form.html", data)
-
 
     def post(self, request, *args, **kwargs):
         myname = kwargs['name']
@@ -568,18 +571,18 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
         old_config_data = response.data[harvester.name][HCCJC.HEALTH]
         (fields, old_data) = create_config_fields(old_config_data)
         data = {}
-        changes = {} #before-after data
-        config_changes = {} #only after data to send to api
+        changes = {}  # before-after data
+        config_changes = {}  # only after data to send to api
         for key in fields:
-            # In the response all boolean fields are either set "on" if True or 
-            # None if false. -> convert it
+            # In the response all boolean fields are either set "on" if True
+            # or None if false. -> convert it
             if self.request.POST.get(key) == "on":
                 new_data = "true"
             elif self.request.POST.get(key) == None:
                 new_data = "false"
             else:
-                new_data = self.request.POST.get(key)  
-              
+                new_data = self.request.POST.get(key)
+
             if(old_data[key] != new_data):
                 changes[key] = {"before": old_data[key], "after": new_data}
                 config_changes[key] = new_data
@@ -587,19 +590,21 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
             response = api.save_harvester_config_data(config_changes)
             data["changes"] = changes
         else:
-            return JsonResponse({"status":"unchanged", "message": "There have been no changes!"})
-        
+            return JsonResponse({
+                "status": "unchanged",
+                "message": "There have been no changes!"
+            })
+
         message = response.data[harvester.name][HCCJC.HEALTH]["message"]
         data["message"] = message
         data["status"] = response.data[harvester.name][HCCJC.HEALTH]["status"]
         if ("Cannot change value" in message) and ("Set parameter" in message):
             data["status"] = "some issues"
-        
-        return JsonResponse(data)       
+
+        return JsonResponse(data)
 
 
 class ScheduleHarvesterView(SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
-#class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
     """
     This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
