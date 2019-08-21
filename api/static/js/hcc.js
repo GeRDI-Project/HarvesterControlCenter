@@ -209,21 +209,6 @@ $( function () {
     };
 
     $('#register-button').click(formButton.regClick);
-
-    $('#toggle-mode-button').click(function(){
-
-        if ($('#toggle-mode-sign').attr("data-original-title") == "dark mode"){
-            $('#toggle-mode-sign').attr("data-original-title","light mode");
-            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
-        } else {
-            $('#toggle-mode-sign').attr("data-original-title","dark mode");
-            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
-        }
-        $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
-        $('.footer').toggleClass("footer-custom-1 footer-custom-2");
-        $('input').toggleClass("dark-input-fields");
-
-    });
 });
 
 /*
@@ -367,6 +352,23 @@ $(".harvesteredit").click(function(ev) { // for each edit harvester url
      });
      return false; // prevent the click propagation
  });
+
+ function toggleModeFunction() {
+
+    if ($('#toggle-mode-text').text() == "Dark Mode") {
+        // changing from light to dark mode
+        $('#toggle-mode-text').text("Light Mode");
+        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+    } else {
+        // changing from dark to light mode
+        $('#toggle-mode-text').text("Dark Mode");
+        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
+    }
+
+    $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
+    $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+    $('input').toggleClass("dark-input-fields");
+ }
 
  /*$('.harvester-edit-form').on('submit', function() {
      $.ajax({
