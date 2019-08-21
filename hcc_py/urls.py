@@ -29,7 +29,7 @@ from api import views_v2 as views
 from api.forms import LoginForm
 from api.views_v2 import EditHarvesterView, ConfigHarvesterView
 
-__author__ = "Jan Frömberg"
+__author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"

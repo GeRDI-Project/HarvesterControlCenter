@@ -29,7 +29,7 @@ from api.serializers import HarvesterSerializer, UserSerializer
 from api.harvester_api import InitHarvester
 from api.constants import HCCJSONConstants as HCCJC
 
-__author__ = "Jan Frömberg"
+__author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"

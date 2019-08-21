@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from api.constants import HarvesterApiConstantsV6, HarvesterApiConstantsV7
 from api.constants import HCCJSONConstants as HCCJC
 
-__author__ = "Jan Frömberg"
+__author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
