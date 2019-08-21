@@ -54,18 +54,18 @@ clean:
 # TOOLS/SCRIPTS
 
 migrations: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py makemigrations $(app) --settings hcc.gui.local
+	@$(PYTHON) $(SRC_DIR)/manage.py makemigrations $(app) --settings hcc_py.settings
 
 migrate: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py migrate $(app) $(migration) --settings hcc.gui.local
+	@$(PYTHON) $(SRC_DIR)/manage.py migrate $(app) $(migration) --settings hcc_py.settings
 
 superuser: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py createsuperuser --settings hcc.gui.local
+	@$(PYTHON) $(SRC_DIR)/manage.py createsuperuser --settings hcc_py.settings
 
 # LOCAL
 
 runlocal: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py runserver --settings hcc.gui.local
+	@$(PYTHON) $(SRC_DIR)/manage.py runserver --settings hcc_py.settings
 
 # DOCKER
 
