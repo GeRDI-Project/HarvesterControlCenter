@@ -54,20 +54,24 @@ clean:
 # TOOLS/SCRIPTS
 
 migrations: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py makemigrations $(app) --settings hcc_py.settings
+	@$(PYTHON) $(SRC_DIR)/manage.py makemigrations $(app) --settings hcc_py.settings_local
 
 migrate: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py migrate $(app) $(migration) --settings hcc_py.settings
+	@$(PYTHON) $(SRC_DIR)/manage.py migrate $(app) $(migration) --settings hcc_py.settings_local
 
 superuser: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py createsuperuser --settings hcc_py.settings
+	@$(PYTHON) $(SRC_DIR)/manage.py createsuperuser --settings hcc_py.settings_local
 
 # LOCAL
 
 runlocal: venv
-	@$(PYTHON) $(SRC_DIR)/manage.py runserver --settings hcc_py.settings
+	@$(PYTHON) $(SRC_DIR)/manage.py runserver --settings hcc_py.settings_local
 
 # DOCKER
 
-rundocker:
-	@docker-compose up --build
+docker:
+	@docker build -t harvest/hccenter:latest .
+
+dockerrun:
+	@docker build -t harvest/hccenter:latest .
+	@docker run --name=gerdi_hcc -it -p 8080:80 harvest/hccenter:latest
