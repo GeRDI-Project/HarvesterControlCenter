@@ -1,0 +1,7 @@
+Django==2.2
+django-crispy-forms==1.7.2
+django-rest-swagger==2.2.0
+djangorestframework==3.9.2
+gunicorn==19.9.0
+flake8=3.7.8
+isort=4.3.21
