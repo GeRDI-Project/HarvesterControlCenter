@@ -104,8 +104,12 @@
                         <a href="{% url 'start-harvesters' %}" role="button" class="btn btn-primary">start all</a>
                         <a href="{% url 'abort-harvesters' %}" role="button" class="btn btn-dark">abort all</a>
                     </div>
-                    <input type="text" id="harvesterInput" onkeyup="filterFunction()" class="form-control" placeholder="search for harvester" aria-label="Harvester Name">
-
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                        </div>
+                        <input type="text" id="harvesterInput" onkeyup="filterFunction()" class="form-control" placeholder="search for harvester" aria-label="Harvester Name">
+                    </div>
                 </h5>
             </div>
 
@@ -291,16 +295,31 @@
                                     <a id="table-checkbox-start-harvesters" class="btn btn-success btn-sm disabled" href="#" role="button">
                                         Start Harvesters
                                     </a>
-                                    <label class="checkbox-inline"><input id="checkbox-show-idle" type="checkbox" onclick="checkboxOnlyShowIdle()"> only show idle </label>
-                                    <label class="checkbox-inline"><input id="checkbox-hide-idle"type="checkbox" onclick="checkboxHideIdle()"> hide idle </label>
-                                </div><br>
+                                </div>
+                                <br>
                                 <table class="table">
                                     <thead id="table-view-thead">
                                         <tr>
                                             <th><input id="table-checkbox-master" type="checkbox" onclick="checkboxMasterFunction()"> select all </th>
                                             <th>Harvester Name</th>
                                             <th>Actions</th>
-                                            <th>Status</th>
+                                            <th>
+                                                <div class="dropdown">
+                                                    Status
+                                                    <button class="dropdown-toggle btn btn-sm btn-outline-primary float-right" type="button" id="table-dropdown-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> filter </button>
+                                                    <div class="dropdown-menu" role="menu" aria-labelledby="table-dropdown-btn">
+                                                        <div class="radio status-radio">
+                                                            <label class="dropdown-item"><input id="checkbox-show-all" name="optradio" type="radio" checked> show all </label>
+                                                        </div>
+                                                        <div class="radio status-radio">
+                                                            <label class="dropdown-item"><input id="checkbox-show-idle" name="optradio" type="radio"> show idle </label>
+                                                        </div>
+                                                        <div class="radio status-radio">
+                                                            <label class="dropdown-item"><input id="checkbox-hide-idle" name="optradio" type="radio"> hide idle </label>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -316,7 +335,7 @@
                                             </td>
                                             <td>
                                                 <a id ="table-hcc-button-{{harvester.name}}" href="{% url 'api:harvester-detail' name=harvester.name %}" role="button" class="btn btn-sm btn-primary">
-                                                    <i class="fa fa-search" aria-hidden="true" title="Details" data-toggle="tooltip"></i>
+                                                    <i class="fa fa-file-text-o" aria-hidden="true" title="Details" data-toggle="tooltip"></i>
                                                 </a>
                                                 <button id ="table-info-button-{{harvester.name}}" type="button" class="btn btn-sm btn-outline-primary" data-container="body" data-toggle="popover" title="Info" data-content="{{ val }}">
                                                 <i class="fa fa-info" aria-hidden="true"></i> 
@@ -491,7 +510,7 @@
             </div>
             <div id="submission-modal-body" class="modal-body"></div>
             <div class="modal-footer">
-                <a id="submission-modal-submit-button" href="#" type="button" class="btn btn-primary">Save</a>
+                <button id="submission-modal-submit-button" type="button" class="btn btn-primary">Save</a>
                 <button id="submission-modal-cancel-button" type="button" class="btn">Cancel</button>
             </div>
         </div>

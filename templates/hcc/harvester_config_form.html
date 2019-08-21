@@ -51,8 +51,7 @@
                 $('#submission-modal-body').html(text);
                 $('#submission-modal').modal('show');
 
-                $('#submission-modal-submit-button').click(function (ev) {
-                    ev.preventDefault();
+                $('#submission-modal-submit-button').click(function () {
                     $('#submission-modal').modal('hide');
                     $('#config-modal').modal('hide');
                     $.ajax({

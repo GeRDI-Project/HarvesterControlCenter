@@ -247,6 +247,12 @@ $(function () {
         });
         return false;
     });
+
+    $('.status-radio').click(function() {
+        if ($('#checkbox-show-all').prop('checked')) checkboxShowAll();
+        if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
+        if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
+    });
 });
 
 /*
@@ -475,7 +481,7 @@ function checkboxMasterFunction() {
     checkboxFunction();
 }
 
-function checkboxOnlyShowIdle() {
+function checkboxShowIdle() {
     var checkBox, table, tbody, trs, status, hname;
     table = document.getElementById("div-table-view");
     checkBox = document.getElementById("checkbox-show-idle");
@@ -523,6 +529,26 @@ function checkboxHideIdle() {
         for (i = 0; i < trs.length; i++) {
             a = trs[i];
             a.style.display = "";
+        }
+    }
+}
+
+function checkboxShowAll() {
+    var checkBox, table, tbody, trs, status, hname, i;
+    table = document.getElementById("div-table-view");
+    checkBox = document.getElementById("checkbox-show-all");
+    tbody = table.getElementsByTagName('tbody')[0];
+    trs = tbody.getElementsByTagName('tr');
+
+    if (checkBox.checked) {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            a.style.display = "";
+        }
+    } else {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            a.style.display = "none";
         }
     }
 }
