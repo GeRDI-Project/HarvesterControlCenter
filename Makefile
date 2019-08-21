@@ -19,7 +19,10 @@ PYTHON=$(shell "$(CMD_FROM_VENV)" "python")
 # .PHONY: hello venv freeze check fix clean makemigrations migrate superuser runlocal rundocker runcelery
 
 hello:
-	@echo "Hello, World!"
+	@echo ""
+	@echo "You can use a command from the list: check, fix, clean, runlocal, dockerrun, ..."
+	@echo "-> See Makefile for more information."
+	@echo ""
 
 # DEVELOPMENT
 
