@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v3.8.1
+# Harvester Control Center (HCC) v3.9.0
 
 A Harvester Control Center GUI with REST-API written in Django.
 
@@ -65,7 +65,7 @@ Install the dependencies needed to run the app:
 
    1. Basic Authentication via Username and Password
    2. Token Authentication via Auth.-Token (see below)
-   3. SAML Auth will be implemented...
+   3. OAuth will be implemented... what about FIDO2 eh?
 
 ### Code testing
 
@@ -87,6 +87,11 @@ Fire up the server using this one simple command:
 
 ```bash
     DEBUG=True python manage.py runserver
+```
+    
+or
+```bash
+    make runlocal
 ```
 
 You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
@@ -121,10 +126,10 @@ If you do have a SSL Configuration, please add the line
 "proxy_set_header X-Forwarded-Proto https;" in the nginx configuration
 found in folder nginx/nginx.conf.
 
-First build the docker container...
+To build the docker container...
 
 ```bash
-    docker build -t harvest/hccenter:latest .
+    make docker
 ```
 
 ### Environment variable configuration
@@ -142,5 +147,5 @@ There are seven ENV variables which could be used to configure production use. F
 Now run that container.
 
 ```bash
-    docker run --name=gerdi_hcc -it -p 8080:80 harvest/hccenter:latest
+    make dockerrun
 ```

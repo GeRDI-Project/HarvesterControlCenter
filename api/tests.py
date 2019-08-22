@@ -3,13 +3,13 @@ Testing Module
 """
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.urls import include, path, reverse, resolve
+from django.urls import include, path, resolve, reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APITestCase, URLPatternsTestCase, APIClient
+from rest_framework.test import APIClient, APITestCase, URLPatternsTestCase
 
-from .models import Harvester
 from .forms import HarvesterForm
+from .models import Harvester
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"

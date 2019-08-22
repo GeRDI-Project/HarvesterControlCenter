@@ -6,28 +6,30 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic import RedirectView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
-from rest_framework import status, generics, permissions
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication
+from rest_framework import generics, permissions, status
+from rest_framework.authentication import (BasicAuthentication,
+                                           TokenAuthentication)
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.forms import HarvesterForm, SchedulerForm, create_config_form, create_config_fields
+from api.constants import HCCJSONConstants as HCCJC
+from api.forms import (HarvesterForm, SchedulerForm, create_config_fields,
+                       create_config_form)
+from api.harvester_api import InitHarvester
 from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
-from api.harvester_api import InitHarvester
-from api.constants import HCCJSONConstants as HCCJC
 
 __author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -486,7 +488,8 @@ class UserDetailsView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMixin):
+class EditHarvesterView(View, LoginRequiredMixin,
+                        AjaxableResponseMixin, FormMixin):
     """
     This class handles AJAx, GET, DELETE and POST requests
     to control the edit of the harvesters.
@@ -511,7 +514,8 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         if "name" not in kwargs:  # Add Harvester
             # check if the name is not already used
             if Harvester.objects.filter(name=name).exists():
-                return JsonResponse({'message': 'A Harvester named {} already exists!'.format(name)})
+                return JsonResponse(
+                    {'message': 'A Harvester named {} already exists!'.format(name)})
             else:
                 _h = Harvester(owner=self.request.user)
                 action = 'added'
@@ -541,7 +545,8 @@ class EditHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMix
         return JsonResponse(response)
 
 
-class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormMixin):
+class ConfigHarvesterView(View, LoginRequiredMixin,
+                          AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the config of the harvesters.
@@ -578,7 +583,7 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
             # or None if false. -> convert it
             if self.request.POST.get(key) == "on":
                 new_data = "true"
-            elif self.request.POST.get(key) == None:
+            elif self.request.POST.get(key) is None:
                 new_data = "false"
             else:
                 new_data = self.request.POST.get(key)
@@ -604,7 +609,8 @@ class ConfigHarvesterView(View, LoginRequiredMixin, AjaxableResponseMixin, FormM
         return JsonResponse(data)
 
 
-class ScheduleHarvesterView(SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
+class ScheduleHarvesterView(
+        SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
