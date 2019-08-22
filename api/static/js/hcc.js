@@ -620,3 +620,20 @@ $(window).scroll(function (e) {
         $('.navbar').removeClass("navbar-hide");
     }
 });
+
+function toggleModeFunction() {
+
+    if ($('#toggle-mode-text').text() == "Dark Mode") {
+        // changing from light to dark mode
+        $('#toggle-mode-text').text("Light Mode");
+        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+    } else {
+        // changing from dark to light mode
+        $('#toggle-mode-text').text("Dark Mode");
+        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
+    }
+
+    $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
+    $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+    $('input').toggleClass("dark-input-fields");
+}
