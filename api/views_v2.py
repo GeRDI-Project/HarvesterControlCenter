@@ -11,8 +11,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.views.generic import FormView, RedirectView
+from django.urls import reverse
+from django.views.generic import RedirectView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
 from rest_framework import status, generics, permissions
@@ -22,7 +22,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.forms import HarvesterForm, SchedulerForm, create_config_form, create_config_fields
-from api.mixins import AjaxTemplateMixin, AjaxableResponseMixin
+from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer

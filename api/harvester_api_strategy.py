@@ -311,7 +311,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester_name] = response.text
             except RequestException as _e:
                 feedback[harvester_name][HCCJC.HEALTH] = str(_e)
-                feedback[harvester.name][HCCJC.STATUS] = "no status"
+                feedback[harvester_name][HCCJC.STATUS] = "no status"
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,
@@ -324,7 +324,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester_name] = response.text
             except RequestException as _e:
                 feedback[harvester_name][HCCJC.HEALTH] = str(_e)
-                feedback[harvester.name][HCCJC.STATUS] = "no status"
+                feedback[harvester_name][HCCJC.STATUS] = "no status"
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,
@@ -337,7 +337,7 @@ class VersionBased6Strategy(Strategy):
                 feedback[harvester_name] = response.text
             except RequestException as _e:
                 feedback[harvester_name][HCCJC.HEALTH] = str(_e)
-                feedback[harvester.name][HCCJC.STATUS] = "no status"
+                feedback[harvester_name][HCCJC.STATUS] = "no status"
                 feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
 
             return Response(feedback,

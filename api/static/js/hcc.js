@@ -1,5 +1,5 @@
 /*
-Copyright © 2017 Jan Frömberg (http://www.gerdi-project.de)
+Copyright © 2017 Jan Frömberg, Laura Höhle (http://www.gerdi-project.de)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -363,8 +363,8 @@ $(window).ready(function () {
 
 function filterFunction() {
     /*
-    Hides all harvesters that do not match the string entered in the filter row
-    for all views
+    Hides all harvesters that do not match the string entered in the filter input field.
+    This filter function applies to all views.
     */
 
     // declare variables
@@ -620,47 +620,3 @@ $(window).scroll(function (e) {
         $('.navbar').removeClass("navbar-hide");
     }
 });
-
-// good coding examples for non anonymous functions
-var formButton = {
-    regClick: function () {
-        $('#form-modal-body').load('/hcc/register #hreg-form-content', formButton.toggleModal);
-    },
-
-    toggleModal: function () {
-        $('#form-modal').modal('toggle');
-        formAjaxSubmit.init('#form-modal-body form', '#form-modal');
-    }
-};
-
-var formAjaxSubmit = {
-    init: function (form, modal) {
-        $(form).submit(formAjaxSubmit.ajax);
-    },
-
-    ajax: function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            success: formAjaxSubmit.succFunc,
-            error: formAjaxSubmit.errorFunc,
-        });
-    },
-
-    succFunc: function (xhr, ajaxOptions, thrownError) {
-        if ($(xhr).find('.has-error').length > 0) {
-            $(modal).find('.modal-body').html(xhr);
-            formAjaxSubmit.init(form, modal);
-        } else {
-            $(modal).modal('toggle');
-        }
-    },
-
-    errorFunc: function (xhr, ajaxOptions, thrownError) {
-        // handle response errors here
-    }
-};
-
-$('#register-button').click(formButton.regClick);
