@@ -65,7 +65,7 @@ Install the dependencies needed to run the app:
 
    1. Basic Authentication via Username and Password
    2. Token Authentication via Auth.-Token (see below)
-   3. SAML Auth will be implemented...
+   3. OAuth will be implemented... what about FIDO2 eh?
 
 ### Code testing
 
@@ -87,6 +87,11 @@ Fire up the server using this one simple command:
 
 ```bash
     DEBUG=True python manage.py runserver
+```
+    
+or
+```bash
+    make runlocal
 ```
 
 You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
@@ -142,5 +147,5 @@ There are seven ENV variables which could be used to configure production use. F
 Now run that container.
 
 ```bash
-    make runlocal
+    make dockerrun
 ```
