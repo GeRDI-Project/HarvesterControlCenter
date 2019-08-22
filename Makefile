@@ -1,3 +1,20 @@
+###
+#
+# Copyright © 2019 Jan Frömberg (http://www.gerdi-project.de)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
 ROOT_DIR:=./
 SRC_DIR:=./
 VENV_BIN_DIR:="venv/bin"
@@ -16,7 +33,9 @@ AUTOPEP8:="$(VENV_BIN_DIR)/autopep8"
 CMD_FROM_VENV:=". $(VENV_BIN_DIR)/activate; which"
 PYTHON=$(shell "$(CMD_FROM_VENV)" "python")
 
-# .PHONY: hello venv freeze check fix clean makemigrations migrate superuser runlocal rundocker runcelery
+# Make will use these given recipes instead of file executables
+# https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
+.PHONY: hello venv freeze qa check fix clean migrations superuser runlocal
 
 hello:
 	@echo ""
@@ -36,6 +55,9 @@ venv:
 
 freeze: venv
 	@$(PIP) freeze > $(REQUIREMENTS_LOCAL)
+
+# quality assurance
+qa: check fix
 
 check: venv
 	@$(FLAKE8) api
