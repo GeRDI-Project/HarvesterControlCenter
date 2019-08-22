@@ -1,7 +1,7 @@
 """
 The forms module.
 """
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons
+from crispy_forms.bootstrap import FieldWithButtons, FormActions, PrependedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from django import forms
@@ -38,10 +38,11 @@ class HarvesterForm(forms.ModelForm):
         helper.render_unmentioned_fields = True  # render all fields
         helper.label_class = 'col-md-5'
         helper.field_class = 'col-md-10'
-        #helper.layout = Layout(
+        # helper.layout = Layout(
         #    FormActions(
-        #        Submit('edit-harvester', 'Register', css_class="btn-primary")))
+        # Submit('edit-harvester', 'Register', css_class="btn-primary")))
         return helper
+
 
 class ConfigForm(forms.Form):
     """
@@ -50,9 +51,10 @@ class ConfigForm(forms.Form):
     """
     pass
 
+
 def create_config_fields(config_data):
     """
-    This function validates the input data to data and fields used for 
+    This function validates the input data to data and fields used for
     create_config_form(config_data) to create a ConfigForm
     INPUT:
      - config_data : JSON configuration data
@@ -61,7 +63,7 @@ def create_config_fields(config_data):
      - data : dictionary of field names with current value
     """
     fields = {}
-    data= {}
+    data = {}
     keys = []
 
     for key in config_data:
@@ -69,23 +71,28 @@ def create_config_fields(config_data):
     for key in keys:
         for field in config_data[key]["parameters"]:
             if field["type"] == "IntegerParameter":
-                fields["{}.{}".format(key, field["key"])] = forms.IntegerField(required=False)
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.IntegerField(required=False)
                 field_type = "integer"
             elif field["type"] == "StringParameter":
-                fields["{}.{}".format(key, field["key"])] = forms.CharField(required=False)
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.CharField(required=False)
                 field_type = "string"
             elif field["type"] == "BooleanParameter":
-                fields["{}.{}".format(key, field["key"])] = forms.BooleanField(required=False)
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.BooleanField(required=False)
                 field_type = "boolean"
             elif field["type"] == "PasswordParameter":
-                fields["{}.{}".format(key, field["key"])] = forms.CharField(required=False, widget=forms.PasswordInput())
+                fields["{}.{}".format(key, field["key"])] = forms.CharField(
+                    required=False, widget=forms.PasswordInput())
                 field_type = "password"
             else:
-                fields["{}.{}".format(key, field["key"])] = forms.CharField(required=False)
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.CharField(required=False)
 
             if "value" in field:
-                data["{}.{}".format(key, field["key"])] = field["value"] 
-            else: #set default values, if value is not set
+                data["{}.{}".format(key, field["key"])] = field["value"]
+            else:  # set default values, if value is not set
                 if field_type == "integer":
                     data["{}.{}".format(key, field["key"])] = 0
                 elif field_type == "string":
@@ -98,13 +105,15 @@ def create_config_fields(config_data):
                     data["{}.{}".format(key, field["key"])] = None
     return (fields, data)
 
+
 def create_config_form(config_data):
     """
     This function creates a ConfigForm: a dynamic Form for Harvester Configuration.
     """
     (fields, data) = create_config_fields(config_data)
-    DynamicConfigForm = type('DynamicConfigForm',(ConfigForm,), fields)
+    DynamicConfigForm = type('DynamicConfigForm', (ConfigForm,), fields)
     return DynamicConfigForm(data)
+
 
 class LoginForm(AuthenticationForm):
     """

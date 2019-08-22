@@ -8,32 +8,14 @@ __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
 
-class AjaxTemplateMixin(object):
-    """
-    Mixin to add Ajax Support to Form Templates
-    """
-
-    def dispatch(self, request, *args, **kwargs):
-        if not hasattr(self, 'ajax_template_name'):
-            split = self.template_name.split('.html')
-            split[-1] = '_inner'
-            split.append('.html')
-            self.ajax_template_name = ''.join(split)
-        if request.is_ajax():
-            self.template_name = self.ajax_template_name
-        return super(AjaxTemplateMixin, self).dispatch(request, *args, **kwargs)
-
-
 class AjaxableResponseMixin:
     """
     Mixin to add AJAX support to a form.
     Must be used with an object-based FormView (e.g. CreateView)
     """
 
-    
-    #FormMixin must be inheritet in the class to use AjaxableResponseMixin.
-    #(RedirectView did not inherit FormMixin)
-
+    # FormMixin must be inheritet in the class to use AjaxableResponseMixin.
+    # (RedirectView did not inherit FormMixin)
 
     def form_invalid(self, form):
         response = super().form_invalid(form)

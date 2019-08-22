@@ -98,7 +98,7 @@ class HarvesterApiConstantsV6:
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""
-    #CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
+    # CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
 
 
 class HarvesterApiConstantsV7:
@@ -116,9 +116,9 @@ class HarvesterApiConstantsV7:
     G_HARVEST_LOG = "/log?date="
     HARVESTER_LOG_FORMAT = "%Y-%m-%d"
     G_HARVEST_ALLLOG = "/log"
-    P_HARVEST_CRON = "/schedule/_add" #E.g. {"cronTab" : "0 0 * * *"}
+    P_HARVEST_CRON = "/schedule/_add"  # E.g. {"cronTab" : "0 0 * * *"}
     G_HARVEST_CRON = "/schedule"
-    D_HARVEST_CRON = "/schedule/_delete" #E.g. {"cronTab" : "0 0 * * *"}
+    D_HARVEST_CRON = "/schedule/_delete"  # E.g. {"cronTab" : "0 0 * * *"}
     DALL_HARVEST_CRON = "/schedule/_deleteAll"
     G_HEALTH = "/health"
     G_BOOLEAN_OUTDATED = "/outdated"
@@ -127,4 +127,4 @@ class HarvesterApiConstantsV7:
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""
-    #CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
+    # CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
