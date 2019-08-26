@@ -19,7 +19,11 @@
                         </div>
                     </a>
                 </h3>
+                {% if collapse_status.toolbox == 'visible' %}
+                <div class="card-body collapse show" id="collapseToolbox">
+                {% else %}
                 <div class="card-body collapse" id="collapseToolbox">
+                {% endif %}    
                     <table width="100%">
                     <tr><td>
                             <a id="btn-edit-{{ harvester.name }" class="btn btn-primary btn-sm harvesteredit"
@@ -61,7 +65,11 @@
                         </div>
                     </a>
                 </h3>
+                {% if collapse_status.chart == 'visible' %}
+                <div class="card-body collapse show" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
+                {% else %}
                 <div class="card-body collapse" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
+                {% endif %}    
                     <div class="chart-container" style="position: relative;">
                         <canvas id="harvesterChart" width="300" height="120" style="display: block; width: 300px; height: 120px;"></canvas>
                     </div>

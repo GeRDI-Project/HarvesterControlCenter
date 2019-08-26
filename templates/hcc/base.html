@@ -98,7 +98,8 @@
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script>
-    var startView = '{{ viewtype }}';
+    var startView = "{{ viewtype }}";
+    var updateSessionUrl = "{% url 'update-session' %}";
 </script>
 <script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
 <script src="{% static "js/popper.min.js" %}"></script>

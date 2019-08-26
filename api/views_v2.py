@@ -272,11 +272,15 @@ def home(request):
     """
     feedback = {}
 
-    # init session mode (dark/light) with default light
+    # init session variables:
+    # mode (dark/light) with default light
     mode = request.session.get('mode', 'light')
-
-    # init session viewtype (card/list/table) with default card
+    # viewtype (card/list/table) with default card
     viewtype = request.session.get('viewtype', 'card')
+    # collapse status (visible/invisible)
+    collapse_status = {}
+    collapse_status['toolbox'] = request.session.get('toolbox', 'invisible')
+    collapse_status['chart'] = request.session.get('chart', 'invisible')
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -363,7 +367,8 @@ def home(request):
                 'status': feedback,
                 'forms': forms,
                 'mode': mode,
-                'viewtype': viewtype
+                'viewtype': viewtype,
+                'collapse_status': collapse_status
             })
 
     return render(request, 'hcc/index.html', {
@@ -371,6 +376,7 @@ def home(request):
         'mode': mode
     })
 
+@permission_classes((IsAuthenticated, ))
 def update_session(request):
     if not request.is_ajax() or not request.method == 'POST':
         return JsonResponse({
@@ -384,18 +390,21 @@ def update_session(request):
     elif 'viewtype' in request.POST:
         request.session['viewtype'] = request.POST.get('viewtype')
         var = 'viewtype'
+    elif 'toolbox' in request.POST:
+        request.session['toolbox'] = request.POST.get('toolbox')  
+        var = 'toolbox'
+    elif 'chart' in request.POST:
+        request.session['chart'] = request.POST.get('chart')  
+        var = 'chart'  
     else:
         return JsonResponse({
-            'status': 'failed', 
-            'message': (
-                'Data could not been handled. No input matched'
-                ' "mode" or "viewtype"'
-            )    
+            'status': 'failed',  
+            'message': 'Data could not been handled.'
         })
     
     return JsonResponse({
         'status': 'ok', 
-        'message': 'Session variable {} was changed.'.format(var)
+        'message': 'Session variable {} was changed to {}.'.format(var, request.session[var])
     })
 
 @api_view(['POST'])

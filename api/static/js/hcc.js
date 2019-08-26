@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-// startView is set in bottom of base.html
+// startView and sessionUrl are set in bottom of base.html
+
 // set global variables for the current viewtype
 var listView, cardView, tableView;
 listView = (startView == 'list');
@@ -28,6 +29,10 @@ $(function () {
 
     $('#loaderSpinnerLog').hide();
     $('#loaderSpinnerStat').hide();
+
+    if ($('#collapseChart').is(':visible')) {
+        loadChart();
+    }
 
     toggleViews();
     initMode();
@@ -158,6 +163,22 @@ $(function () {
         updateChart(vlabels, vdata, gbcarray, bcarray);
     }
 
+    function loadChart() {
+        var url = $('#collapseChart').attr("title");
+        $('#loaderSpinnerStat').show();
+        $.get(url, function (result) {
+    
+            updateGUI(result);
+    
+        }).fail(function (response) {
+    
+            $('#loaderSpinnerStat').hide();
+            $('#form-modal').modal('toggle');
+            $('#form-modal-body').html(response.responseText);
+    
+        });
+    };
+
     /*
         Buttons
     */
@@ -181,20 +202,7 @@ $(function () {
         cardView = (viewtype == 'card');
         tableView = (viewtype == 'table');
 
-        // send current viewtype to change session variable in django
-        var csrftoken = getCookie('csrftoken');
-        $.ajax({
-            type: 'POST',
-            url: $(this).attr('href'),
-            data: {'csrfmiddlewaretoken': csrftoken, 'viewtype': viewtype},
-            context: this,
-            success: function (response) {
-                console.log(response.message);
-            },
-            error: function() {
-                console.log('internal error');
-            },
-        });
+        updateSession('viewtype', viewtype);
 
         // actually change the viewtype and check for filter
         toggleViews();
@@ -204,20 +212,20 @@ $(function () {
     });
 
     $('#collapseChart').on('show.bs.collapse', function (event) {
+        updateSession('chart', 'visible');
+        loadChart();
+    });
 
-        var url = $(this).attr("title");
-        $('#loaderSpinnerStat').show();
-        $.get(url, function (result) {
+    $('#collapseChart').on('hide.bs.collapse', function() {
+        updateSession('chart', 'invisible');
+    });    
 
-            updateGUI(result);
+    $('#collapseToolbox').on('show.bs.collapse', function() {
+        updateSession('toolbox', 'visible');
+    });
 
-        }).fail(function (response) {
-
-            $('#loaderSpinnerStat').hide();
-            $('#form-modal').modal('toggle');
-            $('#form-modal-body').html(response.responseText);
-
-        });
+    $('#collapseToolbox').on('hide.bs.collapse', function() {
+        updateSession('toolbox', 'invisible');
     });
 
     $(".harvesteredit").click(function (ev) { // for each edit harvester url
@@ -288,20 +296,7 @@ $(function () {
         $('.footer').toggleClass("footer-custom-1 footer-custom-2");
         $('input').toggleClass("dark-input-fields");
 
-        // send current mode to change session variable in django
-        var csrftoken = getCookie('csrftoken');
-        $.ajax({
-            type: 'POST',
-            url: $(this).attr('href'),
-            data: {'csrfmiddlewaretoken': csrftoken, 'mode': mode},
-            context: this,
-            success: function (response) {
-                console.log(response.message);
-            },
-            error: function (response) {
-                console.log('internal error');
-            },
-        });
+        updateSession('mode', mode);
         return false;
     });
 });
@@ -684,6 +679,25 @@ function getCookie(cookieName) {
         }
     }
     return "";
+}
+
+function updateSession(sessionVar, value) {
+    var csrftoken = getCookie('csrftoken');
+    sessionData = {
+        'csrfmiddlewaretoken': csrftoken,
+        [sessionVar]: value
+    };
+    $.ajax({
+        type: 'POST',
+        url: updateSessionUrl,
+        data: sessionData,
+        success: function (response) {
+            console.log(response.message);
+        },
+        error: function() {
+            console.log('internal error');
+        },
+    });
 }
 
 $(window).scroll(function (e) {
