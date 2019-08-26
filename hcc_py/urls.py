@@ -17,17 +17,19 @@ import os
 
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path, include
+from django.urls import include, path
 # development settings for gunicorn!!
-#from django.conf import settings
-#from django.conf.urls.static import static
+# from django.conf import settings
+# from django.conf.urls.static import static
 # end here
 from rest_framework_swagger.views import get_swagger_view
-#from rest_framework.documentation import include_docs_urls
 
 from api import views_v2 as views
 from api.forms import LoginForm
-from api.views_v2 import EditHarvesterView, ConfigHarvesterView
+from api.views_v2 import ConfigHarvesterView, EditHarvesterView
+
+# from rest_framework.documentation import include_docs_urls
+
 
 __author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -42,28 +44,58 @@ SCHEMA_VIEW = get_swagger_view(title='Harvester Control Center API',
 urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
-    path('hcc/<str:name>/toggle', views.toggle_harvester, name='toggle-harvester'),
-    path('hcc/toggle/<str:hnames>', views.toggle_harvesters, name='toggle-harvesters'),
+    path(
+        'hcc/<str:name>/toggle',
+        views.toggle_harvester,
+        name='toggle-harvester'),
+    path(
+        'hcc/toggle/<str:hnames>',
+        views.toggle_harvesters,
+        name='toggle-harvesters'),
     path('hcc/<str:name>/stop', views.stop_harvester, name='stop-harvester'),
-    path('hcc/<str:name>/start', views.start_harvester, name='start-harvester'),
-    path('hcc/start/<str:hnames>', views.start_selected_harvesters, name='start-selected-harvesters'),
-    path('hcc/<str:name>/reset', views.reset_harvester, name='reset-harvester'),
-    path('hcc/edit/<str:name>', EditHarvesterView.as_view(), name='edit-harvester'),
+    path(
+        'hcc/<str:name>/start',
+        views.start_harvester,
+        name='start-harvester'),
+    path('hcc/start/<str:hnames>',
+         views.start_selected_harvesters,
+         name='start-selected-harvesters'),
+    path(
+        'hcc/<str:name>/reset',
+        views.reset_harvester,
+        name='reset-harvester'),
+    path(
+        'hcc/edit/<str:name>',
+        EditHarvesterView.as_view(),
+        name='edit-harvester'),
     path('hcc/add', EditHarvesterView.as_view(), name='add-harvester'),
-    path('hcc/config/<str:name>', ConfigHarvesterView.as_view(), name='config-harvester'), 
+    path(
+        'hcc/config/<str:name>',
+        ConfigHarvesterView.as_view(),
+        name='config-harvester'),
     path('hcc/startall', views.start_all_harvesters, name='start-harvesters'),
     path('hcc/abortall', views.abort_all_harvesters, name='abort-harvesters'),
     path('hcc/logs', views.get_all_harvester_log, name='harvesters-log'),
     path('hcc/hcclog', views.get_hcc_log, name='hcc-log'),
-    path('hcc/<str:name>/progress', views.get_harvester_progress, name='harvester-progress'),
+    path(
+        'hcc/<str:name>/progress',
+        views.get_harvester_progress,
+        name='harvester-progress'),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', SCHEMA_VIEW, name='swagger-docs'),
     # switch to internal docs if swagger is insufficient
     # path('docs2/', include_docs_urls(title='HCC API Documentation',
     # schema_url=os.environ.get('FORCE_SCRIPT_NAME', '')), name='doc'),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('accounts/login/', auth_views.LoginView.as_view(authentication_form=LoginForm)),
+    path(
+        'api-auth/',
+        include(
+            'rest_framework.urls',
+            namespace='rest_framework')),
+    path(
+        'accounts/login/',
+        auth_views.LoginView.as_view(
+            authentication_form=LoginForm)),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 # dev settings remove for production and use nginx as reverse proxy
