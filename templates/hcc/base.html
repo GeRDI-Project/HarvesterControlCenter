@@ -22,7 +22,7 @@
 
 <body>
 
-<nav class="navbar navbar-expand-sm bg-custom-1 fixed-top" role="navigation">
+<nav class="navbar navbar-expand-sm light-mode-bg fixed-top" role="navigation">
     
     <a class="navbar-brand" href="#">
         <h2>{% block title %}{% endblock %}</h2>
@@ -45,7 +45,7 @@
             <a class="dropdown-item" href="{% url 'swagger-docs' %}">API Documentation</a>
             <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Interface</a>
             <div class="dropdown-divider"></div>
-            <a id="toggle-mode-button" class="dropdown-item" href="#" onclick=toggleModeFunction()>
+            <a id="toggle-mode-button" class="dropdown-item" href="#" onclick=toggleTheme()>
                 <i class="fa fa-adjust" aria-hidden=true></i>
                 <span id="toggle-mode-text">Dark Mode</span>
             </a>

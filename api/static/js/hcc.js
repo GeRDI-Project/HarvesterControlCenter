@@ -353,7 +353,7 @@ $(".harvesteredit").click(function(ev) { // for each edit harvester url
      return false; // prevent the click propagation
  });
 
- function toggleModeFunction() {
+ function toggleTheme() {
 
     if ($('#toggle-mode-text').text() == "Dark Mode") {
         // changing from light to dark mode
@@ -365,8 +365,8 @@ $(".harvesteredit").click(function(ev) { // for each edit harvester url
         $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
     }
 
-    $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
-    $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+    $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+    $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
  }
 
