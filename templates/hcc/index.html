@@ -88,18 +88,18 @@
                         {% endfor %}
                         </span>
                     </button>
-                    <button id="btn-list-view" class="btn float-right">
+                    <a id="btn-list-view" role="button" href="{% url 'update-session' %}" class="btn toggle-view-button float-right">
                         <i class="fa fa-lg fa-list" title="list view" aria-hidden="true"
                         data-toggle="tooltip" data-placement="top"></i>
-                    </button>
-                    <button id="btn-card-view" class="btn float-right">
+                    </a>
+                    <a id="btn-card-view" role="button" href="{% url 'update-session' %}" class="btn toggle-view-button float-right">
                         <i class="fa fa-lg fa-id-card" title="card view" aria-hidden="true"
                         data-toggle="tooltip" data-placement="top"></i>
-                    </button>
-                    <button id="btn-table-view" class="btn float-right">
+                    </a>
+                    <a id="btn-table-view" role="button" href="{% url 'update-session' %}" class="btn toggle-view-button float-right">
                         <i class="fa fa-lg fa-table" title="table view" aria-hidden="true"
                         data-toggle="tooltip" data-placement="top"></i>
-                    </button>
+                    </a>
                     <div class="btn-group" role="group" aria-label="ControlPanel">
                         <a href="{% url 'start-harvesters' %}" role="button" class="btn btn-primary">start all</a>
                         <a href="{% url 'abort-harvesters' %}" role="button" class="btn btn-dark">abort all</a>

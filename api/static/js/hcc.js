@@ -14,11 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
+// startView is set in bottom of base.html
+// set global variables for the current viewtype
 var listView, cardView, tableView;
-// which view is shown at the moment (especially at the beginning)
-listView = false;
-tableView = false;
-cardView = true;
+listView = (startView == 'list');
+cardView = (startView == 'card');
+tableView = (startView == 'table');
 
 /*
    Execute when DOM is ready
@@ -29,6 +30,7 @@ $(function () {
     $('#loaderSpinnerStat').hide();
 
     toggleViews();
+    initMode();
 
     var ctx = document.getElementById("harvesterChart");
     if (ctx != null) {
@@ -168,28 +170,37 @@ $(function () {
         load_into_modal(this);
     });
 
-    $('#btn-list-view').click(function () {
-        listView = true;
-        cardView = false;
-        tableView = false;
-        toggleViews();
-        filterFunction();
-    });
+    $('.toggle-view-button').click(function(ev) {
+        ev.preventDefault();
 
-    $('#btn-card-view').click(function () {
-        listView = false;
-        cardView = true;
-        tableView = false;
-        toggleViews();
-        filterFunction();
-    });
+        // id is btn-(viewtype)-view
+        var viewtype = $(this).attr('id').split('-')[1];
 
-    $('#btn-table-view').click(function () {
-        listView = false;
-        cardView = false;
-        tableView = true;
+        // set global viewtype variables
+        listView = (viewtype == 'list');
+        cardView = (viewtype == 'card');
+        tableView = (viewtype == 'table');
+
+        // send current viewtype to change session variable in django
+        var csrftoken = getCookie('csrftoken');
+        $.ajax({
+            type: 'POST',
+            url: $(this).attr('href'),
+            data: {'csrfmiddlewaretoken': csrftoken, 'viewtype': viewtype},
+            context: this,
+            success: function (response) {
+                console.log(response.message);
+            },
+            error: function() {
+                console.log('internal error');
+            },
+        });
+
+        // actually change the viewtype and check for filter
         toggleViews();
         filterFunction();
+
+        return false;
     });
 
     $('#collapseChart').on('show.bs.collapse', function (event) {
@@ -256,6 +267,42 @@ $(function () {
         if ($('#checkbox-show-all').prop('checked')) checkboxShowAll();
         if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
+    });
+
+    $('#toggle-mode-button').click(function(ev) {
+        ev.preventDefault();
+
+        if ($('#toggle-mode-text').text().includes("Dark Mode")) {
+            // changing from light to dark mode
+            var mode = 'dark';
+            $('#toggle-mode-text').text("Light Mode");
+            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+        } else {
+            // changing from dark to light mode
+            var mode = 'light';
+            $('#toggle-mode-text').text("Dark Mode");
+            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
+        }
+    
+        $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
+        $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+        $('input').toggleClass("dark-input-fields");
+
+        // send current mode to change session variable in django
+        var csrftoken = getCookie('csrftoken');
+        $.ajax({
+            type: 'POST',
+            url: $(this).attr('href'),
+            data: {'csrfmiddlewaretoken': csrftoken, 'mode': mode},
+            context: this,
+            success: function (response) {
+                console.log(response.message);
+            },
+            error: function (response) {
+                console.log('internal error');
+            },
+        });
+        return false;
     });
 });
 
@@ -610,6 +657,34 @@ function removeClass(el, className) {
     }
 }
 
+function initMode() {
+    if ($('#toggle-mode-text').text().includes("Light Mode")) {
+        // set css if dark mode is active in the beginning
+        $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
+        $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+        $('input').toggleClass("dark-input-fields");
+    }
+}
+
+function getCookie(cookieName) {
+    var name, decodedCookie, cookieArray, c;
+
+    name = cookieName + "=";
+    decodedCookie = decodeURIComponent(document.cookie);
+    cookieArray = decodedCookie.split(';');
+    for(var i = 0; i < cookieArray.length; i++) {
+        c = cookieArray[i];
+
+        // avoid spaces at the beginning
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
 
 $(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
@@ -620,20 +695,3 @@ $(window).scroll(function (e) {
         $('.navbar').removeClass("navbar-hide");
     }
 });
-
-function toggleModeFunction() {
-
-    if ($('#toggle-mode-text').text() == "Dark Mode") {
-        // changing from light to dark mode
-        $('#toggle-mode-text').text("Light Mode");
-        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
-    } else {
-        // changing from dark to light mode
-        $('#toggle-mode-text').text("Dark Mode");
-        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
-    }
-
-    $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
-    $('.footer').toggleClass("footer-custom-1 footer-custom-2");
-    $('input').toggleClass("dark-input-fields");
-}

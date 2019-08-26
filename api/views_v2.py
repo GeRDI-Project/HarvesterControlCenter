@@ -272,6 +272,12 @@ def home(request):
     """
     feedback = {}
 
+    # init session mode (dark/light) with default light
+    mode = request.session.get('mode', 'light')
+
+    # init session viewtype (card/list/table) with default card
+    viewtype = request.session.get('viewtype', 'card')
+
     # if user is logged in
     if request.user.is_authenticated:
         forms = {}
@@ -355,13 +361,42 @@ def home(request):
             request, 'hcc/index.html', {
                 'harvesters': harvesters,
                 'status': feedback,
-                'forms': forms
+                'forms': forms,
+                'mode': mode,
+                'viewtype': viewtype
             })
 
     return render(request, 'hcc/index.html', {
-        'status': feedback
+        'status': feedback,
+        'mode': mode
     })
 
+def update_session(request):
+    if not request.is_ajax() or not request.method == 'POST':
+        return JsonResponse({
+            'status': 'failed',
+            'message': 'wrong access'
+        })
+
+    if 'mode' in request.POST:
+        request.session['mode'] = request.POST.get('mode')
+        var = 'mode'
+    elif 'viewtype' in request.POST:
+        request.session['viewtype'] = request.POST.get('viewtype')
+        var = 'viewtype'
+    else:
+        return JsonResponse({
+            'status': 'failed', 
+            'message': (
+                'Data could not been handled. No input matched'
+                ' "mode" or "viewtype"'
+            )    
+        })
+    
+    return JsonResponse({
+        'status': 'ok', 
+        'message': 'Session variable {} was changed.'.format(var)
+    })
 
 @api_view(['POST'])
 # @authentication_classes((TokenAuthentication, BasicAuthentication))
