@@ -1,3 +1,3 @@
-from settings import *
+from hcc_py.settings import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
