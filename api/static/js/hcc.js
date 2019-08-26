@@ -257,11 +257,13 @@ $(function () {
             success: function (response) {
                 $('#message-modal-header').text(response.status == 'Ok' ? 'Success!' : 'Error');
                 $('#message-modal-body').text(response.message);
+                $('#message-modal-exit').show();
                 $('#message-modal').modal('show');
             },
             error: function (response) {
                 $('#message-modal-header').text('Error!');
                 $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+                $('#message-modal-exit').show();
                 $('#message-modal').modal('show');
             },
         });
