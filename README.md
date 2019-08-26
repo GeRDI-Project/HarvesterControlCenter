@@ -1,4 +1,4 @@
-# Harvester Control Center (HCC) v3.7.2
+# Harvester Control Center (HCC) v3.9.0
 
 A Harvester Control Center GUI with REST-API written in Django.
 
@@ -17,15 +17,15 @@ A Harvester Control Center GUI with REST-API written in Django.
 * [FontAwesome](https://fontawesome.com/v4.7.0/icons/): Fontawesome Version 4.7
 * [Bootstrap](https://getbootstrap.com/docs/4.1/getting-started/introduction/): Bootstrap 4
 
+### Authentication-Mechanisms
+
+   1. Basic Authentication via Username and Password
+   2. Token Authentication via Auth.-Token (see below)
+   3. OAuth will be implemented... what about FIDO2 eh?
+
 ## Installation
 
 If you wish to run your own build, first ensure you have python globally installed in your computer. If not, you can get python [here](https://www.python.org").
-
-After doing this, confirm that you have installed _virtualenv_ globally as well. If not, run this:
-
-```bash
-    pip install virtualenv
-```
 
 Then, Git clone this repo to your PC
 
@@ -33,7 +33,13 @@ Then, Git clone this repo to your PC
     git clone https://...
 ```
 
-### Dependencies
+### Install dependencies without using make(-file)
+
+After doing installation, confirm that you have installed _virtualenv_ globally as well. If not, run this:
+
+```bash
+    pip install virtualenv
+```
 
 Change into the cloned repo as such:
 
@@ -61,12 +67,6 @@ Install the dependencies needed to run the app:
     python manage.py migrate
 ```
 
-### Authentication-Mechanisms
-
-   1. Basic Authentication via Username and Password
-   2. Token Authentication via Auth.-Token (see below)
-   3. SAML Auth will be implemented...
-
 ### Code testing
 
 To use Django Testing Environment fire the following command in your Terminal
@@ -87,6 +87,12 @@ Fire up the server using this one simple command:
 
 ```bash
     DEBUG=True python manage.py runserver
+```
+
+or
+
+```bash
+    make runlocal
 ```
 
 You can now access the service on your browser by using the following URLS. /docs for swagger api documentation. /v1 is the HCC API endpoint. /admin is the admin-webinterface provided by django.
@@ -121,10 +127,10 @@ If you do have a SSL Configuration, please add the line
 "proxy_set_header X-Forwarded-Proto https;" in the nginx configuration
 found in folder nginx/nginx.conf.
 
-First build the docker container...
+To build the docker container...
 
 ```bash
-    docker build -t harvest/hccenter:latest .
+    make docker
 ```
 
 ### Environment variable configuration
@@ -142,5 +148,5 @@ There are seven ENV variables which could be used to configure production use. F
 Now run that container.
 
 ```bash
-    docker run --name=gerdi_hcc -it -p 8080:80 harvest/hccenter:latest
+    make dockerrun
 ```

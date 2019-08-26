@@ -14,16 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
- /*
-    Execute when DOM is ready
- */
-$( function () {
+var listView, cardView, tableView;
+// which view is shown at the moment (especially at the beginning)
+listView = false;
+tableView = false;
+cardView = true;
+
+/*
+   Execute when DOM is ready
+*/
+$(function () {
 
     $('#loaderSpinnerLog').hide();
     $('#loaderSpinnerStat').hide();
+    toggleViews();
 
     var ctx = document.getElementById("harvesterChart");
-    if ( ctx != null ) {
+    if (ctx != null) {
         var myChart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -36,7 +43,9 @@ $( function () {
                     borderWidth: 1
                 }]
             },
-            options: { cutoutPercentage: 45 }
+            options: {
+                cutoutPercentage: 45
+            }
         });
     }
 
@@ -44,58 +53,37 @@ $( function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
-    $('#btn-deploy-harvester').on('click', function (event) {
-        load_into_modal(this);
+    $(function () {
+        $('[data-toggle="popover"]').popover();
     });
 
-    $('#btn-hcc-log').on('click', function (event) {
-        load_into_modal(this);
-    });
-
-    function load_into_modal (_this) {
+    function load_into_modal(_this) {
         var url = $(_this).attr("title");
         $('#loaderSpinnerLog').show();
         $.get(url, function (result) {
             var status = result;
             var data = JSON.stringify(result, undefined, 2);
-            $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html('<pre>' + data + '</pre>');
+            $('#form-modal').modal('toggle');
+            $('#form-modal-body').html('<pre>' + data + '</pre>');
             for (var key in status) {
                 var obj = status[key];
-                $( '#hv-status-' + key ).html( obj.log );
+                $('#hv-status-' + key).html(obj.log);
             }
             $('#loaderSpinnerLog').hide();
 
         }).fail(function (response) {
-            $( '#loaderSpinnerLog' ).hide();
-            $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html( response.responseText );
+            $('#loaderSpinnerLog').hide();
+            $('#form-modal').modal('toggle');
+            $('#form-modal-body').html(response.responseText);
         });
     }
-
-    $('#collapseChart').on('show.bs.collapse', function (event) {
-
-        var url = $(this).attr("title");
-        $('#loaderSpinnerStat').show();
-        $.get(url, function (result) {
-
-            updateGUI(result);
-
-        }).fail(function (response) {
-
-            $('#loaderSpinnerStat').hide();
-            $( '#form-modal' ).modal('toggle');
-            $( '#form-modal-body' ).html( response.responseText );
-
-        });
-    });
 
     function updateChart(labels, data, bgColorArray, bColorArray) {
 
         $('#loaderSpinnerStat').hide();
 
         myChart.data.labels.pop();
-        myChart.data.datasets.forEach( function(dataset) {
+        myChart.data.datasets.forEach(function (dataset) {
             dataset.data.pop();
             dataset.backgroundColor.pop();
             dataset.borderColor.pop();
@@ -120,46 +108,46 @@ $( function () {
         for (var key in status) {
 
             var obj = status[key];
-            if ( obj != 'disabled' ) {
+            if (obj != 'disabled') {
 
-                $( '#hv-status-' + key ).html( JSON.stringify(obj) );
+                $('#hv-status-' + key).html(JSON.stringify(obj));
                 var btnhvstatus = document.getElementById('btn-harvester-status-' + key);
-                if ( btnhvstatus ) {
+                if (btnhvstatus) {
                     btnhvstatus.classList.toggle("btn-info", false);
                     btnhvstatus.classList.toggle("btn-warning", false);
                     btnhvstatus.classList.toggle("btn-success", false);
-                    btnhvstatus.classList.add( "btn-" + obj.gui_status );
+                    btnhvstatus.classList.add("btn-" + obj.gui_status);
                 }
-                if ( obj.status ) {
+                if (obj.status) {
                     var lbl_status = document.getElementById('lbl-harvester-status-' + key);
-                    lbl_status.innerHTML = obj.status ;
+                    lbl_status.innerHTML = obj.status;
                 }
-                if ( obj.cached_docs ) {
-                    vlabels.push( key );
-                    vdata.push( parseInt(obj.cached_docs) );
+                if (obj.cached_docs) {
+                    vlabels.push(key);
+                    vdata.push(parseInt(obj.cached_docs));
                     var r = (Math.floor(Math.random() * 256));
                     var g = (Math.floor(Math.random() * 256));
                     var b = (Math.floor(Math.random() * 256));
-                    gbcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.3)' );
-                    bcarray.push( 'rgba(' + r + ',' + g + ',' + b + ',0.4)' );
+                    gbcarray.push('rgba(' + r + ',' + g + ',' + b + ',0.3)');
+                    bcarray.push('rgba(' + r + ',' + g + ',' + b + ',0.4)');
                 }
-                if ( obj.health != 'OK' ) {
-                    $( '#health-exclamation-' + key ).show();
-                    $( '#health-exclamation-' + key ).prop('title', obj.health );
+                if (obj.health != 'OK') {
+                    $('#health-exclamation-' + key).show();
+                    $('#health-exclamation-' + key).prop('title', obj.health);
                 } else {
-                    $( '#health-exclamation-' + key ).hide();
+                    $('#health-exclamation-' + key).hide();
                 }
-                if ( obj.status == 'harvesting' ) {
+                if (obj.status == 'harvesting') {
                     //$( '#progresshv-' + key ).show();
                 } else {
                     //$( '#progresshv-' + key ).hide();
                 }
-                if ( obj.data_pvd ) {
-                    $( '#btn-harvester-status-' + key ).attr('data-original-title', obj.data_pvd +
-                    ' harvested and cached documents: ' +
-                    obj.cached_docs + ' of ' +
-                    obj.max_docs + '. Last harvest: ' +
-                    obj.lastHarvestDate);
+                if (obj.data_pvd) {
+                    $('#btn-harvester-status-' + key).attr('data-original-title', obj.data_pvd +
+                        ' harvested and cached documents: ' +
+                        obj.cached_docs + ' of ' +
+                        obj.max_docs + '. Last harvest: ' +
+                        obj.lastHarvestDate);
                 }
             }
         }
@@ -167,90 +155,145 @@ $( function () {
         updateChart(vlabels, vdata, gbcarray, bcarray);
     }
 
-    var formButton = {
-        regClick: function () {
-            $('#form-modal-body').load('/hcc/register #hreg-form-content', formButton.toggleModal);
-        },
+    /*
+        Buttons
+    */
 
-        toggleModal: function () {
+    $('#btn-harvester-log').on('click', function (event) {
+        load_into_modal(this);
+    });
+
+    $('#btn-hcc-log').on('click', function (event) {
+        load_into_modal(this);
+    });
+
+    $('#btn-list-view').click(function () {
+        listView = true;
+        cardView = false;
+        tableView = false;
+        toggleViews();
+        filterFunction();
+    });
+
+    $('#btn-card-view').click(function () {
+        listView = false;
+        cardView = true;
+        tableView = false;
+        toggleViews();
+        filterFunction();
+    });
+
+    $('#btn-table-view').click(function () {
+        listView = false;
+        cardView = false;
+        tableView = true;
+        toggleViews();
+        filterFunction();
+    });
+
+    $('#collapseChart').on('show.bs.collapse', function (event) {
+
+        var url = $(this).attr("title");
+        $('#loaderSpinnerStat').show();
+        $.get(url, function (result) {
+
+            updateGUI(result);
+
+        }).fail(function (response) {
+
+            $('#loaderSpinnerStat').hide();
             $('#form-modal').modal('toggle');
-            formAjaxSubmit.init('#form-modal-body form', '#form-modal');
-        }
-    };
+            $('#form-modal-body').html(response.responseText);
 
-    var formAjaxSubmit = {
-        init: function (form, modal) {
-            $(form).submit(formAjaxSubmit.ajax);
-        },
+        });
+    });
 
-        ajax: function (e) {
-            e.preventDefault();
-            $.ajax({
-                type: $(this).attr('method'),
-                url: $(this).attr('action'),
-                data: $(this).serialize(),
-                success: formAjaxSubmit.succFunc,
-                error: formAjaxSubmit.errorFunc,
-            });
-        },
+    $(".harvesteredit").click(function (ev) { // for each edit harvester url
+        ev.preventDefault(); // prevent navigation
+        var url = $(this).attr("data-form"); // get the harvester form url
+        $("#harvesterModal").load(url, function () { // load the url into the modal
+            $(this).modal('show'); // display the modal on url load
+        });
+        return false; // prevent the click propagation
+    });
 
-        succFunc: function (xhr, ajaxOptions, thrownError) {
-            if ($(xhr).find('.has-error').length > 0) {
-                $(modal).find('.modal-body').html(xhr);
-                formAjaxSubmit.init(form, modal);
-            } else {
-                $(modal).modal('toggle');
-            }
-        },
+    $(".harvesterconfig").click(function (ev) { // for each edit harvester url
+        ev.preventDefault(); // prevent navigation
+        var url = $(this).attr("data-form"); // get the harvester form url
+        $("#config-modal").load(url, function () { // load the url into the modal
+            $(this).modal('show'); // display the modal on url load
+        });
+        return false; // prevent the click propagation
+    });
 
-        errorFunc: function (xhr, ajaxOptions, thrownError) {
-            // handle response errors here
-        }
-    };
+    $('.crontab-edit-form').submit(function (ev) {
+        ev.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: serializedData,
+            context: this,
+            success: function (response) {
+                $('#message-modal-header').text(response.status == 'Ok' ? 'Success!' : 'Error');
+                $('#message-modal-body').text(response.message);
+                $('#message-modal').modal('show');
+            },
+            error: function (response) {
+                $('#message-modal-header').text('Error!');
+                $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+                $('#message-modal').modal('show');
+            },
+        });
+        return false;
+    });
 
-    $('#register-button').click(formButton.regClick);
-
+    $('.status-radio').click(function() {
+        if ($('#checkbox-show-all').prop('checked')) checkboxShowAll();
+        if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
+        if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
+    });
 });
 
 /*
-    Execute when Page/window is loaded
+    Execute when page/window is loaded
 */
-$( window ).ready( function(){
+$(window).ready(function () {
 
     // milisec to hours, min, sec
     var timeConvert = function (milis) {
         var milisec = milis;
-        var rseconds = Math.floor( (milisec / 1000) % 60 );
-        var rminutes = Math.floor( (milisec / (1000*60)) % 60 );
-        var rhours   = Math.round( (milisec / (1000*60*60)) % 24 );
+        var rseconds = Math.floor((milisec / 1000) % 60);
+        var rminutes = Math.floor((milisec / (1000 * 60)) % 60);
+        var rhours = Math.round((milisec / (1000 * 60 * 60)) % 24);
         return rhours + "h " + rminutes + "min " + rseconds + "sec";
     };
 
     var lbl_status = document.querySelectorAll('*[id^="lbl-harvester-status-"]');
     var lblarray = Array.from(lbl_status);
-    if ( lblarray.length > 0 ) {
+    if (lblarray.length > 0) {
         for (var key in lblarray) {
 
             var obj = lblarray[key];
             var objid = obj.id;
             var me = objid.split('-')[3];
 
-            if ( obj.innerText == 'harvesting' || obj.innerText == 'queued' ) {
+            if (obj.innerText == 'harvesting' || obj.innerText == 'queued') {
 
-                var is = $( '#progresshv-' + me);
-                is.addClass( "progress-bar-animated" );
-                is.removeClass ( "progress-bar-grey" );
+                var is = $('#progresshv-' + me);
+                is.addClass("progress-bar-animated");
+                is.removeClass("progress-bar-grey");
                 var remember = is.attr("title");
-                var intervalid = setInterval( getProgress, 1982, remember, me );
+                var intervalid = setInterval(getProgress, 1982, remember, me);
             }
         }
     }
 
     function getProgress(_url, _harv) {
 
-        var bar = $( '#progresshv-' + _harv);
-        var timelabel = $( '#status-label-' + _harv);
-        var statuslabel = $( '#lbl-harvester-status-' + _harv);
+        var bar = $('#progresshv-' + _harv);
+        var timelabel = $('#status-label-' + _harv);
+        var statuslabel = $('#lbl-harvester-status-' + _harv);
         var width = parseInt(bar[0].innerText.replace('%', ''));
         var state = statuslabel[0].innerText;
         var perc = "%";
@@ -258,7 +301,7 @@ $( window ).ready( function(){
         var time = 0;
         var time_string = "";
 
-        if ( state == 'harvesting' || state == 'queued' || typeof state == "undefined" ) {
+        if (state == 'harvesting' || state == 'queued' || typeof state == "undefined") {
 
             var request = $.ajax({
                 url: _url,
@@ -273,7 +316,7 @@ $( window ).ready( function(){
             });
 
             request.done(function (data) {
-                for ( var key in data ) {
+                for (var key in data) {
 
                     width = data[key].progress_cur;
                     remain = data[key].remainingHarvestTime;
@@ -281,31 +324,31 @@ $( window ).ready( function(){
                     cache = data[key].progress;
                     state = data[key].state;
 
-                    $( '#btn-harvester-status-' + key ).attr('data-original-title',
-                    cache + ' of ' + max);
+                    $('#btn-harvester-status-' + key).attr('data-original-title',
+                        cache + ' of ' + max);
                     statuslabel.html(state);
 
                     // referenced by context, this
                     bar.css("width", width + "%");
-                    if ( max === "N/A" ) {
+                    if (max === "N/A") {
                         perc = "";
                     }
-                    if ( typeof remain !== "undefined" ) {
+                    if (typeof remain !== "undefined") {
                         time = timeConvert(remain);
                         time_string = 'remaining time: ' + time;
                     }
-                    timelabel.html( time_string );
+                    timelabel.html(time_string);
                     bar.html(width + perc);
                 }
             });
 
         } else {
 
-            bar.removeClass( "progress-bar-animated" );
-            bar.addClass( "progress-bar-grey" );
+            bar.removeClass("progress-bar-animated");
+            bar.addClass("progress-bar-grey");
             bar.css("width", width + "%");
             bar.html(width + '%');
-            timelabel.html( "" );
+            timelabel.html("");
             statuslabel.html("finished");
             clearInterval(intervalid);
 
@@ -317,25 +360,227 @@ $( window ).ready( function(){
 function filterFunction() {
 
     // Declare variables
-    var input, filter, list, btns, a, i, txtValue;
+    var input, filter, list, card, table, divs, trs, tbody, a, i, txtValue;
     input = document.getElementById('harvesterInput');
     filter = input.value.toUpperCase();
-    list = document.getElementById("harvesterList");
-    btns = list.getElementsByTagName('button');
+    list = document.getElementById("div-list-view");
+    card = document.getElementById("div-card-view");
+    table = document.getElementById("div-table-view");
 
-    // Loop through all list items, and hide those who don't match the search query
-    for (i = 0; i < btns.length; i++) {
-      a = btns[i];
-      txtValue = a.textContent || a.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "";
-      } else {
-        btns[i].parentElement.parentElement.parentElement.parentElement.style.display = "none";
-      }
+    // first: check which div is visible (same implementation like jQuerys :visible)
+    // after: Loop through divs/trs and compare id names
+    if (listView) {
+        divs = list.getElementsByClassName('harvester-list-div');//direct child divs of div-list-view
+        for (i = 0; i < divs.length; i++) {
+            a = divs[i];
+            txtValue = a.id.split("-")[0]; //divs are named {{harvester.name}}-div-list
+            if (txtValue.toUpperCase().includes(filter)) {
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
+        }
+    } else if (cardView) {
+        divs = card.getElementsByClassName('harvester-card-div');//direct child divs of div-card-view
+        for (i = 0; i < divs.length; i++) {
+            a = divs[i];
+            txtValue = a.id.split("-")[0]; //divs are named {{harvester.name}}-div-card
+            if (txtValue.toUpperCase().includes(filter)) {
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
+        }
+    } else if (tableView) {
+        tbody = table.getElementsByTagName('tbody')[0];//only tbody changes, thead should always be visible
+        trs = tbody.getElementsByTagName('tr');
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            txtValue = a.id.split("-")[0]; //trs are named {{harvester.name}}-tr-table
+            if (txtValue.toUpperCase().includes(filter)) {
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
+        }
     }
 }
 
-$( window ).scroll(function(e) {
+function toggleViews() {
+    var listDiv, listBtn, cardDiv, cardBtn, tableDiv, tableBtn;
+    listDiv = document.getElementById("div-list-view");
+    cardDiv = document.getElementById("div-card-view");
+    tableDiv = document.getElementById("div-table-view");
+
+    listBtn = document.getElementById("btn-list-view");
+    cardBtn = document.getElementById("btn-card-view");
+    tableBtn = document.getElementById("btn-table-view");
+
+    listDiv.style.display = listView ? "" : "none";
+    cardDiv.style.display = cardView ? "" : "none";
+    tableDiv.style.display = tableView ? "" : "none";
+
+    listBtn.style.display = listView ? "none" : "";
+    cardBtn.style.display = cardView ? "none" : "";
+    tableBtn.style.display = tableView ? "none" : "";
+}
+
+function checkboxFunction() {
+    /*
+    Enables/disables links in table-view if checkboxes are checked/not checked
+    and adds url with the name of the harvesters
+    */
+
+    var checkBoxes, isChecked, harvs, i, startHButton, disableHButton, tr, hname, slug;
+    checkBoxes = document.getElementsByClassName("table-view-checkbox");
+    isChecked = false;
+    harvs = [];
+    for (i = 0; i < checkBoxes.length; i++) {
+        if (checkBoxes[i].checked) {
+            isChecked = true;
+            tr = $(checkBoxes[i]).closest('tr');//get row, where checkBox[i] is in
+            hname = $(tr).attr('id').split("-")[0]; //trs are named {{harvester.name}}-tr-table
+            harvs.push(hname);
+        }
+    }
+    slug = '';
+    for (i = 0; i < harvs.length; i++) {
+        if (i < harvs.length - 1) {
+            slug += harvs[i] + '-';
+        } else {
+            slug += harvs[i];
+        }
+    }
+
+    startHButton = document.getElementById("table-checkbox-start-harvesters");
+    disableHButton = document.getElementById("table-checkbox-disable-harvesters");
+    if (isChecked) {
+        removeClass(startHButton, "disabled");
+        removeClass(disableHButton, "disabled");
+
+        $(disableHButton).attr('href', "toggle/" + slug);
+        $(startHButton).attr('href', "start/" + slug);
+        // note: not the best solution, might be changed later
+        // to a version with dynamic url
+    } else {
+        addClass(startHButton, "disabled");
+        addClass(disableHButton, "disabled");
+
+        $(this).attr('href', "#");
+    }
+}
+
+function checkboxMasterFunction() {
+    var masterCheckbox, checkboxes, i;
+    masterCheckbox = document.getElementById("table-checkbox-master");
+    checkboxes = document.getElementsByClassName("table-view-checkbox");
+
+    for (i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = (masterCheckbox.checked) ? true : false;
+    }
+    checkboxFunction();
+}
+
+function checkboxShowIdle() {
+    var checkBox, table, tbody, trs, status, hname;
+    table = document.getElementById("div-table-view");
+    checkBox = document.getElementById("checkbox-show-idle");
+    tbody = table.getElementsByTagName('tbody')[0];
+    trs = tbody.getElementsByTagName('tr');
+
+    if (checkBox.checked) {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            hname = a.id.split("-")[0];
+            status = a.getElementsByClassName("tv-status-" + hname)[0];
+            if (status.innerText == "idle") {
+                a.style.display = "";
+            } else {
+                a.style.display = "none";
+            }
+        }
+    } else {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            a.style.display = "";
+        }
+    }
+}
+
+function checkboxHideIdle() {
+    var checkBox, table, tbody, trs, status, hname, i;
+    table = document.getElementById("div-table-view");
+    checkBox = document.getElementById("checkbox-hide-idle");
+    tbody = table.getElementsByTagName('tbody')[0];
+    trs = tbody.getElementsByTagName('tr');
+
+    if (checkBox.checked) {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            hname = a.id.split("-")[0];
+            status = a.getElementsByClassName("tv-status-" + hname)[0];
+            if (status.innerText == "idle") {
+                a.style.display = "none";
+            } else {
+                a.style.display = "";
+            }
+        }
+    } else {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            a.style.display = "";
+        }
+    }
+}
+
+function checkboxShowAll() {
+    var checkBox, table, tbody, trs, status, hname, i;
+    table = document.getElementById("div-table-view");
+    checkBox = document.getElementById("checkbox-show-all");
+    tbody = table.getElementsByTagName('tbody')[0];
+    trs = tbody.getElementsByTagName('tr');
+
+    if (checkBox.checked) {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            a.style.display = "";
+        }
+    } else {
+        for (i = 0; i < trs.length; i++) {
+            a = trs[i];
+            a.style.display = "none";
+        }
+    }
+}
+
+//implement own add/remove class methods to avoid jquery
+function hasClass(el, className) {
+    if (el.classList) {
+        return el.classList.contains(className);
+    } else {
+        return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+    }
+}
+
+function addClass(el, className) {
+    if (el.classList) {
+        el.classList.add(className);
+    } else if (!hasClass(el, className)) {
+        el.className += " " + className;
+    }
+}
+
+function removeClass(el, className) {
+    if (el.classList) {
+        el.classList.remove(className);
+    } else if (hasClass(el, className)) {
+        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+        el.className = el.className.replace(reg, ' ');
+    }
+}
+
+
+$(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
     if (scroll >= 270) {
@@ -345,24 +590,46 @@ $( window ).scroll(function(e) {
     }
 });
 
-$(".harvesteredit").click(function(ev) { // for each edit harvester url
-     ev.preventDefault(); // prevent navigation
-     var url = $(this).data("form"); // get the harvester form url
-     $("#harvesterModal").load(url, function() { // load the url into the modal
-         $(this).modal('show'); // display the modal on url load
-     });
-     return false; // prevent the click propagation
- });
+// good coding examples for non anonymous functions
+var formButton = {
+    regClick: function () {
+        $('#form-modal-body').load('/hcc/register #hreg-form-content', formButton.toggleModal);
+    },
 
- /*$('.harvester-edit-form').on('submit', function() {
-     $.ajax({
-         type: $(this).attr('method'),
-         url: this.action,
-         data: $(this).serialize(),
-         context: this,
-         success: function(data, status) {
-             $('#harvesterModal').html(data);
-         }
-     });
-     return false;
- });*/
+    toggleModal: function () {
+        $('#form-modal').modal('toggle');
+        formAjaxSubmit.init('#form-modal-body form', '#form-modal');
+    }
+};
+
+var formAjaxSubmit = {
+    init: function (form, modal) {
+        $(form).submit(formAjaxSubmit.ajax);
+    },
+
+    ajax: function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            success: formAjaxSubmit.succFunc,
+            error: formAjaxSubmit.errorFunc,
+        });
+    },
+
+    succFunc: function (xhr, ajaxOptions, thrownError) {
+        if ($(xhr).find('.has-error').length > 0) {
+            $(modal).find('.modal-body').html(xhr);
+            formAjaxSubmit.init(form, modal);
+        } else {
+            $(modal).modal('toggle');
+        }
+    },
+
+    errorFunc: function (xhr, ajaxOptions, thrownError) {
+        // handle response errors here
+    }
+};
+
+$('#register-button').click(formButton.regClick);
