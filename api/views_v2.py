@@ -48,7 +48,7 @@ def index(request):
     :param request:
     :return: a HttpResponse
     """
-    return HttpResponseRedirect(reverse('swagger-docs'))
+    return HttpResponseRedirect(reverse('hcc_gui'))
 
 
 @login_required
