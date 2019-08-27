@@ -2,15 +2,16 @@
 This module initiaized a harvester and determines its version to decide the protocol language.
 """
 import json
+
 import requests
 from requests.exceptions import RequestException
 from rest_framework import status
 from rest_framework.response import Response
 
-from api.harvester_api_strategy import (HarvesterApiStrategy, BaseStrategy,
+from api.constants import HarvesterApiConstants as HAC
+from api.harvester_api_strategy import (BaseStrategy, HarvesterApiStrategy,
                                         VersionBased6Strategy,
                                         VersionBased7Strategy)
-from api.constants import HarvesterApiConstants as HAC
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"

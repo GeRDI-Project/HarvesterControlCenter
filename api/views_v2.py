@@ -1,33 +1,38 @@
 """
-The is thw views module which encapsulates the backend logic
+This is the views module which encapsulates the backend logic
+which will be riggered via the corresponding path (url).
 """
 import logging
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.views.generic import FormView, RedirectView
-from rest_framework import status, generics, permissions
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.views.generic import RedirectView
+from django.views.generic.base import View
+from django.views.generic.edit import FormMixin
+from rest_framework import generics, permissions, status
+from rest_framework.authentication import (BasicAuthentication,
+                                           TokenAuthentication)
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.forms import HarvesterForm, SchedulerForm
-from api.mixins import AjaxTemplateMixin
+from api.constants import HCCJSONConstants as HCCJC
+from api.forms import (HarvesterForm, SchedulerForm, create_config_fields,
+                       create_config_form)
+from api.harvester_api import InitHarvester
+from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
 from api.permissions import IsOwner
 from api.serializers import HarvesterSerializer, UserSerializer
-from api.harvester_api import InitHarvester
-from api.constants import HCCJSONConstants as HCCJC
 
-__author__ = "Jan Frömberg"
+__author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
@@ -44,7 +49,7 @@ def index(request):
     :param request:
     :return: a HttpResponse
     """
-    return HttpResponseRedirect(reverse('swagger-docs'))
+    return HttpResponseRedirect(reverse('hcc_gui'))
 
 
 @login_required
@@ -67,6 +72,31 @@ def toggle_harvester(request, name):
         LOGGER.info("%s enabled.", harv.name)
         messages.add_message(request, messages.INFO,
                              name + ' harvester enabled.')
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
+
+@login_required
+def toggle_harvesters(request, hnames):
+    """
+    This function toggles the enabled and disabled status of selected harvester.
+
+    :param request: the request
+    :param hnames: names of the harvesters
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+    names = hnames.split('-')
+    for name in names:
+        harv = get_object_or_404(Harvester, name=name)
+        if harv.enabled:
+            harv.disable()
+            LOGGER.info("%s disabled.", harv.name)
+            messages.add_message(request, messages.INFO,
+                                 name + ' harvester disabled.')
+        else:
+            harv.enable()
+            LOGGER.info("%s enabled.", harv.name)
+            messages.add_message(request, messages.INFO,
+                                 name + ' harvester enabled.')
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -101,6 +131,25 @@ def start_harvester(request, name):
     response = api.start_harvest()
     messages.add_message(request, messages.INFO,
                          name + ': ' + str(response.data[harvester.name]))
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
+
+@login_required
+def start_selected_harvesters(request, hnames):
+    """
+    This function starts selected harvester.
+
+    :param request: the request
+    :param hnames: names of the harvesters
+    :return: an HttpResponseRedirect to the Main HCC page
+    """
+    names = hnames.split('-')
+    for name in names:
+        harvester = get_object_or_404(Harvester, name=name)
+        api = InitHarvester(harvester).get_harvester_api()
+        response = api.start_harvest()
+        messages.add_message(request, messages.INFO,
+                             name + ': ' + str(response.data[harvester.name]))
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
@@ -223,11 +272,6 @@ def home(request):
     Home entry point of Web-Application GUI.
     """
     feedback = {}
-    # init view-type for list and card view
-    if 'viewtype' in request.GET:
-        view_type = request.GET['viewtype']
-    else:
-        view_type = False
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -258,8 +302,8 @@ def home(request):
                             HCCJC.CRONTAB]
                         form = SchedulerForm(prefix=harvester.name)
                         if isinstance(placehldr, list):
-                            placehldr = response.data[harvester.name][
-                                HCCJC.CRONTAB][0]
+                            if len(placehldr) > 0:
+                                placehldr = response.data[harvester.name][HCCJC.CRONTAB][0]
                         form.fields[HCCJC.POSTCRONTAB].widget.attrs.update(
                             {'placeholder': placehldr})
                         forms[harvester.name] = form
@@ -312,13 +356,11 @@ def home(request):
             request, 'hcc/index.html', {
                 'harvesters': harvesters,
                 'status': feedback,
-                'forms': forms,
-                'vt': view_type
+                'forms': forms
             })
 
     return render(request, 'hcc/index.html', {
-        'status': feedback,
-        'vt': view_type
+        'status': feedback
     })
 
 
@@ -447,59 +489,129 @@ class UserDetailsView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class RegisterHarvesterFormView(SuccessMessageMixin, AjaxTemplateMixin,
-                                FormView):
+class EditHarvesterView(View, LoginRequiredMixin,
+                        AjaxableResponseMixin, FormMixin):
     """
-    This class handles GUI harvester registration.
+    This class handles AJAx, GET, DELETE and POST requests
+    to control the edit of the harvesters.
     """
-    template_name = 'hcc/hreg_form.html'
-    form_class = HarvesterForm
-    success_url = reverse_lazy('hcc_gui')
-    success_message = "New Harvester (%(name)s) successfully registered!"
 
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        harv_w_user = Harvester(owner=self.request.user)
-        form = HarvesterForm(self.request.POST, instance=harv_w_user)
-        form.save()
-        LOGGER.info("new harvester created: %s", form.cleaned_data['name'])
-        return super().form_valid(form)
+    @staticmethod
+    def get(request, *args, **kwargs):  # the form that is load into the modal
+        data = {}
+        if "name" not in kwargs:
+            harvester = Harvester(owner=request.user)
+            data['template_title'] = 'Add Harvester'
+        else:
+            myname = kwargs['name']
+            harvester = Harvester.objects.get(name=myname)
+            data['template_title'] = "Edit Harvester - {}".format(myname)
+            data['hname'] = myname
+        data['form'] = HarvesterForm(instance=harvester)
+        return render(request, "hcc/harvester_edit_form.html", data)
+
+    def post(self, request, *args, **kwargs):  # the actual logic behind the form
+        name = self.request.POST.get('name')
+        if "name" not in kwargs:  # Add Harvester
+            # check if the name is not already used
+            if Harvester.objects.filter(name=name).exists():
+                return JsonResponse(
+                    {'message': 'A Harvester named {} already exists!'.format(name)})
+            else:
+                _h = Harvester(owner=self.request.user)
+                action = 'added'
+                myname = name
+        else:  # Edit Harvester
+            myname = kwargs['name']
+            _h = Harvester.objects.get(name=myname)
+            action = 'modified'
+        form = HarvesterForm(self.request.POST, instance=_h)
+        if form.is_valid():
+            form.save()
+            success_message = (
+                "{} has been {} successfully!"
+                " Please hold on while the page"
+                " is reloading.".format(myname, action)
+            )
+            if action == 'initialised':
+                LOGGER.info("new harvester created: {}".format(name))
+            response = {'message': success_message, 'name': myname}
+        else:
+            success_message = (
+                "{} could not been {}!"
+                " Please hold on while the page"
+                " is reloading.".format(myname, action)
+            )
+            response = {'message': success_message}
+        return JsonResponse(response)
 
 
-class EditHarvesterView(LoginRequiredMixin, SuccessMessageMixin, RedirectView):
+class ConfigHarvesterView(View, LoginRequiredMixin,
+                          AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the config of the harvesters.
     """
-    success_message = "%(name) was modified successfully"
 
     @staticmethod
     def get(request, *args, **kwargs):
         myname = kwargs['name']
-        if myname is None:
-            harvester = Harvester(owner=request.user)
-            template_title = 'Add Harvester'
+        data = {}
+        harvester = get_object_or_404(Harvester, name=myname)
+        api = InitHarvester(harvester).get_harvester_api()
+        response = api.get_harvester_config_data()
+        if response.status_code != status.HTTP_200_OK:
+            data["message"] = response.data[harvester.name][HCCJC.HEALTH]
         else:
-            harvester = get_object_or_404(Harvester, name=myname)
-            template_title = 'Edit Harvester'
-        form = HarvesterForm(instance=harvester)
-        return render(request, "hcc/harvester_edit_form.html",
-                      {'form': form, 'template_title': template_title, 'hname': myname})
+            form = create_config_form(
+                response.data[harvester.name][HCCJC.HEALTH])
+            data["form"] = form
+        data["hname"] = myname
+        return render(request, "hcc/harvester_config_form.html", data)
 
     def post(self, request, *args, **kwargs):
         myname = kwargs['name']
-        _h = Harvester.objects.get(name=myname)
-        if request.POST.get('cancel', None):
-            return HttpResponseRedirect(reverse('hcc_gui'))
+        harvester = get_object_or_404(Harvester, name=myname)
+        api = InitHarvester(harvester).get_harvester_api()
+        response = api.get_harvester_config_data()
+        old_config_data = response.data[harvester.name][HCCJC.HEALTH]
+        (fields, old_data) = create_config_fields(old_config_data)
+        data = {}
+        changes = {}  # before-after data
+        config_changes = {}  # only after data to send to api
+        for key in fields:
+            # In the response all boolean fields are either set "on" if True
+            # or None if false. -> convert it
+            if self.request.POST.get(key) == "on":
+                new_data = "true"
+            elif self.request.POST.get(key) is None:
+                new_data = "false"
+            else:
+                new_data = self.request.POST.get(key)
 
-        form = HarvesterForm(self.request.POST, instance=_h)
-        if form.is_valid():
-            form.save()
-        return HttpResponseRedirect(reverse('hcc_gui'))
+            if(old_data[key] != new_data):
+                changes[key] = {"before": old_data[key], "after": new_data}
+                config_changes[key] = new_data
+        if len(changes) > 0:
+            response = api.save_harvester_config_data(config_changes)
+            data["changes"] = changes
+        else:
+            return JsonResponse({
+                "status": "unchanged",
+                "message": "There have been no changes!"
+            })
+
+        message = response.data[harvester.name][HCCJC.HEALTH]["message"]
+        data["message"] = message
+        data["status"] = response.data[harvester.name][HCCJC.HEALTH]["status"]
+        if ("Cannot change value" in message) and ("Set parameter" in message):
+            data["status"] = "some issues"
+
+        return JsonResponse(data)
 
 
-class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
+class ScheduleHarvesterView(
+        SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
@@ -520,10 +632,7 @@ class ScheduleHarvesterView(SuccessMessageMixin, RedirectView):
             response = api.add_schedule(crontab)
         else:
             response = api.delete_schedule(crontab)
-        messages.add_message(
-            request, messages.INFO, harvester.name + ': ' +
-            response.data[harvester.name][HCCJC.HEALTH])
-        return HttpResponseRedirect(reverse('hcc_gui'))
+        return JsonResponse(response.data[harvester.name][HCCJC.HEALTH])
 
     def delete(self, request, *args, **kwargs):
         myname = kwargs['name']

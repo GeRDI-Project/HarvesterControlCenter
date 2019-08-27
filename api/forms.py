@@ -1,7 +1,7 @@
 """
 The forms module.
 """
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons
+from crispy_forms.bootstrap import FieldWithButtons, FormActions, PrependedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from django import forms
@@ -9,7 +9,7 @@ from django.contrib.auth.forms import AuthenticationForm
 
 from api.models import Harvester
 
-__author__ = "Jan Frömberg"
+__author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
@@ -34,14 +34,82 @@ class HarvesterForm(forms.ModelForm):
         helper = FormHelper()
         helper.form_method = 'POST'
         helper.form_class = 'form-horizontal'
-        helper.form_tag = True  # render form DOM element
+        helper.form_tag = False  # render form DOM element
         helper.render_unmentioned_fields = True  # render all fields
         helper.label_class = 'col-md-5'
         helper.field_class = 'col-md-10'
-        helper.layout = Layout(
-            FormActions(
-                Submit('hreg-form', 'Register', css_class="btn-primary")))
+        # helper.layout = Layout(
+        #    FormActions(
+        # Submit('edit-harvester', 'Register', css_class="btn-primary")))
         return helper
+
+
+class ConfigForm(forms.Form):
+    """
+    This class represents a dynamic Harvester Configuration Form. It is created every
+    time create_config_form is called.
+    """
+    pass
+
+
+def create_config_fields(config_data):
+    """
+    This function validates the input data to data and fields used for
+    create_config_form(config_data) to create a ConfigForm
+    INPUT:
+     - config_data : JSON configuration data
+    OUTPUT:
+     - fields : dictionary of field names with fields type
+     - data : dictionary of field names with current value
+    """
+    fields = {}
+    data = {}
+
+    for key in config_data.keys():
+        for field in config_data[key]["parameters"]:
+            if field["type"] == "IntegerParameter":
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.IntegerField(required=False)
+                field_type = "integer"
+            elif field["type"] == "StringParameter":
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.CharField(required=False)
+                field_type = "string"
+            elif field["type"] == "BooleanParameter":
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.BooleanField(required=False)
+                field_type = "boolean"
+            elif field["type"] == "PasswordParameter":
+                fields["{}.{}".format(key, field["key"])] = forms.CharField(
+                    required=False, widget=forms.PasswordInput())
+                field_type = "password"
+            else:
+                fields["{}.{}".format(key, field["key"])
+                       ] = forms.CharField(required=False)
+
+            if "value" in field:
+                data["{}.{}".format(key, field["key"])] = field["value"]
+            else:  # set default values, if value is not set
+                if field_type == "integer":
+                    data["{}.{}".format(key, field["key"])] = 0
+                elif field_type == "string":
+                    data["{}.{}".format(key, field["key"])] = ""
+                elif field_type == "boolean":
+                    data["{}.{}".format(key, field["key"])] = False
+                elif field_type == "password":
+                    data["{}.{}".format(key, field["key"])] = ""
+                else:
+                    data["{}.{}".format(key, field["key"])] = None
+    return fields, data
+
+
+def create_config_form(config_data):
+    """
+    This function creates a ConfigForm: a dynamic Form for Harvester Configuration.
+    """
+    fields, data = create_config_fields(config_data)
+    DynamicConfigForm = type('DynamicConfigForm', (ConfigForm,), fields)
+    return DynamicConfigForm(data)
 
 
 class LoginForm(AuthenticationForm):

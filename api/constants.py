@@ -3,7 +3,7 @@ This Module holds constant classes
 """
 # import base64
 
-__author__ = "Jan Frömberg"
+__author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
@@ -93,10 +93,12 @@ class HarvesterApiConstantsV6:
     G_DATA_PROVIDER = "/status/data-provider"
     G_HARVESTED_DOCS = "/status/harvested-documents"
     G_BOOLEAN_OUTDATED_DOCS = "/outdated"
+    G_HARVEST_CONFIG = "/config"
+    P_HARVEST_CONFIG = "/config/_set"
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""
-    #CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
+    # CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
 
 
 class HarvesterApiConstantsV7:
@@ -114,13 +116,15 @@ class HarvesterApiConstantsV7:
     G_HARVEST_LOG = "/log?date="
     HARVESTER_LOG_FORMAT = "%Y-%m-%d"
     G_HARVEST_ALLLOG = "/log"
-    P_HARVEST_CRON = "/schedule/_add" #E.g. {"cronTab" : "0 0 * * *"}
+    P_HARVEST_CRON = "/schedule/_add"  # E.g. {"cronTab" : "0 0 * * *"}
     G_HARVEST_CRON = "/schedule"
-    D_HARVEST_CRON = "/schedule/_delete" #E.g. {"cronTab" : "0 0 * * *"}
+    D_HARVEST_CRON = "/schedule/_delete"  # E.g. {"cronTab" : "0 0 * * *"}
     DALL_HARVEST_CRON = "/schedule/_deleteAll"
     G_HEALTH = "/health"
     G_BOOLEAN_OUTDATED = "/outdated"
+    G_HARVEST_CONFIG = "/config"
+    P_HARVEST_CONFIG = "/config/_set"
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""
-    #CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
+    # CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
