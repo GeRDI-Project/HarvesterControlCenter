@@ -197,18 +197,18 @@ $(function () {
     });
 
     $('#collapseTwo').on('show.bs.collapse', function() {
-        updateSession('disabledHarvs', 'visible');
+        updateSession('disabled_harvs', 'visible');
     });
 
     $('#collapseTwo').on('hide.bs.collapse', function() {
-        updateSession('disabledHarvs', 'collapsed');
+        updateSession('disabled_harvs', 'collapsed');
     });
     
     $('#collapseOne').on('show.bs.collapse', function() {
         // The if statement is needed, because otherwise updateSession will
         // be fired also when a inner div is collapsed
         if (!$(this).is(':visible')){
-            updateSession('enabledHarvs', 'visible');
+            updateSession('enabled_harvs', 'visible');
         }
     });
 
@@ -216,7 +216,7 @@ $(function () {
         // The if statement is needed, because otherwise updateSession will
         // be fired also when a inner div is collapsed
         if ($(this).is(':hidden')){
-            updateSession('enabledHarvs', 'collapsed');
+            updateSession('enabled_harvs', 'collapsed');
         }    
     });
 

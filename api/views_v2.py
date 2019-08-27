@@ -374,45 +374,34 @@ def home(request):
             })
 
     return render(request, 'hcc/index.html', {
-        'status': feedback,
-        'mode': mode
+        'status': feedback
     })
 
 @permission_classes((IsAuthenticated, ))
 def update_session(request):
+    """
+    Updates session variables via POST request
+    """
     if not request.is_ajax() or not request.method == 'POST':
         return JsonResponse({
-            'status': 'failed',
-            'message': 'wrong access'
+            'status': 'failed', 'message': 'wrong access'
         })
 
-    if 'mode' in request.POST:
-        request.session['mode'] = request.POST.get('mode')
-        var = 'mode'
-    elif 'viewtype' in request.POST:
-        request.session['viewtype'] = request.POST.get('viewtype')
-        var = 'viewtype'
-    elif 'toolbox' in request.POST:
-        request.session['toolbox'] = request.POST.get('toolbox')
-        var = 'toolbox'
-    elif 'chart' in request.POST:
-        request.session['chart'] = request.POST.get('chart')
-        var = 'chart'
-    elif 'disabledHarvs' in request.POST:
-        request.session['disabled_harvs'] = request.POST.get('disabledHarvs')
-        var = 'disabled_harvs'
-    elif 'enabledHarvs' in request.POST:
-        request.session['enabled_harvs'] = request.POST.get('enabledHarvs')
-        var = 'enabled_harvs' 
-    else:
-        return JsonResponse({
-            'status': 'failed',  
-            'message': 'Data could not been handled.'
-        })
-    
+    message = ""
+    for key, value in request.POST.items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        elif key in request.session.keys():
+            request.session[key] = value
+            message += 'Session variable {} was changed to {}. '.format(key, value)
+        else:
+            return JsonResponse({
+                'status': 'failed', 'message': 'Data could not been handled.'
+            })
+
     return JsonResponse({
         'status': 'ok', 
-        'message': 'Session variable {} was changed to {}.'.format(var, request.session[var])
+        'message': message
     })
 
 @api_view(['POST'])
