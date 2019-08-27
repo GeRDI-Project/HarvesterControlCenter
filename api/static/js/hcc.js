@@ -294,8 +294,8 @@ $(function () {
             $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
         }
     
-        $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
-        $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+        $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+        $('.footer').toggleClass("footer-light footer-dark");
         $('input').toggleClass("dark-input-fields");
 
         updateSession('mode', mode);
@@ -657,8 +657,6 @@ function removeClass(el, className) {
 function initMode() {
     if ($('#toggle-mode-text').text().includes("Light Mode")) {
         // set css if dark mode is active in the beginning
-        $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
-        $('.footer').toggleClass("footer-custom-1 footer-custom-2");
         $('input').toggleClass("dark-input-fields");
     }
 }

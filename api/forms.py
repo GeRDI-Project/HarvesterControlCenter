@@ -64,11 +64,8 @@ def create_config_fields(config_data):
     """
     fields = {}
     data = {}
-    keys = []
 
-    for key in config_data:
-        keys.append(key)
-    for key in keys:
+    for key in config_data.keys():
         for field in config_data[key]["parameters"]:
             if field["type"] == "IntegerParameter":
                 fields["{}.{}".format(key, field["key"])
