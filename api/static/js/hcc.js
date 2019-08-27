@@ -590,46 +590,41 @@ $(window).scroll(function (e) {
     }
 });
 
-// good coding examples for non anonymous functions
-var formButton = {
-    regClick: function () {
-        $('#form-modal-body').load('/hcc/register #hreg-form-content', formButton.toggleModal);
-    },
+$(".harvesteredit").click(function(ev) { // for each edit harvester url
+     ev.preventDefault(); // prevent navigation
+     var url = $(this).data("form"); // get the harvester form url
+     $("#harvesterModal").load(url, function() { // load the url into the modal
+         $(this).modal('show'); // display the modal on url load
+     });
+     return false; // prevent the click propagation
+ });
 
-    toggleModal: function () {
-        $('#form-modal').modal('toggle');
-        formAjaxSubmit.init('#form-modal-body form', '#form-modal');
+ function toggleTheme() {
+
+    if ($('#toggle-mode-text').text() == "Dark Mode") {
+        // changing from light to dark mode
+        $('#toggle-mode-text').text("Light Mode");
+        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+    } else {
+        // changing from dark to light mode
+        $('#toggle-mode-text').text("Dark Mode");
+        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
     }
-};
 
-var formAjaxSubmit = {
-    init: function (form, modal) {
-        $(form).submit(formAjaxSubmit.ajax);
-    },
+    $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+    $('.footer').toggleClass("footer-light footer-dark");
+    $('input').toggleClass("dark-input-fields");
+ }
 
-    ajax: function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            success: formAjaxSubmit.succFunc,
-            error: formAjaxSubmit.errorFunc,
-        });
-    },
-
-    succFunc: function (xhr, ajaxOptions, thrownError) {
-        if ($(xhr).find('.has-error').length > 0) {
-            $(modal).find('.modal-body').html(xhr);
-            formAjaxSubmit.init(form, modal);
-        } else {
-            $(modal).modal('toggle');
-        }
-    },
-
-    errorFunc: function (xhr, ajaxOptions, thrownError) {
-        // handle response errors here
-    }
-};
-
-$('#register-button').click(formButton.regClick);
+ /*$('.harvester-edit-form').on('submit', function() {
+     $.ajax({
+         type: $(this).attr('method'),
+         url: this.action,
+         data: $(this).serialize(),
+         context: this,
+         success: function(data, status) {
+             $('#harvesterModal').html(data);
+         }
+     });
+     return false;
+ });*/
