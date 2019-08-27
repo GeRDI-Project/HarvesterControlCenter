@@ -277,7 +277,7 @@ def home(request):
     mode = request.session.get('mode', 'light')
     # viewtype (card/list/table) with default card
     viewtype = request.session.get('viewtype', 'card')
-    # collapse status (visible/hidden)
+    # collapse status (visible/collapsed)
     collapse_status = {}
     collapse_status['toolbox'] = request.session.get('toolbox', 'collapsed')
     collapse_status['chart'] = request.session.get('chart', 'collapsed')
