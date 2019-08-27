@@ -119,8 +119,11 @@
                     </div>
                 </h5>
             </div>
-
+            {% if collapse_status.enabled_harvs == 'hidden' %}
+            <div id="collapseOne" class="collapse" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
+            {% else %}
             <div id="collapseOne" class="collapse show" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
+            {% endif %}    
                 <div id="harvesterList" class="card-body">
                     <div class="container">
                         <div id="div-list-view" class="row"><!--list-view-->
@@ -418,7 +421,11 @@
                     </button>
                 </h5>
             </div>
+            {% if collapse_status.enabled_harvs == 'visible' %}
+            <div id="collapseTwo" class="collapse show" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
+            {% else %}
             <div id="collapseTwo" class="collapse" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
+            {% endif %}    
                 <div class="card-body">
                     <div class="container">
                         <div class="row">

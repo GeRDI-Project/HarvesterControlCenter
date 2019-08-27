@@ -277,10 +277,12 @@ def home(request):
     mode = request.session.get('mode', 'light')
     # viewtype (card/list/table) with default card
     viewtype = request.session.get('viewtype', 'card')
-    # collapse status (visible/invisible)
+    # collapse status (visible/hidden)
     collapse_status = {}
-    collapse_status['toolbox'] = request.session.get('toolbox', 'invisible')
-    collapse_status['chart'] = request.session.get('chart', 'invisible')
+    collapse_status['toolbox'] = request.session.get('toolbox', 'hidden')
+    collapse_status['chart'] = request.session.get('chart', 'hidden')
+    collapse_status['disabled_harvs'] = request.session.get('disabled_harvs', 'hidden')
+    collapse_status['enabled_harvs'] = request.session.get('enabled_harvs', 'visible')
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -391,11 +393,17 @@ def update_session(request):
         request.session['viewtype'] = request.POST.get('viewtype')
         var = 'viewtype'
     elif 'toolbox' in request.POST:
-        request.session['toolbox'] = request.POST.get('toolbox')  
+        request.session['toolbox'] = request.POST.get('toolbox')
         var = 'toolbox'
     elif 'chart' in request.POST:
-        request.session['chart'] = request.POST.get('chart')  
-        var = 'chart'  
+        request.session['chart'] = request.POST.get('chart')
+        var = 'chart'
+    elif 'disabledHarvs' in request.POST:
+        request.session['disabled_harvs'] = request.POST.get('disabledHarvs')
+        var = 'disabled_harvs'
+    elif 'enabledHarvs' in request.POST:
+        request.session['enabled_harvs'] = request.POST.get('enabledHarvs')
+        var = 'enabled_harvs' 
     else:
         return JsonResponse({
             'status': 'failed',  

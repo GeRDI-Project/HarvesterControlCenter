@@ -217,7 +217,7 @@ $(function () {
     });
 
     $('#collapseChart').on('hide.bs.collapse', function() {
-        updateSession('chart', 'invisible');
+        updateSession('chart', 'hidden');
     });    
 
     $('#collapseToolbox').on('show.bs.collapse', function() {
@@ -225,7 +225,23 @@ $(function () {
     });
 
     $('#collapseToolbox').on('hide.bs.collapse', function() {
-        updateSession('toolbox', 'invisible');
+        updateSession('toolbox', 'hidden');
+    });
+
+    $('#collapseTwo').on('show.bs.collapse', function() {
+        updateSession('disabledHarvs', 'visible');
+    });
+
+    $('#collapseTwo').on('hide.bs.collapse', function() {
+        updateSession('disabledHarvs', 'hidden');
+    });
+
+    $('#collapseOne').on('show.bs.collapse', function() {
+        updateSession('enabledHarvs', 'visible');
+    });
+
+    $('#collapseOne').on('hide.bs.collapse', function() {
+        updateSession('enabledHarvs', 'hidden');
     });
 
     $(".harvesteredit").click(function (ev) { // for each edit harvester url
