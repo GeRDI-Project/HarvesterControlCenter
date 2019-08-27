@@ -179,6 +179,47 @@ $(function () {
         });
     };
 
+    $('#collapseChart').on('show.bs.collapse', function (event) {
+        updateSession('chart', 'visible');
+        loadChart();
+    });
+
+    $('#collapseChart').on('hide.bs.collapse', function() {
+        updateSession('chart', 'hidden');
+    });    
+
+    $('#collapseToolbox').on('show.bs.collapse', function() {
+        updateSession('toolbox', 'visible');
+    });
+
+    $('#collapseToolbox').on('hide.bs.collapse', function() {
+        updateSession('toolbox', 'hidden');
+    });
+
+    $('#collapseTwo').on('show.bs.collapse', function() {
+        updateSession('disabledHarvs', 'visible');
+    });
+
+    $('#collapseTwo').on('hide.bs.collapse', function() {
+        updateSession('disabledHarvs', 'hidden');
+    });
+    
+    $('#collapseOne').on('show.bs.collapse', function() {
+        // The if statement is needed, because otherwise updateSession will
+        // be fired also when a inner div is collapsed
+        if (!$(this).is(':visible')){
+            updateSession('enabledHarvs', 'visible');
+        }
+    });
+
+    $('#collapseOne').on('hidden.bs.collapse', function() {
+        // The if statement is needed, because otherwise updateSession will
+        // be fired also when a inner div is collapsed
+        if ($(this).is(':hidden')){
+            updateSession('enabledHarvs', 'hidden');
+        }    
+    });
+
     /*
         Buttons
     */
@@ -209,39 +250,6 @@ $(function () {
         filterFunction();
 
         return false;
-    });
-
-    $('#collapseChart').on('show.bs.collapse', function (event) {
-        updateSession('chart', 'visible');
-        loadChart();
-    });
-
-    $('#collapseChart').on('hide.bs.collapse', function() {
-        updateSession('chart', 'hidden');
-    });    
-
-    $('#collapseToolbox').on('show.bs.collapse', function() {
-        updateSession('toolbox', 'visible');
-    });
-
-    $('#collapseToolbox').on('hide.bs.collapse', function() {
-        updateSession('toolbox', 'hidden');
-    });
-
-    $('#collapseTwo').on('show.bs.collapse', function() {
-        updateSession('disabledHarvs', 'visible');
-    });
-
-    $('#collapseTwo').on('hide.bs.collapse', function() {
-        updateSession('disabledHarvs', 'hidden');
-    });
-
-    $('#collapseOne').on('show.bs.collapse', function() {
-        updateSession('enabledHarvs', 'visible');
-    });
-
-    $('#collapseOne').on('hide.bs.collapse', function() {
-        updateSession('enabledHarvs', 'hidden');
     });
 
     $(".harvesteredit").click(function (ev) { // for each edit harvester url
@@ -708,10 +716,10 @@ function updateSession(sessionVar, value) {
         url: updateSessionUrl,
         data: sessionData,
         success: function (response) {
-            console.log(response.message);
+            //console.log(response.message);
         },
         error: function() {
-            console.log('internal error');
+            //console.log('internal error');
         },
     });
 }

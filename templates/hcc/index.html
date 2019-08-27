@@ -84,7 +84,7 @@
         <div class="card">
             <div class="card-header" id="headingEnabled">
                 <h5 class="mb-0">
-                    <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#collapseOne"
+                    <button class="btn btn-outline-info" id="btn-collapseOne" type="button" data-toggle="collapse" data-target="#collapseOne"
                         aria-expanded="true" aria-controls="collapseOne">
                         Enabled Harvesters
                         <span class="badge badge-light">
@@ -421,7 +421,7 @@
                     </button>
                 </h5>
             </div>
-            {% if collapse_status.enabled_harvs == 'visible' %}
+            {% if collapse_status.disabled_harvs == 'visible' %}
             <div id="collapseTwo" class="collapse show" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
             {% else %}
             <div id="collapseTwo" class="collapse" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
