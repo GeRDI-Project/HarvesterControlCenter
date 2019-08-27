@@ -1,5 +1,6 @@
 """
-The is the views module which encapsulates the backend logic
+This is the views module which encapsulates the backend logic
+which will be riggered via the corresponding path (url).
 """
 import logging
 

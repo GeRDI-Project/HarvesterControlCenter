@@ -610,7 +610,6 @@ function removeClass(el, className) {
     }
 }
 
-
 $(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
@@ -621,19 +620,18 @@ $(window).scroll(function (e) {
     }
 });
 
-function toggleModeFunction() {
-
+function toggleTheme() {
     if ($('#toggle-mode-text').text() == "Dark Mode") {
         // changing from light to dark mode
         $('#toggle-mode-text').text("Light Mode");
-        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
     } else {
         // changing from dark to light mode
         $('#toggle-mode-text').text("Dark Mode");
-        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
+        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
     }
 
-    $('.navbar').toggleClass("bg-custom-1 bg-custom-2");
-    $('.footer').toggleClass("footer-custom-1 footer-custom-2");
+    $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+    $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
 }

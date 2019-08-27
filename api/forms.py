@@ -64,11 +64,8 @@ def create_config_fields(config_data):
     """
     fields = {}
     data = {}
-    keys = []
 
-    for key in config_data:
-        keys.append(key)
-    for key in keys:
+    for key in config_data.keys():
         for field in config_data[key]["parameters"]:
             if field["type"] == "IntegerParameter":
                 fields["{}.{}".format(key, field["key"])
@@ -103,14 +100,14 @@ def create_config_fields(config_data):
                     data["{}.{}".format(key, field["key"])] = ""
                 else:
                     data["{}.{}".format(key, field["key"])] = None
-    return (fields, data)
+    return fields, data
 
 
 def create_config_form(config_data):
     """
     This function creates a ConfigForm: a dynamic Form for Harvester Configuration.
     """
-    (fields, data) = create_config_fields(config_data)
+    fields, data = create_config_fields(config_data)
     DynamicConfigForm = type('DynamicConfigForm', (ConfigForm,), fields)
     return DynamicConfigForm(data)
 
