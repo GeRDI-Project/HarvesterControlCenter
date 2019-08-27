@@ -185,7 +185,7 @@ $(function () {
     });
 
     $('#collapseChart').on('hide.bs.collapse', function() {
-        updateSession('chart', 'hidden');
+        updateSession('chart', 'collapsed');
     });    
 
     $('#collapseToolbox').on('show.bs.collapse', function() {
@@ -193,7 +193,7 @@ $(function () {
     });
 
     $('#collapseToolbox').on('hide.bs.collapse', function() {
-        updateSession('toolbox', 'hidden');
+        updateSession('toolbox', 'collapsed');
     });
 
     $('#collapseTwo').on('show.bs.collapse', function() {
@@ -201,7 +201,7 @@ $(function () {
     });
 
     $('#collapseTwo').on('hide.bs.collapse', function() {
-        updateSession('disabledHarvs', 'hidden');
+        updateSession('disabledHarvs', 'collapsed');
     });
     
     $('#collapseOne').on('show.bs.collapse', function() {
@@ -216,7 +216,7 @@ $(function () {
         // The if statement is needed, because otherwise updateSession will
         // be fired also when a inner div is collapsed
         if ($(this).is(':hidden')){
-            updateSession('enabledHarvs', 'hidden');
+            updateSession('enabledHarvs', 'collapsed');
         }    
     });
 

@@ -279,9 +279,9 @@ def home(request):
     viewtype = request.session.get('viewtype', 'card')
     # collapse status (visible/hidden)
     collapse_status = {}
-    collapse_status['toolbox'] = request.session.get('toolbox', 'hidden')
-    collapse_status['chart'] = request.session.get('chart', 'hidden')
-    collapse_status['disabled_harvs'] = request.session.get('disabled_harvs', 'hidden')
+    collapse_status['toolbox'] = request.session.get('toolbox', 'collapsed')
+    collapse_status['chart'] = request.session.get('chart', 'collapsed')
+    collapse_status['disabled_harvs'] = request.session.get('disabled_harvs', 'collapsed')
     collapse_status['enabled_harvs'] = request.session.get('enabled_harvs', 'visible')
 
     # if user is logged in
