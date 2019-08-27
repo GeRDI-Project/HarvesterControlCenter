@@ -500,6 +500,7 @@ function toggleViews() {
     listDiv = document.getElementById("div-list-view");
     cardDiv = document.getElementById("div-card-view");
     tableDiv = document.getElementById("div-table-view");
+    if (listDiv == null) return;
 
     listBtn = document.getElementById("btn-list-view");
     cardBtn = document.getElementById("btn-card-view");
