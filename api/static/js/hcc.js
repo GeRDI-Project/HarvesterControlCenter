@@ -1,5 +1,5 @@
 /*
-Copyright © 2017 Jan Frömberg (http://www.gerdi-project.de)
+Copyright © 2017 Jan Frömberg, Laura Höhle (http://www.gerdi-project.de)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ $(function () {
 
     $('#loaderSpinnerLog').hide();
     $('#loaderSpinnerStat').hide();
+
     toggleViews();
 
     var ctx = document.getElementById("harvesterChart");
@@ -217,13 +218,13 @@ $(function () {
         return false; // prevent the click propagation
     });
 
-    $(".harvesterconfig").click(function (ev) { // for each edit harvester url
-        ev.preventDefault(); // prevent navigation
-        var url = $(this).attr("data-form"); // get the harvester form url
-        $("#config-modal").load(url, function () { // load the url into the modal
-            $(this).modal('show'); // display the modal on url load
+    $(".harvesterconfig").click(function (ev) {
+        ev.preventDefault();
+        var url = $(this).attr("data-form");
+        $("#config-modal").load(url, function () {
+            $(this).modal('show');
         });
-        return false; // prevent the click propagation
+        return false;
     });
 
     $('.crontab-edit-form').submit(function (ev) {
@@ -248,7 +249,10 @@ $(function () {
         return false;
     });
 
-    $('.status-radio').click(function() {
+    $('.status-radio').click(function () {
+        /*
+        Related to the radio buttons in drodown menu in table-view
+        */
         if ($('#checkbox-show-all').prop('checked')) checkboxShowAll();
         if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
@@ -358,8 +362,12 @@ $(window).ready(function () {
 });
 
 function filterFunction() {
+    /*
+    Hides all harvesters that do not match the string entered in the filter input field.
+    This filter function applies to all views.
+    */
 
-    // Declare variables
+    // declare variables
     var input, filter, list, card, table, divs, trs, tbody, a, i, txtValue;
     input = document.getElementById('harvesterInput');
     filter = input.value.toUpperCase();
@@ -367,13 +375,15 @@ function filterFunction() {
     card = document.getElementById("div-card-view");
     table = document.getElementById("div-table-view");
 
-    // first: check which div is visible (same implementation like jQuerys :visible)
+    // first: check which view is active
     // after: Loop through divs/trs and compare id names
     if (listView) {
-        divs = list.getElementsByClassName('harvester-list-div');//direct child divs of div-list-view
+        // get direct child divs of div-list-view
+        divs = list.getElementsByClassName('harvester-list-div');
         for (i = 0; i < divs.length; i++) {
             a = divs[i];
-            txtValue = a.id.split("-")[0]; //divs are named {{harvester.name}}-div-list
+            // divs are named {{harvester.name}}-div-list
+            txtValue = a.id.split("-")[0];
             if (txtValue.toUpperCase().includes(filter)) {
                 a.style.display = "";
             } else {
@@ -381,10 +391,12 @@ function filterFunction() {
             }
         }
     } else if (cardView) {
-        divs = card.getElementsByClassName('harvester-card-div');//direct child divs of div-card-view
+        // get direct child divs of div-card-view
+        divs = card.getElementsByClassName('harvester-card-div');
         for (i = 0; i < divs.length; i++) {
             a = divs[i];
-            txtValue = a.id.split("-")[0]; //divs are named {{harvester.name}}-div-card
+            // divs are named {{harvester.name}}-div-card
+            txtValue = a.id.split("-")[0];
             if (txtValue.toUpperCase().includes(filter)) {
                 a.style.display = "";
             } else {
@@ -392,11 +404,12 @@ function filterFunction() {
             }
         }
     } else if (tableView) {
-        tbody = table.getElementsByTagName('tbody')[0];//only tbody changes, thead should always be visible
+        tbody = table.getElementsByTagName('tbody')[0];
         trs = tbody.getElementsByTagName('tr');
         for (i = 0; i < trs.length; i++) {
             a = trs[i];
-            txtValue = a.id.split("-")[0]; //trs are named {{harvester.name}}-tr-table
+            // trs are named {{harvester.name}}-tr-table
+            txtValue = a.id.split("-")[0];
             if (txtValue.toUpperCase().includes(filter)) {
                 a.style.display = "";
             } else {
@@ -407,7 +420,15 @@ function filterFunction() {
 }
 
 function toggleViews() {
+    /*
+    Toggles between list, card and table view when page is loaded
+    or a button is clicked
+    */
+
+    // declare variables
     var listDiv, listBtn, cardDiv, cardBtn, tableDiv, tableBtn;
+
+    // get all needed divs/buttons
     listDiv = document.getElementById("div-list-view");
     cardDiv = document.getElementById("div-card-view");
     tableDiv = document.getElementById("div-table-view");
@@ -416,10 +437,12 @@ function toggleViews() {
     cardBtn = document.getElementById("btn-card-view");
     tableBtn = document.getElementById("btn-table-view");
 
+    // only show active view
     listDiv.style.display = listView ? "" : "none";
     cardDiv.style.display = cardView ? "" : "none";
     tableDiv.style.display = tableView ? "" : "none";
 
+    // only show buttons for inactive views
     listBtn.style.display = listView ? "none" : "";
     cardBtn.style.display = cardView ? "none" : "";
     tableBtn.style.display = tableView ? "none" : "";
@@ -431,18 +454,25 @@ function checkboxFunction() {
     and adds url with the name of the harvesters
     */
 
+    // declare variables
     var checkBoxes, isChecked, harvs, i, startHButton, disableHButton, tr, hname, slug;
+
+    // check, if a checkbox is checked and get the names of the related harvesters
     checkBoxes = document.getElementsByClassName("table-view-checkbox");
     isChecked = false;
     harvs = [];
     for (i = 0; i < checkBoxes.length; i++) {
         if (checkBoxes[i].checked) {
             isChecked = true;
-            tr = $(checkBoxes[i]).closest('tr');//get row, where checkBox[i] is in
-            hname = $(tr).attr('id').split("-")[0]; //trs are named {{harvester.name}}-tr-table
+            // get row, where checkBox[i] is in
+            tr = $(checkBoxes[i]).closest('tr');
+            // trs are named {{harvester.name}}-tr-table
+            hname = $(tr).attr('id').split("-")[0];
             harvs.push(hname);
         }
     }
+
+    // concatenate all harvester names to a string for the url
     slug = '';
     for (i = 0; i < harvs.length; i++) {
         if (i < harvs.length - 1) {
@@ -454,6 +484,9 @@ function checkboxFunction() {
 
     startHButton = document.getElementById("table-checkbox-start-harvesters");
     disableHButton = document.getElementById("table-checkbox-disable-harvesters");
+
+    // the start and disable button should only be visible, if at least one
+    // checkbox is checked and the url should contain the names of the harvesters
     if (isChecked) {
         removeClass(startHButton, "disabled");
         removeClass(disableHButton, "disabled");
@@ -471,6 +504,10 @@ function checkboxFunction() {
 }
 
 function checkboxMasterFunction() {
+    /*
+    The checkbox checks/unchecks all checkboxes in the table-view
+    */
+
     var masterCheckbox, checkboxes, i;
     masterCheckbox = document.getElementById("table-checkbox-master");
     checkboxes = document.getElementsByClassName("table-view-checkbox");
@@ -482,74 +519,68 @@ function checkboxMasterFunction() {
 }
 
 function checkboxShowIdle() {
-    var checkBox, table, tbody, trs, status, hname;
+    /*
+    Radio button 'show idle' in the dropdown filter in table-view
+    */
+
+    // declare variables
+    var table, tbody, trs, status, hname;
+
     table = document.getElementById("div-table-view");
-    checkBox = document.getElementById("checkbox-show-idle");
     tbody = table.getElementsByTagName('tbody')[0];
     trs = tbody.getElementsByTagName('tr');
 
-    if (checkBox.checked) {
-        for (i = 0; i < trs.length; i++) {
-            a = trs[i];
-            hname = a.id.split("-")[0];
-            status = a.getElementsByClassName("tv-status-" + hname)[0];
-            if (status.innerText == "idle") {
-                a.style.display = "";
-            } else {
-                a.style.display = "none";
-            }
-        }
-    } else {
-        for (i = 0; i < trs.length; i++) {
-            a = trs[i];
+    for (i = 0; i < trs.length; i++) {
+        a = trs[i];
+        hname = a.id.split("-")[0];
+        status = a.getElementsByClassName("tv-status-" + hname)[0];
+        if (status.innerText == "idle") {
             a.style.display = "";
+        } else {
+            a.style.display = "none";
         }
     }
 }
 
 function checkboxHideIdle() {
-    var checkBox, table, tbody, trs, status, hname, i;
+    /*
+    Radio button 'hide idle' in the dropdown filter in table-view
+    */
+
+    // declare variables
+    var table, tbody, trs, status, hname, i;
+
     table = document.getElementById("div-table-view");
-    checkBox = document.getElementById("checkbox-hide-idle");
     tbody = table.getElementsByTagName('tbody')[0];
     trs = tbody.getElementsByTagName('tr');
 
-    if (checkBox.checked) {
-        for (i = 0; i < trs.length; i++) {
-            a = trs[i];
-            hname = a.id.split("-")[0];
-            status = a.getElementsByClassName("tv-status-" + hname)[0];
-            if (status.innerText == "idle") {
-                a.style.display = "none";
-            } else {
-                a.style.display = "";
-            }
-        }
-    } else {
-        for (i = 0; i < trs.length; i++) {
-            a = trs[i];
+    for (i = 0; i < trs.length; i++) {
+        a = trs[i];
+        hname = a.id.split("-")[0];
+        status = a.getElementsByClassName("tv-status-" + hname)[0];
+        if (status.innerText == "idle") {
+            a.style.display = "none";
+        } else {
             a.style.display = "";
         }
     }
 }
 
 function checkboxShowAll() {
-    var checkBox, table, tbody, trs, status, hname, i;
+    /*
+    Radio button 'show all' in the dropdown filter in table-view
+    */
+
+    // declare variables
+    var table, tbody, trs, i;
+
     table = document.getElementById("div-table-view");
-    checkBox = document.getElementById("checkbox-show-all");
     tbody = table.getElementsByTagName('tbody')[0];
     trs = tbody.getElementsByTagName('tr');
 
-    if (checkBox.checked) {
-        for (i = 0; i < trs.length; i++) {
-            a = trs[i];
-            a.style.display = "";
-        }
-    } else {
-        for (i = 0; i < trs.length; i++) {
-            a = trs[i];
-            a.style.display = "none";
-        }
+    for (i = 0; i < trs.length; i++) {
+        a = trs[i];
+        a.style.display = "";
     }
 }
 
@@ -579,7 +610,6 @@ function removeClass(el, className) {
     }
 }
 
-
 $(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
@@ -590,41 +620,18 @@ $(window).scroll(function (e) {
     }
 });
 
-$(".harvesteredit").click(function(ev) { // for each edit harvester url
-     ev.preventDefault(); // prevent navigation
-     var url = $(this).data("form"); // get the harvester form url
-     $("#harvesterModal").load(url, function() { // load the url into the modal
-         $(this).modal('show'); // display the modal on url load
-     });
-     return false; // prevent the click propagation
- });
-
- function toggleTheme() {
-
+function toggleTheme() {
     if ($('#toggle-mode-text').text() == "Dark Mode") {
         // changing from light to dark mode
         $('#toggle-mode-text').text("Light Mode");
-        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
     } else {
         // changing from dark to light mode
         $('#toggle-mode-text').text("Dark Mode");
-        $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
+        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
     }
 
     $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
     $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
- }
-
- /*$('.harvester-edit-form').on('submit', function() {
-     $.ajax({
-         type: $(this).attr('method'),
-         url: this.action,
-         data: $(this).serialize(),
-         context: this,
-         success: function(data, status) {
-             $('#harvesterModal').html(data);
-         }
-     });
-     return false;
- });*/
+}
