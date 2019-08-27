@@ -167,57 +167,57 @@ $(function () {
         var url = $('#collapseChart').attr("title");
         $('#loaderSpinnerStat').show();
         $.get(url, function (result) {
-    
+
             updateGUI(result);
-    
+
         }).fail(function (response) {
-    
+
             $('#loaderSpinnerStat').hide();
             $('#form-modal').modal('toggle');
             $('#form-modal-body').html(response.responseText);
-    
+
         });
-    };
+    }
 
     $('#collapseChart').on('show.bs.collapse', function (event) {
         updateSession('chart', 'visible');
         loadChart();
     });
 
-    $('#collapseChart').on('hide.bs.collapse', function() {
+    $('#collapseChart').on('hide.bs.collapse', function () {
         updateSession('chart', 'collapsed');
-    });    
+    });
 
-    $('#collapseToolbox').on('show.bs.collapse', function() {
+    $('#collapseToolbox').on('show.bs.collapse', function () {
         updateSession('toolbox', 'visible');
     });
 
-    $('#collapseToolbox').on('hide.bs.collapse', function() {
+    $('#collapseToolbox').on('hide.bs.collapse', function () {
         updateSession('toolbox', 'collapsed');
     });
 
-    $('#collapseTwo').on('show.bs.collapse', function() {
+    $('#collapseTwo').on('show.bs.collapse', function () {
         updateSession('disabled_harvs', 'visible');
     });
 
-    $('#collapseTwo').on('hide.bs.collapse', function() {
+    $('#collapseTwo').on('hide.bs.collapse', function () {
         updateSession('disabled_harvs', 'collapsed');
     });
-    
-    $('#collapseOne').on('show.bs.collapse', function() {
+
+    $('#collapseOne').on('show.bs.collapse', function () {
         // The if statement is needed, because otherwise updateSession will
         // be fired also when a inner div is collapsed
-        if (!$(this).is(':visible')){
+        if (!$(this).is(':visible')) {
             updateSession('enabled_harvs', 'visible');
         }
     });
 
-    $('#collapseOne').on('hidden.bs.collapse', function() {
+    $('#collapseOne').on('hidden.bs.collapse', function () {
         // The if statement is needed, because otherwise updateSession will
         // be fired also when a inner div is collapsed
-        if ($(this).is(':hidden')){
+        if ($(this).is(':hidden')) {
             updateSession('enabled_harvs', 'collapsed');
-        }    
+        }
     });
 
     /*
@@ -232,7 +232,7 @@ $(function () {
         load_into_modal(this);
     });
 
-    $('.toggle-view-button').click(function(ev) {
+    $('.toggle-view-button').click(function (ev) {
         ev.preventDefault();
 
         // id is btn-(viewtype)-view
@@ -303,21 +303,22 @@ $(function () {
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
     });
 
-    $('#toggle-mode-button').click(function(ev) {
+    $('#toggle-mode-button').click(function (ev) {
         ev.preventDefault();
+        var mode;
 
         if ($('#toggle-mode-text').text().includes("Dark Mode")) {
             // changing from light to dark mode
-            var mode = 'dark';
+            mode = 'dark';
             $('#toggle-mode-text').text("Light Mode");
-            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/darkly/bootstrap.min.css");
+            $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
         } else {
             // changing from dark to light mode
-            var mode = 'light';
+            mode = 'light';
             $('#toggle-mode-text').text("Dark Mode");
-            $('#toggle-mode-link').attr("href","https://bootswatch.com/4/materia/bootstrap.min.css");
+            $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
         }
-    
+
         $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
         $('.footer').toggleClass("footer-light footer-dark");
         $('input').toggleClass("dark-input-fields");
@@ -692,7 +693,7 @@ function getCookie(cookieName) {
     name = cookieName + "=";
     decodedCookie = decodeURIComponent(document.cookie);
     cookieArray = decodedCookie.split(';');
-    for(var i = 0; i < cookieArray.length; i++) {
+    for (var i = 0; i < cookieArray.length; i++) {
         c = cookieArray[i];
 
         // avoid spaces at the beginning
@@ -710,7 +711,7 @@ function updateSession(sessionVar, value) {
     var csrftoken = getCookie('csrftoken');
     sessionData = {
         'csrfmiddlewaretoken': csrftoken,
-        [sessionVar]: value
+        [sessionVar]: value // computed property name -> ES6
     };
     $.ajax({
         type: 'POST',
@@ -719,7 +720,7 @@ function updateSession(sessionVar, value) {
         success: function (response) {
             //console.log(response.message);
         },
-        error: function() {
+        error: function () {
             //console.log('internal error');
         },
     });
@@ -734,3 +735,19 @@ $(window).scroll(function (e) {
         $('.navbar').removeClass("navbar-hide");
     }
 });
+
+function toggleTheme() {
+    if ($('#toggle-mode-text').text() == "Dark Mode") {
+        // changing from light to dark mode
+        $('#toggle-mode-text').text("Light Mode");
+        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
+    } else {
+        // changing from dark to light mode
+        $('#toggle-mode-text').text("Dark Mode");
+        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
+    }
+
+    $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+    $('.footer').toggleClass("footer-light footer-dark");
+    $('input').toggleClass("dark-input-fields");
+}

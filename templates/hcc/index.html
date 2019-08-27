@@ -87,13 +87,7 @@
                     <button class="btn btn-outline-info" id="btn-collapseOne" type="button" data-toggle="collapse" data-target="#collapseOne"
                         aria-expanded="true" aria-controls="collapseOne">
                         Enabled Harvesters
-                        <span class="badge badge-light">
-                        {% for k, v in status.items %}
-                        {% if k == 'num_enabled_harvesters' %}
-                        {{ v }}
-                        {% endif %}
-                        {% endfor %}
-                        </span>
+                        <span class="badge badge-light">{{ status.num_enabled_harvesters }}</span>
                     </button>
                     <a id="btn-list-view" role="button" href="{% url 'update-session' %}" class="btn toggle-view-button float-right">
                         <i class="fa fa-lg fa-list" title="list view" aria-hidden="true"
@@ -413,11 +407,7 @@
                     <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
                         aria-expanded="false" aria-controls="collapseTwo">
                         Disabled Harvesters
-                        <span class="badge badge-light">
-                            {% for k, v in status.items %}
-                            {% if k == 'num_disabled_harvesters' %}{{ v }}{% endif %}
-                            {% endfor %}
-                        </span>
+                        <span class="badge badge-light">{{ status.num_disabled_harvesters }}</span>
                     </button>
                 </h5>
             </div>
