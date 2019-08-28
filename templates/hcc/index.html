@@ -84,8 +84,8 @@
         <div class="card">
             <div class="card-header" id="headingEnabled">
                 <h5 class="mb-0">
-                    <button class="btn btn-outline-info" id="btn-collapseOne" type="button" data-toggle="collapse" data-target="#collapseOne"
-                        aria-expanded="true" aria-controls="collapseOne">
+                    <button class="btn btn-outline-info" id="btn-collapseHarvestersEnabled" type="button" data-toggle="collapse" data-target="#collapseHarvestersEnabled"
+                        aria-expanded="true" aria-controls="collapseHarvestersEnabled">
                         Enabled Harvesters
                         <span class="badge badge-light">
                         {% for k, v in status.items %}
@@ -120,9 +120,9 @@
                 </h5>
             </div>
             {% if collapse_status.enabled_harvs == 'collapsed' %}
-            <div id="collapseOne" class="collapse" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
+            <div id="collapseHarvestersEnabled" class="collapse" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
             {% else %}
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
+            <div id="collapseHarvestersEnabled" class="collapse show" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
             {% endif %}    
                 <div id="harvesterList" class="card-body">
                     <div class="container">
@@ -410,8 +410,8 @@
         <div class="card">
             <div class="card-header" id="headingDisabled">
                 <h5 class="mb-0">
-                    <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
-                        aria-expanded="false" aria-controls="collapseTwo">
+                    <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse" data-target="#collapseHarvestersDisabled"
+                        aria-expanded="false" aria-controls="collapseHarvestersDisabled">
                         Disabled Harvesters
                         <span class="badge badge-light">
                             {% for k, v in status.items %}
@@ -422,9 +422,9 @@
                 </h5>
             </div>
             {% if collapse_status.disabled_harvs == 'visible' %}
-            <div id="collapseTwo" class="collapse show" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
+            <div id="collapseHarvestersDisabled" class="collapse show" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
             {% else %}
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
+            <div id="collapseHarvestersDisabled" class="collapse" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
             {% endif %}    
                 <div class="card-body">
                     <div class="container">

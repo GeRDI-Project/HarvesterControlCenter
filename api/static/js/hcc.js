@@ -18,9 +18,9 @@ limitations under the License.
 
 // set global variables for the current viewtype
 var listView, cardView, tableView;
-listView = (startView == 'list');
-cardView = (startView == 'card');
-tableView = (startView == 'table');
+listView = startView === 'list';
+cardView = startView === 'card';
+tableView = startView === 'table';
 
 /*
    Execute when DOM is ready
@@ -196,15 +196,15 @@ $(function () {
         updateSession('toolbox', 'collapsed');
     });
 
-    $('#collapseTwo').on('show.bs.collapse', function() {
+    $('#collapseHarvestersDisabled').on('show.bs.collapse', function() {
         updateSession('disabled_harvs', 'visible');
     });
 
-    $('#collapseTwo').on('hide.bs.collapse', function() {
+    $('#collapseHarvestersDisabled').on('hide.bs.collapse', function() {
         updateSession('disabled_harvs', 'collapsed');
     });
     
-    $('#collapseOne').on('show.bs.collapse', function() {
+    $('#collapseHarvestersEnabled').on('show.bs.collapse', function() {
         // The if statement is needed, because otherwise updateSession will
         // be fired also when a inner div is collapsed
         if (!$(this).is(':visible')){
@@ -212,7 +212,7 @@ $(function () {
         }
     });
 
-    $('#collapseOne').on('hidden.bs.collapse', function() {
+    $('#collapseHarvestersEnabled').on('hidden.bs.collapse', function() {
         // The if statement is needed, because otherwise updateSession will
         // be fired also when a inner div is collapsed
         if ($(this).is(':hidden')){
@@ -239,9 +239,9 @@ $(function () {
         var viewtype = $(this).attr('id').split('-')[1];
 
         // set global viewtype variables
-        listView = (viewtype == 'list');
-        cardView = (viewtype == 'card');
-        tableView = (viewtype == 'table');
+        listView = viewtype === 'list';
+        cardView = viewtype === 'card';
+        tableView = viewtype === 'table';
 
         updateSession('viewtype', viewtype);
 
@@ -687,6 +687,10 @@ function initMode() {
 }
 
 function getCookie(cookieName) {
+    /*
+    This function return the value of the cookie named
+    like the input cookieName
+    */
     var name, decodedCookie, cookieArray, c;
 
     name = cookieName + "=";
@@ -707,6 +711,10 @@ function getCookie(cookieName) {
 }
 
 function updateSession(sessionVar, value) {
+    /*
+    This function sends a post request to the server to change
+    the session variable with the given input
+    */
     var csrftoken = getCookie('csrftoken');
     sessionData = {
         'csrfmiddlewaretoken': csrftoken,
