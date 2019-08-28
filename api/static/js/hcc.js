@@ -689,23 +689,23 @@ function initMode() {
 
 function getCookie(cookieName) {
     /*
-    This function return the value of the cookie named
-    like the input cookieName
+    This function returns the value of the cookie
+    via parameter (cookieName)
     */
-    var name, decodedCookie, cookieArray, c;
+    var name, decodedCookie, cookieArray, cookieEntry;
 
     name = cookieName + "=";
     decodedCookie = decodeURIComponent(document.cookie);
     cookieArray = decodedCookie.split(';');
     for (var i = 0; i < cookieArray.length; i++) {
-        c = cookieArray[i];
+        cookieEntry = cookieArray[i];
 
         // avoid spaces at the beginning
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
+        while (cookieEntry.charAt(0) == ' ') {
+            cookieEntry = cookieEntry.substring(1);
         }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
+        if (cookieEntry.indexOf(name) == 0) {
+            return cookieEntry.substring(name.length, cookieEntry.length);
         }
     }
     return "";

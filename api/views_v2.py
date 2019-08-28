@@ -266,7 +266,6 @@ def abort_all_harvesters(request):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
-# @login_required
 def home(request):
     """
     Home entry point of Web-Application GUI.
@@ -381,14 +380,14 @@ def home(request):
     })
 
 
-@permission_classes((IsAuthenticated, ))
+@login_required
 def update_session(request):
     """
     Updates session variables via POST request
     """
     if not request.is_ajax() or not request.method == 'POST':
         return JsonResponse({
-            'status': 'failed', 'message': 'wrong access'
+            'status': 'failed', 'message': 'no POST request via ajax'
         })
 
     message = ""
