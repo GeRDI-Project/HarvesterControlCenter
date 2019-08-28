@@ -1,12 +1,12 @@
 # Dockerfile to create a Harvester Controlcenter Microservice
 # GeRDI ControlCenter for Harvesters
-# Author: Jan Frömberg (jan.froember@tu-dresden.de)
+# Author: Jan Frömberg (jan.froemberg@tu-dresden.de)
 
 # FROM directive instructing base image to build upon
 FROM python:alpine
 LABEL author="Jan Frömberg <jan.froemberg@tu-dresden.de>"
 LABEL project="GeRDI Project"
-LABEL version="3.9"
+LABEL version="3.11"
 
 WORKDIR /usr/src/app
 

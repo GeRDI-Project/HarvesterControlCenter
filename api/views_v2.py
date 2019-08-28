@@ -1,5 +1,6 @@
 """
-The is the views module which encapsulates the backend logic
+This is the views module which encapsulates the backend logic
+which will be riggered via the corresponding path (url).
 """
 import logging
 
@@ -48,7 +49,7 @@ def index(request):
     :param request:
     :return: a HttpResponse
     """
-    return HttpResponseRedirect(reverse('swagger-docs'))
+    return HttpResponseRedirect(reverse('hcc_gui'))
 
 
 @login_required
@@ -281,8 +282,10 @@ def home(request):
     collapse_status = {}
     collapse_status['toolbox'] = request.session.get('toolbox', 'collapsed')
     collapse_status['chart'] = request.session.get('chart', 'collapsed')
-    collapse_status['disabled_harvs'] = request.session.get('disabled_harvs', 'collapsed')
-    collapse_status['enabled_harvs'] = request.session.get('enabled_harvs', 'visible')
+    collapse_status['disabled_harvs'] = request.session.get(
+        'disabled_harvs', 'collapsed')
+    collapse_status['enabled_harvs'] = request.session.get(
+        'enabled_harvs', 'visible')
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -377,6 +380,7 @@ def home(request):
         'status': feedback
     })
 
+
 @permission_classes((IsAuthenticated, ))
 def update_session(request):
     """
@@ -393,16 +397,18 @@ def update_session(request):
             continue
         elif key in request.session.keys():
             request.session[key] = value
-            message += 'Session variable {} was changed to {}. '.format(key, value)
+            message += 'Session variable {} was changed to {}. '.format(
+                key, value)
         else:
             return JsonResponse({
                 'status': 'failed', 'message': 'Data could not been handled.'
             })
 
     return JsonResponse({
-        'status': 'ok', 
+        'status': 'ok',
         'message': message
     })
+
 
 @api_view(['POST'])
 # @authentication_classes((TokenAuthentication, BasicAuthentication))
