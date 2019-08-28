@@ -21,28 +21,41 @@
                 </h3>
                 <div class="card-body collapse" id="collapseToolbox">
                     <table width="100%">
-                    <tr><td>
-                            <a id="btn-edit-{{ harvester.name }" class="btn btn-primary btn-sm harvesteredit"
-                            data-form="{% url 'add-harvester' %}" href="#" role="button">
-                                <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
+                        <tr>
+                            <td width="20%">
+                                <a id="btn-edit-{{ harvester.name }" class="harvesteredit"
+                                data-form="{% url 'add-harvester' %}" href="#">
+                                    <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                            <td width="20%">
+                                <a id="btn-save-harvester-data" href="{% url 'get-init-data' %}" download="harvesterdata.json">
+                                    <i class="fa fa-download fa-5x align-middle" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                            <td width="20%">
+                                <a id="btn-load-harvester-data" href="#">
+                                    <i class="fa fa-upload fa-5x align-middle" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                            <td width="20%">
+                                <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
                                     <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
+                                </a>
+                            </td>
+                            <td width="20%">
+                                <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
                                     <i class="fa fa-file-text fa-5x align-middle" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Add Harvester</td>
-                        <td>Harvester Logs</td>
-                        <td>HCC Logs</td>
-                    </tr>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Add Harvester</td>
+                            <td>Save Data</td>
+                            <td>Load Data</td>
+                            <td>Harvester Logs</td>
+                            <td>HCC Logs</td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -462,6 +475,35 @@
 <div id="harvesterModal" class="modal fade" tabindex="-1" role="dialog"></div>     
 <!-- Config Modal -->
 <div id="config-modal" class="modal fade" tabindex="-1" role="dialog"></div>
+<!-- File Upload Modal -->
+<div id="file-upload-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Upload file here: 
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="upload-file-form" class="form-horizontal" action="{% url 'set-init-data' %}" method="POST" enctype=multipart/form-data>
+                <div id="modal-body" class="modal-body">
+                    {% csrf_token %}
+                    {{ uploadform|crispy }}
+                </div>
+                <div id="modal-footer" class="modal-footer">
+                    <button class="btn btn-primary" type="submit" Value="Save">
+                        Save
+                    </button>    
+                    <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- Message Modal -->
 <div id="message-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">

@@ -257,6 +257,40 @@ $(function () {
         if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
     });
+
+    $('#btn-load-harvester-data').click(function(ev) {
+        ev.preventDefault();
+        $('#file-upload-modal input').val('');
+        $('input[name=csrfmiddlewaretoken]').attr('value', getCookie("csrftoken"));
+        $('#file-upload-modal').modal("show");
+        return false;
+    });
+    /*
+    $('#upload-file-form').submit(function(ev) {
+        ev.preventDefault();
+        var serializedData = new FormData($(this));
+        console.log(serializedData)
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: serializedData,
+            context: this,
+            success: function(response){
+                $('#file-upload-modal').modal('hide');
+                $('#message-modal-header').text('Success!');
+                $('#message-modal-body').text(response.message);
+                $('#message-modal').modal('show');
+            },  
+            error: function (response) {
+                $('#file-upload-modal').modal('hide');
+                $('#message-modal-header').text('Error!');
+                $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+                $('#message-modal').modal('show');
+            },    
+        });
+        return false;
+    });
+    */
 });
 
 /*
@@ -609,6 +643,26 @@ function removeClass(el, className) {
         var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
         el.className = el.className.replace(reg, ' ');
     }
+}
+
+function getCookie(cookieName) {
+    var name, decodedCookie, cookieArray, c;
+
+    name = cookieName + "=";
+    decodedCookie = decodeURIComponent(document.cookie);
+    cookieArray = decodedCookie.split(';');
+    for(var i = 0; i < cookieArray.length; i++) {
+        c = cookieArray[i];
+
+        // avoid spaces at the beginning
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
 
 $(window).scroll(function (e) {

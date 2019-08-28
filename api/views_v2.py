@@ -3,6 +3,8 @@ This is the views module which encapsulates the backend logic
 which will be riggered via the corresponding path (url).
 """
 import logging
+import json
+import collections
 
 from django.conf import settings
 from django.contrib import messages
@@ -25,7 +27,7 @@ from rest_framework.response import Response
 
 from api.constants import HCCJSONConstants as HCCJC
 from api.forms import (HarvesterForm, SchedulerForm, create_config_fields,
-                       create_config_form)
+                       create_config_form, UploadFileForm)
 from api.harvester_api import InitHarvester
 from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
@@ -356,7 +358,8 @@ def home(request):
             request, 'hcc/index.html', {
                 'harvesters': harvesters,
                 'status': feedback,
-                'forms': forms
+                'forms': forms,
+                'uploadform': UploadFileForm()
             })
 
     return render(request, 'hcc/index.html', {
@@ -442,6 +445,86 @@ def get_harvester_states(request, format=None):
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
 
+
+@login_required
+def harvester_data_to_file(request):
+    """
+    Function that gets data of all harvesters in the database and returns it 
+    through a file.
+    """
+    data = []
+    harvesters = Harvester.objects.all()
+    for harvester in harvesters:
+        data.append({
+            'name': harvester.name,
+            'notes': harvester.notes,
+            'url': harvester.url,
+            'enabled': harvester.enabled
+        })
+        
+    return JsonResponse(data, safe=False)
+
+
+@permission_classes((IsAuthenticated, ))
+def upload_file(request):
+    """
+    This function handles POST and GET requests to upload a file
+    containing harvester data and add it to the database
+    """
+    data = {}
+    f = request.FILES['upload_file']
+    # Check if file type is correct and get the content
+    if f.name.lower().endswith('.json') or f.name.lower.endswith('.txt'):
+        content_bytes = f.read()
+        content_str = content_bytes.decode('utf8').replace("'", '"')
+        content = json.loads(content_str)
+    else:
+        data['status'] = 'failed'
+        data['message'] = (
+            'File type could not been handled.'
+            'Must be either .json or .txt!'
+        )
+        return JsonResponse(data)
+
+    required_keys = ('name', 'notes', 'url', 'enabled')
+    for el in content:
+        # 'content' should be a list of dictionaries
+        if not isinstance(el, collections.Mapping):
+            data['status'] = 'failed'
+            data['message'] = (
+                'File content could not been handled.'
+                'Should be a list of dictionaries!'
+            )
+            return JsonResponse(data)
+
+        if not all(key in el for key in required_keys):
+            data['status'] = 'failed'
+            data['message'] = (
+                'Key missmatch! Required: name, notes, url, enabled'
+            )
+            return JsonResponse(data)
+        else:
+            if Harvester.objects.filter(name=el['name']).exists():
+                harvester = Harvester.objects.get(name=el['name'])
+                if harvester.url != el['url']:
+                    harvester.url = el['url']
+                    harvester.save()
+                elif harvester.notes != el['notes']:
+                    harvester.notes = el['notes']
+                    harvester.save()
+                elif harvester.enabled != el['enabled']:
+                    harvester.enabled = el['enabled']
+                    harvester.save()
+            else:
+                harvester = Harvester(owner=request.user)
+                harvester.name = el['name']
+                harvester.notes = el['notes']
+                harvester.url = el['url']
+                harvester.enabled = el['enabled']
+                harvester.save()
+
+    return HttpResponseRedirect(reverse('hcc_gui'))
+    
 
 class HarvesterCreateView(generics.ListCreateAPIView):
     """
@@ -643,3 +726,4 @@ class ScheduleHarvesterView(
             request, messages.INFO, harvester.name + ': ' +
             response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))
+        
