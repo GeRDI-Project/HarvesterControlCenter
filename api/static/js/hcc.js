@@ -35,7 +35,7 @@ $(function () {
     }
 
     toggleViews();
-    initMode();
+    initTheme();
 
     var ctx = document.getElementById("harvesterChart");
     if (ctx != null) {
@@ -223,7 +223,6 @@ $(function () {
     /*
         Buttons
     */
-
     $('#btn-harvester-log').on('click', function (event) {
         load_into_modal(this);
     });
@@ -303,33 +302,33 @@ $(function () {
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
     });
 
-    $('#toggle-mode-button').click(function (ev) {
+    $('#toggle-theme-button').click(function (ev) {
         ev.preventDefault();
-        var mode;
+        var theme;
 
-        if ($('#toggle-mode-text').text().includes("Dark Mode")) {
-            // changing from light to dark mode
-            mode = 'dark';
-            $('#toggle-mode-text').text("Light Mode");
-            $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
+        if ($('#toggle-theme-text').text().includes("Dark Theme")) {
+            // changing from light to dark theme
+            theme = 'dark';
+            $('#toggle-theme-text').text("Light Theme");
+            $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
         } else {
-            // changing from dark to light mode
-            mode = 'light';
-            $('#toggle-mode-text').text("Dark Mode");
-            $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
+            // changing from dark to light theme
+            theme = 'light';
+            $('#toggle-theme-text').text("Dark Theme");
+            $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
         }
 
-        $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+        $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
         $('.footer').toggleClass("footer-light footer-dark");
         $('input').toggleClass("dark-input-fields");
 
-        updateSession('mode', mode);
+        updateSession('theme', theme);
         return false;
     });
 });
 
 /*
-    Execute when page/window is loaded
+   Execute when page/window is loaded
 */
 $(window).ready(function () {
 
@@ -428,6 +427,16 @@ $(window).ready(function () {
         }
     }
 
+});
+
+$(window).scroll(function (e) {
+    // add/remove class to navbar when scrolling to hide/show
+    var scroll = $(window).scrollTop();
+    if (scroll >= 270) {
+        $('.navbar').addClass("navbar-hide");
+    } else {
+        $('.navbar').removeClass("navbar-hide");
+    }
 });
 
 function filterFunction() {
@@ -680,9 +689,9 @@ function removeClass(el, className) {
     }
 }
 
-function initMode() {
-    if ($('#toggle-mode-text').text().includes("Light Mode")) {
-        // set css if dark mode is active in the beginning
+function initTheme() {
+    if ($('#toggle-theme-text').text().includes("Light Theme")) {
+        // set css if dark Theme is active in the beginning
         $('input').toggleClass("dark-input-fields");
     }
 }
@@ -726,36 +735,24 @@ function updateSession(sessionVar, value) {
         url: updateSessionUrl,
         data: sessionData,
         success: function (response) {
-            //console.log(response.message);
         },
         error: function () {
-            //console.log('internal error');
         },
     });
 }
 
-$(window).scroll(function (e) {
-    // add/remove class to navbar when scrolling to hide/show
-    var scroll = $(window).scrollTop();
-    if (scroll >= 270) {
-        $('.navbar').addClass("navbar-hide");
-    } else {
-        $('.navbar').removeClass("navbar-hide");
-    }
-});
-
 function toggleTheme() {
-    if ($('#toggle-mode-text').text() == "Dark Mode") {
-        // changing from light to dark mode
-        $('#toggle-mode-text').text("Light Mode");
-        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
+    if ($('#toggle-theme-text').text() == "Dark Theme") {
+        // changing from light to dark Theme
+        $('#toggle-theme-text').text("Light Theme");
+        $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
     } else {
-        // changing from dark to light mode
-        $('#toggle-mode-text').text("Dark Mode");
-        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
+        // changing from dark to light Theme
+        $('#toggle-theme-text').text("Dark Theme");
+        $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
     }
 
-    $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+    $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
     $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
 }
