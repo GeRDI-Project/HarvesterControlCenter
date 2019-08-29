@@ -542,7 +542,7 @@ class EditHarvesterView(View, LoginRequiredMixin,
     """
 
     @staticmethod
-    def get(request, *args, **kwargs):  # the form that is load into the modal
+    def get(request, *args, **kwargs):  # the form that is loaded into the modal
         data = {}
         if "name" not in kwargs:
             harvester = Harvester(owner=request.user)
