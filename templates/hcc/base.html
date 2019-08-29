@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/hcc.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
     {% block bootstrap_theme %}
-        {% if mode == 'dark' %}
+        {% if theme == 'dark' %}
             <link id="toggle-theme-link" rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css" type="text/css">
         {% else %}
             <link id="toggle-theme-link" rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css" type="text/css">
@@ -25,10 +25,10 @@
 </head>
 
 <body>
-{% if mode == 'dark' %}
-<nav class="navbar navbar-expand-sm dark-mode-bg fixed-top" role="navigation">
+{% if theme == 'dark' %}
+<nav class="navbar navbar-expand-sm dark-theme-bg fixed-top" role="navigation">
 {% else %}
-<nav class="navbar navbar-expand-sm light-mode-bg fixed-top" role="navigation">
+<nav class="navbar navbar-expand-sm light-theme-bg fixed-top" role="navigation">
 {% endif %}
     
     <a class="navbar-brand" href="#">
@@ -55,10 +55,10 @@
             <a id="toggle-theme-button" class="dropdown-item" href="{% url 'update-session' %}">
                 <i class="fa fa-adjust" aria-hidden=true></i>
                 <span id="toggle-theme-text">
-                    {% if mode == 'dark' %}
-                        Light Mode
+                    {% if theme == 'dark' %}
+                        Light Theme
                     {% else %}
-                        Dark Mode
+                        Dark Theme
                     {% endif %}
                 </span>
             </a>

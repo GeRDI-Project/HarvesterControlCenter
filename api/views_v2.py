@@ -273,8 +273,8 @@ def home(request):
     feedback = {}
 
     # init session variables:
-    # mode (dark/light) with default light
-    mode = request.session.get('mode', 'light')
+    # theme (dark/light) with default light
+    theme = request.session.get('theme', 'light')
     # viewtype (card/list/table) with default card
     viewtype = request.session.get('viewtype', 'card')
     # collapse status (visible/collapsed)
@@ -370,7 +370,7 @@ def home(request):
                 'harvesters': harvesters,
                 'status': feedback,
                 'forms': forms,
-                'mode': mode,
+                'theme': theme,
                 'viewtype': viewtype,
                 'collapse_status': collapse_status
             })
