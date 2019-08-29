@@ -14,7 +14,7 @@ RUN mkdir /usr/src/app/log && touch /usr/src/app/log/debug.log && touch /usr/src
 
 COPY requirements.txt ./
 
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 
