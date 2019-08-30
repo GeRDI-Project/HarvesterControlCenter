@@ -12,7 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
- */
+*/
 
 // startView and sessionUrl are set in bottom of base.html
 
@@ -429,6 +429,9 @@ $(window).ready(function () {
 
 });
 
+/*
+   Different functions for filtering, themeing and session handling
+*/
 $(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
@@ -734,10 +737,8 @@ function updateSession(sessionVar, value) {
         type: 'POST',
         url: updateSessionUrl,
         data: sessionData,
-        success: function (response) {
-        },
-        error: function () {
-        },
+        success: function (response) {},
+        error: function () {},
     });
 }
 
