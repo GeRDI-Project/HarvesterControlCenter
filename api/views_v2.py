@@ -275,16 +275,22 @@ def home(request):
     # init session variables:
     # theme (dark/light) with default light
     theme = request.session.get('theme', 'light')
+    request.session['theme'] = theme
     # viewtype (card/list/table) with default card
     viewtype = request.session.get('viewtype', 'card')
+    request.session['viewtype'] = viewtype
     # collapse status (visible/collapsed)
     collapse_status = {}
     collapse_status['toolbox'] = request.session.get('toolbox', 'collapsed')
+    request.session['toolbox'] = collapse_status['toolbox']
     collapse_status['chart'] = request.session.get('chart', 'collapsed')
+    request.session['chart'] = collapse_status['chart']
     collapse_status['disabled_harvs'] = request.session.get(
         'disabled_harvs', 'collapsed')
+    request.session['disabled_harvs'] = collapse_status['disabled_harvs']
     collapse_status['enabled_harvs'] = request.session.get(
         'enabled_harvs', 'visible')
+    request.session['enabled_harvs'] = collapse_status['enabled_harvs']
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -387,7 +393,7 @@ def update_session(request):
     """
     if not request.is_ajax() or not request.method == 'POST':
         return JsonResponse({
-            'status': 'failed', 'message': 'no POST request via ajax'
+            'status': 'failed', 'message': 'not a POST request or ajax call'
         })
 
     message = ""
@@ -396,11 +402,11 @@ def update_session(request):
             continue
         elif key in request.session.keys():
             request.session[key] = value
-            message += 'Session variable {} was changed to {}. '.format(
+            message += 'Session variable {} was changed to {}.'.format(
                 key, value)
         else:
             return JsonResponse({
-                'status': 'failed', 'message': 'Data could not been handled.'
+                'status': 'failed', 'message': 'key not found in session...'
             })
 
     return JsonResponse({
