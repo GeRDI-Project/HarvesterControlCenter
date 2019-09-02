@@ -27,7 +27,7 @@ from rest_framework.response import Response
 
 from api.constants import HCCJSONConstants as HCCJC
 from api.forms import (HarvesterForm, SchedulerForm, create_config_fields,
-                       create_config_form, UploadFileForm)
+                       create_config_form, UploadFileForm, ValidateFileForm)
 from api.harvester_api import InitHarvester
 from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
@@ -474,68 +474,87 @@ def upload_file(request):
     data = {}
     f = request.FILES['upload_file']
     # Check if file type is correct and get the content
-    if f.content_type in ['application/json', 'text/plain']:
-        content_bytes = f.read()
-        content_str = content_bytes.decode('utf8').replace("'", '"')
+    if f.content_type == 'application/json':
         try:
-            content = json.loads(content_str)
+            content = json.load(f)
         except json.JSONDecodeError:
             message = (
                 'Upload failed. '
-                'File content could not been handled.'
-                'Must be formatted as a json string!'
+                'File content was either wrong formatted or empty. '
+                'Must be a JSON array of objects with harvester data.'
             )
             messages.warning(request, message)
             return HttpResponseRedirect(reverse('hcc_gui'))
     else:
         message = (
             'Upload failed. '
-            'File type could not been handled.'
-            'Must be either .json or .txt!'
+            'File type could not been handled. '
+            'Must be a JSON file!'
         )
         messages.warning(request, message)
         return HttpResponseRedirect(reverse('hcc_gui'))
 
     required_keys = ('name', 'notes', 'url', 'enabled')
-    for el in content:
+    for harvester_data in content:
         # 'content' should be a list of dictionaries
-        if not isinstance(el, collections.Mapping):
+        if not isinstance(harvester_data, collections.Mapping):
             message = (
-                'Upload failed. '
+                'Validation failed. '
                 'File content could not been handled.'
                 'Should be a list of dictionaries!'
             )
             messages.warning(request, message)
             return HttpResponseRedirect(reverse('hcc_gui'))
 
-        if not all(key in el for key in required_keys):
+        # The json file should contain the required harvester data
+        if not all(key in harvester_data for key in required_keys):
             message = (
-                'Upload failed. '
+                'Validation failed. '
                 'Key missmatch! Required: name, notes, url, enabled'
             )
             messages.warning(request, message)
             return HttpResponseRedirect(reverse('hcc_gui'))
-        else:
-            if Harvester.objects.filter(name=el['name']).exists():
-                harvester = Harvester.objects.get(name=el['name'])
-                if harvester.url != el['url']:
-                    harvester.url = el['url']
-                    harvester.save()
-                elif harvester.notes != el['notes']:
-                    harvester.notes = el['notes']
-                    harvester.save()
-                elif harvester.enabled != el['enabled']:
-                    harvester.enabled = el['enabled']
-                    harvester.save()
-            else:
+        
+        data = harvester_data
+        if Harvester.objects.filter(name=harvester_data['name']).exists():
+            # Harvester already exists -> update harvester
+            harvester = Harvester.objects.get(name=harvester_data['name'])
+            data['notes'] = harvester.notes # Notes should not be updated
+            if (harvester.url == harvester_data['url'] and 
+                    harvester.enabled == harvester_data['enabled']):
+                continue
+            elif not harvester.url == harvester_data['url']:
+                # Create new Harvester with new url
                 harvester = Harvester(owner=request.user)
-                harvester.name = el['name']
-                harvester.notes = el['notes']
-                harvester.url = el['url']
-                harvester.enabled = el['enabled']
-                harvester.save()
-    message = 'Upload successful!'
-    messages.success(request, message)
+                counter = 1
+                while True:
+                    # Loop until the harvester name is not already used
+                    postfix = '_{}'.format(counter)
+                    temp_name = harvester_data['name'] + postfix
+                    if not Harvester.objects.filter(name=temp_name).exists():
+                        data['name'] = temp_name
+                        break
+                    counter += 1
+        elif Harvester.objects.filter(url=harvester_data['url']).exists():
+            # The url should be unique. Leave the existing harvester data
+            # and ignore the new one
+            continue
+        else:
+            # Create a new harvester
+            harvester = Harvester(owner=request.user)
+
+        form = ValidateFileForm(data, instance=harvester)
+        if form.is_valid():
+            form.save()
+        else:
+            message = (
+                'Validation failed. '
+                'Content data could not been saved.'
+            )
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
+    
+    messages.success(request, 'Upload successful!')
     return HttpResponseRedirect(reverse('hcc_gui'))
     
 
