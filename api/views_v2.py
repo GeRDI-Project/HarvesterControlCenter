@@ -474,35 +474,47 @@ def upload_file(request):
     data = {}
     f = request.FILES['upload_file']
     # Check if file type is correct and get the content
-    if f.name.lower().endswith('.json') or f.name.lower.endswith('.txt'):
+    if f.content_type in ['application/json', 'text/plain']:
         content_bytes = f.read()
         content_str = content_bytes.decode('utf8').replace("'", '"')
-        content = json.loads(content_str)
+        try:
+            content = json.loads(content_str)
+        except json.JSONDecodeError:
+            message = (
+                'Upload failed. '
+                'File content could not been handled.'
+                'Must be formatted as a json string!'
+            )
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
     else:
-        data['status'] = 'failed'
-        data['message'] = (
+        message = (
+            'Upload failed. '
             'File type could not been handled.'
             'Must be either .json or .txt!'
         )
-        return JsonResponse(data)
+        messages.warning(request, message)
+        return HttpResponseRedirect(reverse('hcc_gui'))
 
     required_keys = ('name', 'notes', 'url', 'enabled')
     for el in content:
         # 'content' should be a list of dictionaries
         if not isinstance(el, collections.Mapping):
-            data['status'] = 'failed'
-            data['message'] = (
+            message = (
+                'Upload failed. '
                 'File content could not been handled.'
                 'Should be a list of dictionaries!'
             )
-            return JsonResponse(data)
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
 
         if not all(key in el for key in required_keys):
-            data['status'] = 'failed'
-            data['message'] = (
+            message = (
+                'Upload failed. '
                 'Key missmatch! Required: name, notes, url, enabled'
             )
-            return JsonResponse(data)
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
         else:
             if Harvester.objects.filter(name=el['name']).exists():
                 harvester = Harvester.objects.get(name=el['name'])
@@ -522,7 +534,8 @@ def upload_file(request):
                 harvester.url = el['url']
                 harvester.enabled = el['enabled']
                 harvester.save()
-
+    message = 'Upload successful!'
+    messages.success(request, message)
     return HttpResponseRedirect(reverse('hcc_gui'))
     
 
