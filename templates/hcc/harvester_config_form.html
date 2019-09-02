@@ -53,7 +53,7 @@
 
                 $('#submission-modal-submit-button').click(function () {
                     $('#submission-modal').modal('hide');
-                    $('#config-modal').modal('hide');
+                    $('#form-modal').modal('hide');
                     $.ajax({
                         type: $("#harvester-config-form").attr('method'),
                         url: $("#harvester-config-form").attr('action'),
@@ -73,28 +73,31 @@
                             var message = response.message.replace(";", "<br>");
                             $('#message-modal-body').html(message);
                             $('#message-modal-exit').show();
+                            $('#message-modal-footer').hide();
                             $('#message-modal').modal('show');
                         },
                         error: function (response) {
                             $('#message-modal-header').text('Error!');
                             $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
                             $('#message-modal-exit').show();
+                            $('#message-modal-footer').hide();
                             $('#message-modal').modal('show');
                         },
                     });
                 });
                 $('#submission-modal-cancel-button').click(function () {
                     $('#submission-modal').modal('hide');
-                    $('#config-modal').modal('hide');
+                    $('#form-modal').modal('hide');
                 });
             } else {
-                $('#config-modal').modal('hide');
+                $('#form-modal').modal('hide');
                 $('#message-modal-header').text('Info');
                 $('#message-modal-body').text("Nothing to change!");
                 $('#message-modal-exit').show();
+                $('#message-modal-footer').hide();
                 $('#message-modal').modal('show');
             }
-            $("config-modal").find("input,textarea,select").val('').end();
+            $("form-modal").find("input,textarea,select").val('').end();
             return false;
         });
 
