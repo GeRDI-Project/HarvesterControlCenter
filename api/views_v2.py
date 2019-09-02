@@ -266,12 +266,25 @@ def abort_all_harvesters(request):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
-# @login_required
 def home(request):
     """
     Home entry point of Web-Application GUI.
     """
     feedback = {}
+
+    # init session variables:
+    # theme (dark/light) with default light
+    theme = request.session.get('theme', 'light')
+    # viewtype (card/list/table) with default card
+    viewtype = request.session.get('viewtype', 'card')
+    # collapse status (visible/collapsed)
+    collapse_status = {}
+    collapse_status['toolbox'] = request.session.get('toolbox', 'collapsed')
+    collapse_status['chart'] = request.session.get('chart', 'collapsed')
+    collapse_status['disabled_harvs'] = request.session.get(
+        'disabled_harvs', 'collapsed')
+    collapse_status['enabled_harvs'] = request.session.get(
+        'enabled_harvs', 'visible')
 
     # if user is logged in
     if request.user.is_authenticated:
@@ -356,11 +369,43 @@ def home(request):
             request, 'hcc/index.html', {
                 'harvesters': harvesters,
                 'status': feedback,
-                'forms': forms
+                'forms': forms,
+                'theme': theme,
+                'viewtype': viewtype,
+                'collapse_status': collapse_status
             })
 
     return render(request, 'hcc/index.html', {
         'status': feedback
+    })
+
+
+@login_required
+def update_session(request):
+    """
+    Updates session variables via POST request
+    """
+    if not request.is_ajax() or not request.method == 'POST':
+        return JsonResponse({
+            'status': 'failed', 'message': 'not a POST request or ajax call'
+        })
+
+    message = ""
+    for key, value in request.POST.items():
+        if key == "csrfmiddlewaretoken":
+            continue
+        elif key in request.session.keys():
+            request.session[key] = value
+            message += 'Session variable {} was changed to {}.'.format(
+                key, value)
+        else:
+            request.session[key] = value
+            message += 'Session variable {} was added and set to {}.'.format(
+                key, value)
+
+    return JsonResponse({
+        'status': 'ok',
+        'message': message
     })
 
 
@@ -497,7 +542,7 @@ class EditHarvesterView(View, LoginRequiredMixin,
     """
 
     @staticmethod
-    def get(request, *args, **kwargs):  # the form that is load into the modal
+    def get(request, *args, **kwargs):  # the form that is loaded into the modal
         data = {}
         if "name" not in kwargs:
             harvester = Harvester(owner=request.user)

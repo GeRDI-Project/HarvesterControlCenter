@@ -7,11 +7,11 @@ body {
     margin-top: 80px;
 }
 
-.light-mode-bg {
+.light-theme-bg {
     background-color: #eeeeee;
 }
 
-.dark-mode-bg {
+.dark-theme-bg {
     background-color: #303030;
     border-bottom-color: #2b4764;
 }

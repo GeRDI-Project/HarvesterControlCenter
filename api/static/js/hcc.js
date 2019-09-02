@@ -12,13 +12,15 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
- */
+*/
 
+// currentTheme, startView and sessionUrl are set in bottom of base.html
+
+// set global variables for the current viewtype
 var listView, cardView, tableView;
-// which view is shown at the moment (especially at the beginning)
-listView = false;
-tableView = false;
-cardView = true;
+listView = startView === 'list';
+cardView = startView === 'card';
+tableView = startView === 'table';
 
 /*
    Execute when DOM is ready
@@ -28,7 +30,12 @@ $(function () {
     $('#loaderSpinnerLog').hide();
     $('#loaderSpinnerStat').hide();
 
+    if ($('#collapseChart').is(':visible')) {
+        loadChart();
+    }
+
     toggleViews();
+    initTheme();
 
     var ctx = document.getElementById("harvesterChart");
     if (ctx != null) {
@@ -64,8 +71,9 @@ $(function () {
         $.get(url, function (result) {
             var status = result;
             var data = JSON.stringify(result, undefined, 2);
-            $('#form-modal').modal('toggle');
-            $('#form-modal-body').html('<pre>' + data + '</pre>');
+            $('#message-modal-footer').show();
+            $('#message-modal').modal('toggle');
+            $('#message-modal-body').html('<pre>' + data + '</pre>');
             for (var key in status) {
                 var obj = status[key];
                 $('#hv-status-' + key).html(obj.log);
@@ -74,8 +82,9 @@ $(function () {
 
         }).fail(function (response) {
             $('#loaderSpinnerLog').hide();
-            $('#form-modal').modal('toggle');
-            $('#form-modal-body').html(response.responseText);
+            $('#message-modal-footer').show();
+            $('#message-modal').modal('toggle');
+            $('#message-modal-body').html(response.responseText);
         });
     }
 
@@ -156,45 +165,8 @@ $(function () {
         updateChart(vlabels, vdata, gbcarray, bcarray);
     }
 
-    /*
-        Buttons
-    */
-
-    $('#btn-harvester-log').on('click', function (event) {
-        load_into_modal(this);
-    });
-
-    $('#btn-hcc-log').on('click', function (event) {
-        load_into_modal(this);
-    });
-
-    $('#btn-list-view').click(function () {
-        listView = true;
-        cardView = false;
-        tableView = false;
-        toggleViews();
-        filterFunction();
-    });
-
-    $('#btn-card-view').click(function () {
-        listView = false;
-        cardView = true;
-        tableView = false;
-        toggleViews();
-        filterFunction();
-    });
-
-    $('#btn-table-view').click(function () {
-        listView = false;
-        cardView = false;
-        tableView = true;
-        toggleViews();
-        filterFunction();
-    });
-
-    $('#collapseChart').on('show.bs.collapse', function (event) {
-
-        var url = $(this).attr("title");
+    function loadChart() {
+        var url = $('#collapseChart').attr("title");
         $('#loaderSpinnerStat').show();
         $.get(url, function (result) {
 
@@ -203,16 +175,89 @@ $(function () {
         }).fail(function (response) {
 
             $('#loaderSpinnerStat').hide();
-            $('#form-modal').modal('toggle');
-            $('#form-modal-body').html(response.responseText);
+            $('#message-modal-footer').show();
+            $('#message-modal').modal('toggle');
+            $('#message-modal-body').html(response.responseText);
 
         });
+    }
+
+    $('#collapseChart').on('show.bs.collapse', function (event) {
+        updateSession('chart', 'visible');
+        loadChart();
+    });
+
+    $('#collapseChart').on('hide.bs.collapse', function () {
+        updateSession('chart', 'collapsed');
+    });
+
+    $('#collapseToolbox').on('show.bs.collapse', function () {
+        updateSession('toolbox', 'visible');
+    });
+
+    $('#collapseToolbox').on('hide.bs.collapse', function () {
+        updateSession('toolbox', 'collapsed');
+    });
+
+    $('#collapseHarvestersDisabled').on('show.bs.collapse', function() {
+        updateSession('disabled_harvs', 'visible');
+    });
+
+    $('#collapseHarvestersDisabled').on('hide.bs.collapse', function() {
+        updateSession('disabled_harvs', 'collapsed');
+    });
+    
+    $('#collapseHarvestersEnabled').on('show.bs.collapse', function() {
+        // The if statement is needed, because otherwise updateSession will
+        // be fired also when a inner div is collapsed
+        if (!$(this).is(':visible')) {
+            updateSession('enabled_harvs', 'visible');
+        }
+    });
+
+    $('#collapseHarvestersEnabled').on('hidden.bs.collapse', function() {
+        // The if statement is needed, because otherwise updateSession will
+        // be fired also when a inner div is collapsed
+        if ($(this).is(':hidden')) {
+            updateSession('enabled_harvs', 'collapsed');
+        }
+    });
+
+    /*
+        Buttons
+    */
+    $('#btn-harvester-log').on('click', function (event) {
+        load_into_modal(this);
+    });
+
+    $('#btn-hcc-log').on('click', function (event) {
+        load_into_modal(this);
+    });
+
+    $('.toggle-view-button').click(function (ev) {
+        ev.preventDefault();
+
+        // id is btn-(viewtype)-view
+        var viewtype = $(this).attr('id').split('-')[1];
+
+        // set global viewtype variables
+        listView = viewtype === 'list';
+        cardView = viewtype === 'card';
+        tableView = viewtype === 'table';
+
+        updateSession('viewtype', viewtype);
+
+        // actually change the viewtype and check for filter
+        toggleViews();
+        filterFunction();
+
+        return false;
     });
 
     $(".harvesteredit").click(function (ev) { // for each edit harvester url
         ev.preventDefault(); // prevent navigation
         var url = $(this).attr("data-form"); // get the harvester form url
-        $("#harvesterModal").load(url, function () { // load the url into the modal
+        $("#form-modal").load(url, function () { // load the url into the modal
             $(this).modal('show'); // display the modal on url load
         });
         return false; // prevent the click propagation
@@ -221,7 +266,7 @@ $(function () {
     $(".harvesterconfig").click(function (ev) {
         ev.preventDefault();
         var url = $(this).attr("data-form");
-        $("#config-modal").load(url, function () {
+        $("#form-modal").load(url, function () {
             $(this).modal('show');
         });
         return false;
@@ -238,11 +283,15 @@ $(function () {
             success: function (response) {
                 $('#message-modal-header').text(response.status == 'Ok' ? 'Success!' : 'Error');
                 $('#message-modal-body').text(response.message);
+                $('#message-modal-exit').show();
+                $('#message-modal-footer').hide();
                 $('#message-modal').modal('show');
             },
             error: function (response) {
                 $('#message-modal-header').text('Error!');
                 $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+                $('#message-modal-exit').show();
+                $('#message-modal-footer').hide();
                 $('#message-modal').modal('show');
             },
         });
@@ -257,10 +306,34 @@ $(function () {
         if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
     });
+
+    $('#toggle-theme-button').click(function (ev) {
+        ev.preventDefault();
+        var theme;
+
+        if ($('#toggle-theme-text').text().includes("Dark Theme")) {
+            // changing from light to dark theme
+            theme = 'dark';
+            $('#toggle-theme-text').text("Light Theme");
+            $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
+        } else {
+            // changing from dark to light theme
+            theme = 'light';
+            $('#toggle-theme-text').text("Dark Theme");
+            $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
+        }
+
+        $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
+        $('.footer').toggleClass("footer-light footer-dark");
+        $('input').toggleClass("dark-input-fields");
+
+        updateSession('theme', theme);
+        return false;
+    });
 });
 
 /*
-    Execute when page/window is loaded
+   Execute when page/window is loaded
 */
 $(window).ready(function () {
 
@@ -361,6 +434,19 @@ $(window).ready(function () {
 
 });
 
+/*
+   Different functions for filtering, themeing and session handling
+*/
+$(window).scroll(function (e) {
+    // add/remove class to navbar when scrolling to hide/show
+    var scroll = $(window).scrollTop();
+    if (scroll >= 270) {
+        $('.navbar').addClass("navbar-hide");
+    } else {
+        $('.navbar').removeClass("navbar-hide");
+    }
+});
+
 function filterFunction() {
     /*
     Hides all harvesters that do not match the string entered in the filter input field.
@@ -432,6 +518,7 @@ function toggleViews() {
     listDiv = document.getElementById("div-list-view");
     cardDiv = document.getElementById("div-card-view");
     tableDiv = document.getElementById("div-table-view");
+    if (listDiv == null) return;
 
     listBtn = document.getElementById("btn-list-view");
     cardBtn = document.getElementById("btn-card-view");
@@ -610,28 +697,78 @@ function removeClass(el, className) {
     }
 }
 
-$(window).scroll(function (e) {
-    // add/remove class to navbar when scrolling to hide/show
-    var scroll = $(window).scrollTop();
-    if (scroll >= 270) {
-        $('.navbar').addClass("navbar-hide");
-    } else {
-        $('.navbar').removeClass("navbar-hide");
+function initTheme() {
+    /*
+    This function is called when the page is loaded to initialize the theme
+    */
+
+    if (currentTheme === 'dark') {
+        // set css if dark Theme is active in the beginning
+        $('input').toggleClass("dark-input-fields");
     }
-});
+}
+
+function getCookie(cookieName) {
+    /*
+    This function returns the value of the cookie
+    via parameter (cookieName)
+    */
+    var name, decodedCookie, cookieArray, cookieEntry;
+
+    name = cookieName + "=";
+    decodedCookie = decodeURIComponent(document.cookie);
+    cookieArray = decodedCookie.split(';');
+    for (var i = 0; i < cookieArray.length; i++) {
+        cookieEntry = cookieArray[i];
+
+        // avoid spaces at the beginning
+        while (cookieEntry.charAt(0) == ' ') {
+            cookieEntry = cookieEntry.substring(1);
+        }
+        if (cookieEntry.indexOf(name) == 0) {
+            return cookieEntry.substring(name.length, cookieEntry.length);
+        }
+    }
+    return "";
+}
+
+function updateSession(sessionVar, value) {
+    /*
+    This function sends a post request to the server to change
+    the session variable with the given input
+    */
+    var csrftoken = getCookie('csrftoken');
+    sessionData = {
+        'csrfmiddlewaretoken': csrftoken,
+        [sessionVar]: value // computed property name -> ES6
+    };
+    $.ajax({
+        type: 'POST',
+        url: updateSessionUrl,
+        data: sessionData,
+        success: function (response) {},
+        error: function () {},
+    });
+}
 
 function toggleTheme() {
-    if ($('#toggle-mode-text').text() == "Dark Mode") {
-        // changing from light to dark mode
-        $('#toggle-mode-text').text("Light Mode");
-        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
+    /*
+    This function toggles between light and dark theme
+    */
+    var newTheme;
+    if (currentTheme === 'light') {
+        // changing from light to dark Theme
+        $('#toggle-theme-text').text("Light Theme");
+        $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
+        newTheme = 'dark';
     } else {
-        // changing from dark to light mode
-        $('#toggle-mode-text').text("Dark Mode");
-        $('#toggle-mode-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
+        // changing from dark to light Theme
+        $('#toggle-theme-text').text("Dark Theme");
+        $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
+        newTheme = 'light‚';
     }
-
-    $('.navbar').toggleClass("light-mode-bg dark-mode-bg");
+    currentTheme = newTheme;
+    $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
     $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
 }
