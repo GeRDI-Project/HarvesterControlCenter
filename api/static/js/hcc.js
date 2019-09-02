@@ -698,6 +698,10 @@ function removeClass(el, className) {
 }
 
 function initTheme() {
+    /*
+    This function is called when the page is loaded to initialize the theme
+    */
+
     if (currentTheme === 'dark') {
         // set css if dark Theme is active in the beginning
         $('input').toggleClass("dark-input-fields");
@@ -748,16 +752,20 @@ function updateSession(sessionVar, value) {
 }
 
 function toggleTheme() {
+    /*
+    This function toggles between light and dark theme
+    */
+    var newTheme;
     if (currentTheme === 'light') {
         // changing from light to dark Theme
         $('#toggle-theme-text').text("Light Theme");
         $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
-        var newTheme = 'dark';
+        newTheme = 'dark';
     } else {
         // changing from dark to light Theme
         $('#toggle-theme-text').text("Dark Theme");
         $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
-        var newTheme = 'light‚';
+        newTheme = 'light‚';
     }
     currentTheme = newTheme;
     $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
