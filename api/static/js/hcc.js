@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// startView and sessionUrl are set in bottom of base.html
+// currentTheme, startView and sessionUrl are set in bottom of base.html
 
 // set global variables for the current viewtype
 var listView, cardView, tableView;
@@ -693,7 +693,7 @@ function removeClass(el, className) {
 }
 
 function initTheme() {
-    if ($('#toggle-theme-text').text().includes("Light Theme")) {
+    if (currentTheme === 'dark') {
         // set css if dark Theme is active in the beginning
         $('input').toggleClass("dark-input-fields");
     }
@@ -743,16 +743,18 @@ function updateSession(sessionVar, value) {
 }
 
 function toggleTheme() {
-    if ($('#toggle-theme-text').text() == "Dark Theme") {
+    if (currentTheme === 'light') {
         // changing from light to dark Theme
         $('#toggle-theme-text').text("Light Theme");
         $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/darkly/bootstrap.min.css");
+        var newTheme = 'dark';
     } else {
         // changing from dark to light Theme
         $('#toggle-theme-text').text("Dark Theme");
         $('#toggle-theme-link').attr("href", "https://bootswatch.com/4/materia/bootstrap.min.css");
+        var newTheme = 'light‚';
     }
-
+    currentTheme = newTheme;
     $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
     $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
