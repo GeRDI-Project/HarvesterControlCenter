@@ -91,7 +91,7 @@ urlpatterns = [
         views.upload_file,
         name="harvester-from-file"),
     path(
-        'hcc/saveloadform',
+        'hcc/harvesterloadform',
         views.upload_file_form,
         name="harvester-file-form"),
     path('admin/', admin.site.urls),
