@@ -19,44 +19,38 @@
                         </div>
                     </a>
                 </h3>
-                <div class="card-body collapse" id="collapseToolbox">
-                    <table width="100%">
-                        <tr>
-                            <td width="20%">
-                                <a id="btn-edit-{{ harvester.name }" class="harvesteredit"
-                                data-form="{% url 'add-harvester' %}" href="#">
-                                    <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                            <td width="20%">
-                                <a id="btn-save-harvester-data" href="{% url 'get-init-data' %}" download="harvesterdata.json">
-                                    <i class="fa fa-download fa-5x align-middle" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                            <td width="20%">
-                                <a id="btn-load-harvester-data" href="#">
-                                    <i class="fa fa-upload fa-5x align-middle" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                            <td width="20%">
-                                <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
-                                    <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                            <td width="20%">
-                                <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
-                                    <i class="fa fa-file-text fa-5x align-middle" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Add Harvester</td>
-                            <td>Save Harvesters</td>
-                            <td>Load Harvesters</td>
-                            <td>Harvester Logs</td>
-                            <td>HCC Logs</td>
-                        </tr>
-                    </table>
+                <div class="card-body collapse row" id="collapseToolbox">
+                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                        <a id="btn-edit-{{ harvester.name }" class="harvesteredit"
+                        data-form="{% url 'add-harvester' %}" href="#">
+                            <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Add Harvester
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                        <a id="btn-save-harvester-data" href="{% url 'get-init-data' %}" download="harvesterdata.json">
+                            <i class="fa fa-download fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Save Harvesters
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                        <a id="btn-load-harvester-data" href="{% url 'init-data-form' %}">
+                            <i class="fa fa-upload fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Load Harvesters
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                        <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
+                            <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Harvester Logs
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                        <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
+                            <i class="fa fa-file-text fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        HCC Logs
+                    </div>
                 </div>
             </div>
         </div>

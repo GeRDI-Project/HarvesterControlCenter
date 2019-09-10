@@ -255,7 +255,7 @@ $(function () {
 
     $('.status-radio').click(function () {
         /*
-        Related to the radio buttons in drodown menu in table-view
+        Related to the radio buttons in dropdown menu in table-view
         */
         if ($('#checkbox-show-all').prop('checked')) checkboxShowAll();
         if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
