@@ -64,8 +64,9 @@ $(function () {
         $.get(url, function (result) {
             var status = result;
             var data = JSON.stringify(result, undefined, 2);
-            $('#form-modal').modal('toggle');
-            $('#form-modal-body').html('<pre>' + data + '</pre>');
+            $('#message-modal-footer').show();
+            $('#message-modal').modal('toggle');
+            $('#message-modal-body').html('<pre>' + data + '</pre>');
             for (var key in status) {
                 var obj = status[key];
                 $('#hv-status-' + key).html(obj.log);
@@ -74,8 +75,9 @@ $(function () {
 
         }).fail(function (response) {
             $('#loaderSpinnerLog').hide();
-            $('#form-modal').modal('toggle');
-            $('#form-modal-body').html(response.responseText);
+            $('#message-modal-footer').show();
+            $('#message-modal').modal('toggle');
+            $('#message-modal-body').html(response.responseText);
         });
     }
 
@@ -203,16 +205,16 @@ $(function () {
         }).fail(function (response) {
 
             $('#loaderSpinnerStat').hide();
-            $('#form-modal').modal('toggle');
-            $('#form-modal-body').html(response.responseText);
-
+            $('#message-modal-footer').show();
+            $('#message-modal').modal('toggle');
+            $('#message-modal-body').html(response.responseText);
         });
     });
 
     $(".harvesteredit").click(function (ev) { // for each edit harvester url
         ev.preventDefault(); // prevent navigation
         var url = $(this).attr("data-form"); // get the harvester form url
-        $("#harvesterModal").load(url, function () { // load the url into the modal
+        $("#form-modal").load(url, function () { // load the url into the modal
             $(this).modal('show'); // display the modal on url load
         });
         return false; // prevent the click propagation
@@ -221,7 +223,7 @@ $(function () {
     $(".harvesterconfig").click(function (ev) {
         ev.preventDefault();
         var url = $(this).attr("data-form");
-        $("#config-modal").load(url, function () {
+        $("#form-modal").load(url, function () {
             $(this).modal('show');
         });
         return false;
@@ -238,11 +240,13 @@ $(function () {
             success: function (response) {
                 $('#message-modal-header').text(response.status == 'Ok' ? 'Success!' : 'Error');
                 $('#message-modal-body').text(response.message);
+                $('#message-modal-footer').hide();
                 $('#message-modal').modal('show');
             },
             error: function (response) {
                 $('#message-modal-header').text('Error!');
                 $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
+                $('#message-modal-footer').hide();
                 $('#message-modal').modal('show');
             },
         });
@@ -260,37 +264,12 @@ $(function () {
 
     $('#btn-load-harvester-data').click(function(ev) {
         ev.preventDefault();
-        $('#file-upload-modal input').val('');
-        $('input[name=csrfmiddlewaretoken]').attr('value', getCookie("csrftoken"));
-        $('#file-upload-modal').modal("show");
-        return false;
-    });
-    /*
-    $('#upload-file-form').submit(function(ev) {
-        ev.preventDefault();
-        var serializedData = new FormData($(this));
-        console.log(serializedData)
-        $.ajax({
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: serializedData,
-            context: this,
-            success: function(response){
-                $('#file-upload-modal').modal('hide');
-                $('#message-modal-header').text('Success!');
-                $('#message-modal-body').text(response.message);
-                $('#message-modal').modal('show');
-            },  
-            error: function (response) {
-                $('#file-upload-modal').modal('hide');
-                $('#message-modal-header').text('Error!');
-                $('#message-modal-body').text('There has been an internal error. Please contact an administrator.');
-                $('#message-modal').modal('show');
-            },    
+        var url = $(this).attr("href");
+        $("#form-modal").load(url, function () {
+            $(this).modal('show');
         });
         return false;
     });
-    */
 });
 
 /*

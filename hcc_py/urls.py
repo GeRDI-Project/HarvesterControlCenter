@@ -88,7 +88,11 @@ urlpatterns = [
     path(
         'hcc/setinitdata',
         views.upload_file,
-        name="set-init-data"),   
+        name="set-init-data"),
+    path(
+        'hcc/initdataform',
+        views.upload_file_form,
+        name="init-data-form"),  
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', SCHEMA_VIEW, name='swagger-docs'),

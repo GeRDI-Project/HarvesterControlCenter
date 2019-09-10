@@ -358,8 +358,7 @@ def home(request):
             request, 'hcc/index.html', {
                 'harvesters': harvesters,
                 'status': feedback,
-                'forms': forms,
-                'uploadform': UploadFileForm()
+                'forms': forms
             })
 
     return render(request, 'hcc/index.html', {
@@ -468,7 +467,7 @@ def harvester_data_to_file(request):
 @permission_classes((IsAuthenticated, ))
 def upload_file(request):
     """
-    This function handles POST and GET requests to upload a file
+    This function handles POST requests to upload a file
     containing harvester data and add it to the database
     """
     data = {}
@@ -556,7 +555,17 @@ def upload_file(request):
     
     messages.success(request, 'Upload successful!')
     return HttpResponseRedirect(reverse('hcc_gui'))
-    
+
+@permission_classes((IsAuthenticated, ))
+def upload_file_form(request):
+    """
+    This function handles GET requests to create a form 
+    for uploading a file containing harvester data that
+    will be handled in upload_file.
+    """
+    data = {'uploadform': UploadFileForm()}
+    return render(request, "hcc/file_upload_form.html", data)
+ 
 
 class HarvesterCreateView(generics.ListCreateAPIView):
     """

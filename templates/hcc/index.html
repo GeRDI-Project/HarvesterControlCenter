@@ -471,67 +471,23 @@
     {% endif %}
 </div>
 
-<!-- Edit Modal -->
-<div id="harvesterModal" class="modal fade" tabindex="-1" role="dialog"></div>     
-<!-- Config Modal -->
-<div id="config-modal" class="modal fade" tabindex="-1" role="dialog"></div>
-<!-- File Upload Modal -->
-<div id="file-upload-modal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Upload file here: 
-                </h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="upload-file-form" class="form-horizontal" action="{% url 'set-init-data' %}" method="POST" enctype=multipart/form-data>
-                <div id="modal-body" class="modal-body">
-                    {% csrf_token %}
-                    {{ uploadform|crispy }}
-                </div>
-                <div id="modal-footer" class="modal-footer">
-                    <button class="btn btn-primary" type="submit" Value="Save">
-                        Upload
-                    </button>    
-                    <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Form Modal -->
+<div id="form-modal" class="modal fade" tabindex="-1" role="dialog"></div>
 <!-- Message Modal -->
 <div id="message-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 id="message-modal-header" class="modal-title">
-                </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="message-modal-header" class="modal-title">Info</h4>
+                <button id ="message-modal-exit" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div id="message-modal-body" class="modal-body"></div>
+            <div id="message-modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
-<!-- Form/Info Modal -->
-<div id="form-modal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Info</h4>
-                <button id="message-modal-close-button" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div id="form-modal-body" class="modal-body">...</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 <!-- Submission Modal -->
 <div id="submission-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
