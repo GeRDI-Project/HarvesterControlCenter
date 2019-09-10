@@ -85,15 +85,15 @@ urlpatterns = [
     path(
         'hcc/saveharvesters',
         views.harvester_data_to_file,
-        name="get-init-data"),
+        name="harvester-to-file"),
     path(
         'hcc/loadharvesters',
         views.upload_file,
-        name="set-init-data"),
+        name="harvester-from-file"),
     path(
         'hcc/saveloadform',
         views.upload_file_form,
-        name="init-data-form"),
+        name="harvester-file-form"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', SCHEMA_VIEW, name='swagger-docs'),
