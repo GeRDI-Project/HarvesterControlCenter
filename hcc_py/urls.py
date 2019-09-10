@@ -82,8 +82,8 @@ urlpatterns = [
         views.get_harvester_progress,
         name='harvester-progress'),
     path(
-        'hcc/getinitdata', 
-        views.harvester_data_to_file, 
+        'hcc/getinitdata',
+        views.harvester_data_to_file,
         name="get-init-data"),
     path(
         'hcc/setinitdata',
@@ -92,7 +92,7 @@ urlpatterns = [
     path(
         'hcc/initdataform',
         views.upload_file_form,
-        name="init-data-form"),  
+        name="init-data-form"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', SCHEMA_VIEW, name='swagger-docs'),

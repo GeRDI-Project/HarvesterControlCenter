@@ -448,7 +448,7 @@ def get_harvester_states(request, format=None):
 @login_required
 def harvester_data_to_file(request):
     """
-    Function that gets data of all harvesters in the database and returns it 
+    Function that gets data of all harvesters in the database and returns it
     through a file.
     """
     data = []
@@ -460,7 +460,7 @@ def harvester_data_to_file(request):
             'url': harvester.url,
             'enabled': harvester.enabled
         })
-        
+
     return JsonResponse(data, safe=False)
 
 
@@ -513,13 +513,13 @@ def upload_file(request):
             )
             messages.warning(request, message)
             return HttpResponseRedirect(reverse('hcc_gui'))
-        
+
         data = harvester_data
         if Harvester.objects.filter(name=harvester_data['name']).exists():
             # Harvester already exists -> update harvester
             harvester = Harvester.objects.get(name=harvester_data['name'])
-            data['notes'] = harvester.notes # Notes should not be updated
-            if (harvester.url == harvester_data['url'] and 
+            data['notes'] = harvester.notes  # Notes should not be updated
+            if (harvester.url == harvester_data['url'] and
                     harvester.enabled == harvester_data['enabled']):
                 continue
             elif not harvester.url == harvester_data['url']:
@@ -552,20 +552,21 @@ def upload_file(request):
             )
             messages.warning(request, message)
             return HttpResponseRedirect(reverse('hcc_gui'))
-    
+
     messages.success(request, 'Upload successful!')
     return HttpResponseRedirect(reverse('hcc_gui'))
+
 
 @permission_classes((IsAuthenticated, ))
 def upload_file_form(request):
     """
-    This function handles GET requests to create a form 
+    This function handles GET requests to create a form
     for uploading a file containing harvester data that
     will be handled in upload_file.
     """
     data = {'uploadform': UploadFileForm()}
     return render(request, "hcc/file_upload_form.html", data)
- 
+
 
 class HarvesterCreateView(generics.ListCreateAPIView):
     """
@@ -767,4 +768,3 @@ class ScheduleHarvesterView(
             request, messages.INFO, harvester.name + ': ' +
             response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))
-        
