@@ -83,15 +83,15 @@ urlpatterns = [
         views.get_harvester_progress,
         name='harvester-progress'),
     path(
-        'hcc/getinitdata',
+        'hcc/saveharvesters',
         views.harvester_data_to_file,
         name="get-init-data"),
     path(
-        'hcc/setinitdata',
+        'hcc/loadharvesters',
         views.upload_file,
         name="set-init-data"),
     path(
-        'hcc/initdataform',
+        'hcc/saveloadform',
         views.upload_file_form,
         name="init-data-form"),
     path('admin/', admin.site.urls),
