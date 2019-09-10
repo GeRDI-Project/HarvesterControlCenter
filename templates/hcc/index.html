@@ -19,7 +19,11 @@
                         </div>
                     </a>
                 </h3>
+                {% if collapse_status.toolbox == 'visible' %}
+                <div class="card-body collapse show row" id="collapseToolbox">
+                {% else %}
                 <div class="card-body collapse row" id="collapseToolbox">
+                {% endif %}
                     <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
                         <a id="btn-edit-{{ harvester.name }" class="harvesteredit"
                         data-form="{% url 'add-harvester' %}" href="#">
@@ -68,7 +72,11 @@
                         </div>
                     </a>
                 </h3>
+                {% if collapse_status.chart == 'visible' %}
+                <div class="card-body collapse show" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
+                {% else %}
                 <div class="card-body collapse" id="collapseChart" title="{% url 'api:all-harvester-status' %}">
+                {% endif %}    
                     <div class="chart-container" style="position: relative;">
                         <canvas id="harvesterChart" width="300" height="120" style="display: block; width: 300px; height: 120px;"></canvas>
                     </div>
@@ -84,23 +92,23 @@
         <div class="card">
             <div class="card-header" id="headingEnabled">
                 <h5 class="mb-0">
-                    <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#collapseOne"
-                        aria-expanded="true" aria-controls="collapseOne">
+                    <button class="btn btn-outline-info" id="btn-collapseHarvestersEnabled" type="button" data-toggle="collapse" data-target="#collapseHarvestersEnabled"
+                        aria-expanded="true" aria-controls="collapseHarvestersEnabled">
                         Enabled Harvesters
                         <span class="badge badge-light">{{ status.num_enabled_harvesters }}</span>
                     </button>
-                    <button id="btn-list-view" class="btn float-right">
+                    <a id="btn-list-view" role="button" href="{% url 'update-session' %}" class="btn toggle-view-button float-right">
                         <i class="fa fa-lg fa-list" title="list view" aria-hidden="true"
                         data-toggle="tooltip" data-placement="top"></i>
-                    </button>
-                    <button id="btn-card-view" class="btn float-right">
+                    </a>
+                    <a id="btn-card-view" role="button" href="{% url 'update-session' %}" class="btn toggle-view-button float-right">
                         <i class="fa fa-lg fa-id-card" title="card view" aria-hidden="true"
                         data-toggle="tooltip" data-placement="top"></i>
-                    </button>
-                    <button id="btn-table-view" class="btn float-right">
+                    </a>
+                    <a id="btn-table-view" role="button" href="{% url 'update-session' %}" class="btn toggle-view-button float-right">
                         <i class="fa fa-lg fa-table" title="table view" aria-hidden="true"
                         data-toggle="tooltip" data-placement="top"></i>
-                    </button>
+                    </a>
                     <div class="btn-group" role="group" aria-label="ControlPanel">
                         <a href="{% url 'start-harvesters' %}" role="button" class="btn btn-primary">start all</a>
                         <a href="{% url 'abort-harvesters' %}" role="button" class="btn btn-dark">abort all</a>
@@ -113,8 +121,11 @@
                     </div>
                 </h5>
             </div>
-
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
+            {% if collapse_status.enabled_harvs == 'collapsed' %}
+            <div id="collapseHarvestersEnabled" class="collapse" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
+            {% else %}
+            <div id="collapseHarvestersEnabled" class="collapse show" aria-labelledby="headingEnabled" data-parent="#harvesterAccordion">
+            {% endif %}    
                 <div id="harvesterList" class="card-body">
                     <div class="container">
                         <div id="div-list-view" class="row"><!--list-view-->
@@ -401,14 +412,18 @@
         <div class="card">
             <div class="card-header" id="headingDisabled">
                 <h5 class="mb-0">
-                    <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
-                        aria-expanded="false" aria-controls="collapseTwo">
+                    <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse" data-target="#collapseHarvestersDisabled"
+                        aria-expanded="false" aria-controls="collapseHarvestersDisabled">
                         Disabled Harvesters
                         <span class="badge badge-light">{{ status.num_disabled_harvesters }}</span>
                     </button>
                 </h5>
             </div>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
+            {% if collapse_status.disabled_harvs == 'visible' %}
+            <div id="collapseHarvestersDisabled" class="collapse show" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
+            {% else %}
+            <div id="collapseHarvestersDisabled" class="collapse" aria-labelledby="headingDisabled" data-parent="#harvesterAccordion">
+            {% endif %}    
                 <div class="card-body">
                     <div class="container">
                         <div class="row">

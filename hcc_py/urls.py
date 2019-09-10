@@ -44,6 +44,7 @@ SCHEMA_VIEW = get_swagger_view(title='Harvester Control Center API',
 urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
+    path('hcc/updatesession', views.update_session, name='update-session'),
     path(
         'hcc/<str:name>/toggle',
         views.toggle_harvester,
