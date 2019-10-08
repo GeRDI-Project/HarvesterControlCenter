@@ -632,11 +632,12 @@ class VersionBased7Strategy(Strategy):
                     response, harvester_json = a_response(
                         harvester.name, cron_url, 'Get')
 
-                    if HCCJC.SCHEDULE in harvester_json:
-                        if len(harvester_json[HCCJC.SCHEDULE]) > 0:
-                            feedback[harvester.name][HCCJC.CRONTAB] = harvester_json[HCCJC.SCHEDULE]
-                        else:
-                            feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
+                    tasks = harvester_json.values()
+                    cronlist = list(tasks)[0]
+                    if not cronlist:
+                        feedback[harvester.name][HCCJC.CRONTAB] = HCCJC.NO_CRONTAB
+                    else:
+                        feedback[harvester.name][HCCJC.CRONTAB] = cronlist
 
             except RequestException as _e:
 
