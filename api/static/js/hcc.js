@@ -34,10 +34,7 @@ $(function () {
         loadChart();
     }
 
-    if ($(window).width() < 768) {
-        resizeFunction();
-    }
-
+    resizeFunction();
     toggleViews();
     initTheme();
 
@@ -795,51 +792,13 @@ function resizeFunction() {
     For small windows the button group in table view should turn into a 
     dropdown menu and return to a button group, when the window is big again.
     (<600px: dropdown, >=600px: button group)
-
-    Also the buttons for hanging the view should toggle between horizontal
-    and vertical.
-    (<450px: vertical, >=450px: horizontal)
     */
 
-    if ($(window).width() < 450) {
-        // -> turn list/card/table view buttons to a vertical button group
-        $('#view-btn-group').removeClass("btn-group");
-        $('#view-btn-group').addClass("btn-group-vertical");
-    } else if ($(window).width() < 600) {
-        // small screen 
-
-        // -> table 'Actions' buttons should be in a dropdown menu
-        if ($('.table-btn-group').hasClass("dropdown-menu")) {
-            // buttons already are in a dropdown menu
-            // -> turn list/card/table view buttons to a horizontal button group
-            $('#view-btn-group').removeClass("btn-group-vertical");
-            $('#view-btn-group').addClass("btn-group");
-            return;
-        } else {
-            $('.table-btn-group').toggleClass("btn-group dropdown-menu");
-            $('.table-btn-group').attr("role", "menu");
-            $('.table-btn-group').attr("aria-labelledby", "table-dropdown-btn");
-            $('.table-dropdown-btn').toggle();
-            $('.table-btn-group a').toggleClass("dropdown-item");
-        }
+    if ($(window).width() < 600) {
+        $('.table-dropdown-btn').show();
+        $('.table-btn-group').hide();
     } else {
-        // large screen 
-
-        // -> table 'Action' buttons should be in a button group
-        if ($('.table-btn-group').hasClass("btn-group")) {
-            // buttons already are in a button group
-            return;
-        } else {
-            $('.table-btn-group').toggleClass("btn-group dropdown-menu");
-            $('.table-btn-group').attr("role", "group");
-            $('.table-btn-group').removeAttr("aria-labelledby");
-            $('.table-btn-group').removeAttr("style");
-            $('.table-dropdown-btn').toggle();
-            $('.table-btn-group a').toggleClass("dropdown-item");
-        }
-
-        // -> turn list/card/table view buttons to a horizontal button group
-        $('#view-btn-group').removeClass("btn-group-vertical");
-        $('#view-btn-group').addClass("btn-group");
+        $('.table-dropdown-btn').hide();
+        $('.table-btn-group').show();
     }
 }
