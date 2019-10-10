@@ -496,15 +496,7 @@ def harvester_data_to_file(request):
     Function that gets data of all harvesters in the database and returns it
     through a file.
     """
-    data = []
-    harvesters = Harvester.objects.all()
-    for harvester in harvesters:
-        data.append({
-            'name': harvester.name,
-            'notes': harvester.notes,
-            'url': harvester.url,
-            'enabled': harvester.enabled
-        })
+    data = list(Harvester.objects.values('name', 'notes', 'url', 'enabled'))
 
     return JsonResponse(data, safe=False)
 
@@ -559,7 +551,7 @@ def upload_file(request):
             messages.warning(request, message)
             return HttpResponseRedirect(reverse('hcc_gui'))
 
-        data = harvester_data
+        data = harvester_data.copy()
         if Harvester.objects.filter(name=harvester_data['name']).exists():
             # Harvester already exists -> update harvester
             harvester = Harvester.objects.get(name=harvester_data['name'])
@@ -568,6 +560,10 @@ def upload_file(request):
                     harvester.enabled == harvester_data['enabled']):
                 continue
             elif not harvester.url == harvester_data['url']:
+                if Harvester.objects.filter(url=harvester_data['url']).exists():
+                    # The url should be unique. Leave the existing harvester data
+                    # and ignore the new one.
+                    continue
                 # Create new Harvester with new url
                 harvester = Harvester(owner=request.user)
                 counter = 1
