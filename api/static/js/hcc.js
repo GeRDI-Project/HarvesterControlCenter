@@ -621,7 +621,7 @@ function checkboxShowIdle() {
         a = trs[i];
         hname = a.id.split("-")[0];
         status = a.getElementsByClassName("tv-status-" + hname)[0];
-        if (status.innerText == "idle") {
+        if (status.innerText.includes("idle")) {
             a.style.display = "";
         } else {
             a.style.display = "none";
@@ -645,7 +645,7 @@ function checkboxHideIdle() {
         a = trs[i];
         hname = a.id.split("-")[0];
         status = a.getElementsByClassName("tv-status-" + hname)[0];
-        if (status.innerText == "idle") {
+        if (status.innerText.includes("idle")) {
             a.style.display = "none";
         } else {
             a.style.display = "";

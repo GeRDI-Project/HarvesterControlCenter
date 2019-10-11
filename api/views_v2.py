@@ -288,6 +288,7 @@ def home(request):
 
     # if user is logged in
     if request.user.is_authenticated:
+        status_history = {}
         forms = {}
         response = None
         harvesters = Harvester.objects.all()
@@ -301,6 +302,11 @@ def home(request):
                 num_enabled_harvesters += 1
                 api = InitHarvester(harvester).get_harvester_api()
                 response = api.harvester_status()
+                response_sh = api.status_history()
+                if response_sh:
+                    status_history[harvester.name] = response_sh.data
+                else:
+                    status_history[harvester.name] = "no data"
                 if response:
                     feedback[harvester.name] = response.data[harvester.name]
 
@@ -372,7 +378,8 @@ def home(request):
                 'forms': forms,
                 'theme': theme,
                 'viewtype': viewtype,
-                'collapse_status': collapse_status
+                'collapse_status': collapse_status,
+                'etls': status_history
             })
 
     return render(request, 'hcc/index.html', {
