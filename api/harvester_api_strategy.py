@@ -799,16 +799,20 @@ class VersionBased7Strategy(Strategy):
     def get_status_history(self, harvester):
         get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
         response = requests.get(get_url, timeout=5)
+        response_data = json.loads(response.text).copy()
         feedback = {}
         feedback[harvester.name] = {}
         if response.status_code == status.HTTP_200_OK:
             history_data = ""
-            for info in json.loads(response.text)["overallInfo"]["stateHistory"]:
+            for info in response_data["overallInfo"]["stateHistory"]:
                 ms = info["timestamp"]
                 time = datetime.datetime.fromtimestamp(ms/1000.0)
                 converted_time = time.strftime("%d-%b-%Y (%H:%M:%S)")
                 history_data += converted_time + ": " + info["value"].lower() + "<br>"
             feedback = history_data
         else:
-            feedback = "unable do get status history of harvester {}".format(harvester.name)
+            if "message" in response_data:
+                feedback = response_data["message"]
+            else:
+                feedback = "unable do get status history of harvester {}".format(harvester.name)
         return Response(feedback, status=response.status_code)
