@@ -284,14 +284,10 @@
                                                     {% endfor %}
                                                 </li>
                                                 <li class="list-group-item">
-                                                    {% for k, val in etls.items %}
-                                                    {% if k == harvester.name %}
                                                     <button class="status-history-button btn btn-outline-primary btn-sm" data-html="true"
-                                                    title="{{ val }}" data-toggle="tooltip" data-placement="right">
+                                                        title="" data-toggle="tooltip" data-placement="right" data-form="{% url 'etls' name=harvester.name %}">
                                                         Status History
                                                     </button>
-                                                    {% endif %}
-                                                    {% endfor %}
                                                 </li>
                                             </ul>
                                         </div>
@@ -393,14 +389,10 @@
                                             </td>
                                             <td class="tv-status-{{harvester.name}}">
                                                 {{val.status}}
-                                                {% for key, value in etls.items %}
-                                                {% if key == harvester.name %}
                                                 <button class="status-history-button btn btn-outline-primary btn-sm" data-html="true"
-                                                title="{{ value }}" data-toggle="tooltip" data-placement="top">
+                                                title="" data-toggle="tooltip" data-placement="top" data-form="{% url 'etls' name=harvester.name %}">
                                                     <i class="fa fa-info" aria-hidden=true></i>
-                                                </button>       
-                                                {% endif %}
-                                                {% endfor %}
+                                                </button>
                                                 <i id="health-exclamation-{{ harvester.name }}" class="fa fa-exclamation-triangle float-right"
                                                 style="color: #ffc107;{% if val.health == 'OK' %}display: none{% endif %};"
                                                 data-toggle="tooltip" data-placement="top" title="{{ val.health }}"

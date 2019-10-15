@@ -337,6 +337,8 @@ $(function () {
 */
 $(window).ready(function () {
 
+    getStatusHistories();
+
     // milisec to hours, min, sec
     var timeConvert = function (milis) {
         var milisec = milis;
@@ -508,7 +510,7 @@ function filterFunction() {
 function toggleViews() {
     /*
     Toggles between list, card and table view when page is loaded
-    or a button is clicked
+    or a button is clicked.
     */
 
     // declare variables
@@ -538,7 +540,7 @@ function toggleViews() {
 function checkboxFunction() {
     /*
     Enables/disables links in table-view if checkboxes are checked/not checked
-    and adds url with the name of the harvesters
+    and adds url with the name of the harvesters.
     */
 
     // declare variables
@@ -592,7 +594,7 @@ function checkboxFunction() {
 
 function checkboxMasterFunction() {
     /*
-    The checkbox checks/unchecks all checkboxes in the table-view
+    The checkbox checks/unchecks all checkboxes in the table-view.
     */
 
     var masterCheckbox, checkboxes, i;
@@ -607,7 +609,7 @@ function checkboxMasterFunction() {
 
 function checkboxShowIdle() {
     /*
-    Radio button 'show idle' in the dropdown filter in table-view
+    Radio button 'show idle' in the dropdown filter in table-view.
     */
 
     // declare variables
@@ -631,7 +633,7 @@ function checkboxShowIdle() {
 
 function checkboxHideIdle() {
     /*
-    Radio button 'hide idle' in the dropdown filter in table-view
+    Radio button 'hide idle' in the dropdown filter in table-view.
     */
 
     // declare variables
@@ -655,7 +657,7 @@ function checkboxHideIdle() {
 
 function checkboxShowAll() {
     /*
-    Radio button 'show all' in the dropdown filter in table-view
+    Radio button 'show all' in the dropdown filter in table-view.
     */
 
     // declare variables
@@ -699,7 +701,7 @@ function removeClass(el, className) {
 
 function initTheme() {
     /*
-    This function is called when the page is loaded to initialize the theme
+    This function is called when the page is loaded to initialize the theme.
     */
 
     if (currentTheme === 'dark') {
@@ -711,7 +713,7 @@ function initTheme() {
 function getCookie(cookieName) {
     /*
     This function returns the value of the cookie
-    via parameter (cookieName)
+    via parameter (cookieName).
     */
     var name, decodedCookie, cookieArray, cookieEntry;
 
@@ -735,7 +737,7 @@ function getCookie(cookieName) {
 function updateSession(sessionVar, value) {
     /*
     This function sends a post request to the server to change
-    the session variable with the given input
+    the session variable with the given input.
     */
     var csrftoken = getCookie('csrftoken');
     sessionData = {
@@ -753,7 +755,7 @@ function updateSession(sessionVar, value) {
 
 function toggleTheme() {
     /*
-    This function toggles between light and dark theme
+    This function toggles between light and dark theme.
     */
     var newTheme;
     if (currentTheme === 'light') {
@@ -771,4 +773,26 @@ function toggleTheme() {
     $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
     $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
+}
+
+function getStatusHistories() {
+    /*
+    This function calls the server and sets the content 
+    of the tooltip for the status history.
+    */
+    $('.status-history-button').each(function(i, obj) {
+        var message;
+        $.ajax({
+            type: 'GET',
+            url: $(this).attr("data-form"),
+            context: this,
+            success: function (response) {
+                $(this).attr("data-original-title", response.message);
+            },
+            error: function () {
+                message = "There has been an internal error. Please contact an administrator.";
+                $(this).attr("data-original-title", message);
+            },
+        });
+    });
 }

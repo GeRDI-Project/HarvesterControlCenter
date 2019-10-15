@@ -300,9 +300,7 @@ class BaseStrategy(Strategy):
             status=status.HTTP_501_NOT_IMPLEMENTED)
     
     def get_status_history(self, harvester):
-        return Response({harvester.name: {
-            HCCJC.HEALTH: 'status history not supported'
-        }},
+        return Response('status history not supported',
             status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
@@ -550,7 +548,8 @@ class VersionBased6Strategy(Strategy):
         return Response(feedback, status=response.status_code)
 
     def get_status_history(self, harvester):
-        pass
+        return Response("status history not supported", 
+            status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class VersionBased7Strategy(Strategy):
@@ -807,7 +806,7 @@ class VersionBased7Strategy(Strategy):
             for info in response_data["overallInfo"]["stateHistory"]:
                 ms = info["timestamp"]
                 time = datetime.datetime.fromtimestamp(ms/1000.0)
-                converted_time = time.strftime("%d-%b-%Y (%H:%M:%S)")
+                converted_time = time.strftime("%d-%b-%Y %H:%M:%S")
                 history_data += converted_time + ": " + info["value"].lower() + "<br>"
             feedback = history_data
         else:
