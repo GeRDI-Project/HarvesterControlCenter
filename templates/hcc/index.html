@@ -24,32 +24,32 @@
                 {% else %}
                 <div class="card-body collapse row" id="collapseToolbox">
                 {% endif %}
-                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
                         <a id="btn-edit-{{ harvester.name }" class="harvesteredit"
                         data-form="{% url 'add-harvester' %}" href="#">
                             <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
                         </a><br>
                         Add Harvester
                     </div>
-                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
                         <a id="btn-save-harvester-data" href="{% url 'harvester-to-file' %}" download="harvesterdata.json">
                             <i class="fa fa-download fa-5x align-middle" aria-hidden="true"></i>
                         </a><br>
                         Save Harvesters
                     </div>
-                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
                         <a id="btn-load-harvester-data" href="{% url 'harvester-file-form' %}">
                             <i class="fa fa-upload fa-5x align-middle" aria-hidden="true"></i>
                         </a><br>
                         Load Harvesters
                     </div>
-                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
                         <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
                             <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
                         </a><br>
                         Harvester Logs
                     </div>
-                    <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: center;">
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
                         <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
                             <i class="fa fa-file-text fa-5x align-middle" aria-hidden="true"></i>
                         </a><br>
