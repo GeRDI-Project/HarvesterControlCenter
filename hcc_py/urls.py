@@ -45,6 +45,7 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
     path('hcc/updatesession', views.update_session, name='update-session'),
+    path('hcc/<str:name>/etls', views.harvester_status_history, name='etls'),
     path(
         'hcc/<str:name>/toggle',
         views.toggle_harvester,
@@ -82,6 +83,18 @@ urlpatterns = [
         'hcc/<str:name>/progress',
         views.get_harvester_progress,
         name='harvester-progress'),
+    path(
+        'hcc/saveharvesters',
+        views.harvester_data_to_file,
+        name="harvester-to-file"),
+    path(
+        'hcc/loadharvesters',
+        views.upload_file,
+        name="harvester-from-file"),
+    path(
+        'hcc/harvesterloadform',
+        views.upload_file_form,
+        name="harvester-file-form"),
     path('admin/', admin.site.urls),
     path('v1/', include('api.urls_v2', namespace='v1')),
     path('docs/', SCHEMA_VIEW, name='swagger-docs'),

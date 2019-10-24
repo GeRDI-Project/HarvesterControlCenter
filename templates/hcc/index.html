@@ -20,33 +20,41 @@
                     </a>
                 </h3>
                 {% if collapse_status.toolbox == 'visible' %}
-                <div class="card-body collapse show" id="collapseToolbox">
+                <div class="card-body collapse show row" id="collapseToolbox">
                 {% else %}
-                <div class="card-body collapse" id="collapseToolbox">
-                {% endif %}    
-                    <table width="100%">
-                    <tr><td>
-                            <a id="btn-edit-{{ harvester.name }" class="harvesteredit" data-form="{% url 'add-harvester' %}" href="#">
-                                <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
-                                    <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
-                                    <i class="fa fa-file-text fa-5x align-middle" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Add Harvester</td>
-                        <td>Harvester Logs</td>
-                        <td>HCC Logs</td>
-                    </tr>
-                    </table>
+                <div class="card-body collapse row" id="collapseToolbox">
+                {% endif %}
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
+                        <a id="btn-edit-{{ harvester.name }" class="harvesteredit"
+                        data-form="{% url 'add-harvester' %}" href="#">
+                            <i class="fa fa-plus-circle fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Add Harvester
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
+                        <a id="btn-save-harvester-data" href="{% url 'harvester-to-file' %}" download="harvesterdata.json">
+                            <i class="fa fa-download fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Save Harvesters
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
+                        <a id="btn-load-harvester-data" href="{% url 'harvester-file-form' %}">
+                            <i class="fa fa-upload fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Load Harvesters
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
+                        <a id="btn-harvester-log" href="#" title="{% url 'harvesters-log' %}">
+                            <i class="fa fa-cloud-download fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        Harvester Logs
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-6" style="text-align: center;">
+                        <a id="btn-hcc-log" href="#" title="{% url 'hcc-log' %}">
+                            <i class="fa fa-file-text fa-5x align-middle" aria-hidden="true"></i>
+                        </a><br>
+                        HCC Logs
+                    </div>
                 </div>
             </div>
         </div>
@@ -285,6 +293,12 @@
                                                     {% endif %}
                                                     {% endfor %}
                                                 </li>
+                                                <li class="list-group-item">
+                                                    <button class="status-history-button btn btn-outline-primary btn-sm" data-html="true"
+                                                        title="" data-toggle="tooltip" data-placement="right" data-form="{% url 'etls' name=harvester.name %}">
+                                                        Status History
+                                                    </button>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -346,7 +360,7 @@
                                                     <i class="fa fa-file-text-o" aria-hidden="true" title="Details" data-toggle="tooltip"></i>
                                                 </a>
                                                 <button id ="table-info-button-{{harvester.name}}" type="button" class="btn btn-sm btn-outline-primary" data-container="body" data-toggle="tooltip" title="{{ val }}" data-placement="left">
-                                                <i class="fa fa-info" aria-hidden="true"></i>
+                                                    <i class="fa fa-info" aria-hidden="true"></i>
                                                 </button>
                                                 {{ harvester.name }}
                                             </td>
@@ -424,6 +438,10 @@
                                             </td>
                                             <td class="tv-status-{{harvester.name}}">
                                                 {{val.status}}
+                                                <button class="status-history-button btn btn-outline-primary btn-sm" data-html="true"
+                                                title="" data-toggle="tooltip" data-placement="top" data-form="{% url 'etls' name=harvester.name %}">
+                                                    <i class="fa fa-info" aria-hidden=true></i>
+                                                </button>
                                                 <i id="health-exclamation-{{ harvester.name }}" class="fa fa-exclamation-triangle float-right"
                                                 style="color: #ffc107;{% if val.health == 'OK' %}display: none{% endif %};"
                                                 data-toggle="tooltip" data-placement="top" title="{{ val.health }}"

@@ -160,3 +160,21 @@ class SchedulerForm(forms.Form):
                 'cronTab',
                 Submit('submit_cron', 'set!', css_class="btn-default btn-sm")))
         return helper
+
+
+class UploadFileForm(forms.Form):
+    """
+    This class represents a form for uploading a file for adding
+    several harvesters to the database at a time
+    """
+    upload_file = forms.FileField(label="File:")
+
+
+class ValidateFileForm(forms.ModelForm):
+    """
+    This class represents a form to handle the data of
+    an uploaded file with harvester data content
+    """
+    class Meta:
+        model = Harvester
+        fields = ['name', 'notes', 'url', 'enabled']

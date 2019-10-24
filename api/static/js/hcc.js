@@ -297,11 +297,20 @@ $(function () {
 
     $('.status-radio').click(function () {
         /*
-        Related to the radio buttons in drodown menu in table-view
+        Related to the radio buttons in dropdown menu in table-view
         */
         if ($('#checkbox-show-all').prop('checked')) checkboxShowAll();
         if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
+    });
+
+    $('#btn-load-harvester-data').click(function(ev) {
+        ev.preventDefault();
+        var url = $(this).attr("href");
+        $("#form-modal").load(url, function () {
+            $(this).modal('show');
+        });
+        return false;
     });
 
     $('#toggle-theme-button').click(function (ev) {
@@ -333,6 +342,8 @@ $(function () {
    Execute when page/window is loaded
 */
 $(window).ready(function () {
+
+    getStatusHistories();
 
     // milisec to hours, min, sec
     var timeConvert = function (milis) {
@@ -434,6 +445,7 @@ $(window).ready(function () {
 /*
    Different functions for filtering, themeing and session handling
 */
+
 $(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
@@ -505,7 +517,7 @@ function filterFunction() {
 function toggleViews() {
     /*
     Toggles between list, card and table view when page is loaded
-    or a button is clicked
+    or a button is clicked.
     */
 
     // declare variables
@@ -550,7 +562,7 @@ function toggleViews() {
 function checkboxFunction() {
     /*
     Enables/disables links in table-view if checkboxes are checked/not checked
-    and adds url with the name of the harvesters
+    and adds url with the name of the harvesters.
     */
 
     // declare variables
@@ -604,7 +616,7 @@ function checkboxFunction() {
 
 function checkboxMasterFunction() {
     /*
-    The checkbox checks/unchecks all checkboxes in the table-view
+    The checkbox checks/unchecks all checkboxes in the table-view.
     */
 
     var masterCheckbox, checkboxes, i;
@@ -619,7 +631,7 @@ function checkboxMasterFunction() {
 
 function checkboxShowIdle() {
     /*
-    Radio button 'show idle' in the dropdown filter in table-view
+    Radio button 'show idle' in the dropdown filter in table-view.
     */
 
     // declare variables
@@ -633,7 +645,7 @@ function checkboxShowIdle() {
         a = trs[i];
         hname = a.id.split("-")[0];
         status = a.getElementsByClassName("tv-status-" + hname)[0];
-        if (status.innerText == "idle") {
+        if (status.innerText.includes("idle")) {
             a.style.display = "";
         } else {
             a.style.display = "none";
@@ -643,7 +655,7 @@ function checkboxShowIdle() {
 
 function checkboxHideIdle() {
     /*
-    Radio button 'hide idle' in the dropdown filter in table-view
+    Radio button 'hide idle' in the dropdown filter in table-view.
     */
 
     // declare variables
@@ -657,7 +669,7 @@ function checkboxHideIdle() {
         a = trs[i];
         hname = a.id.split("-")[0];
         status = a.getElementsByClassName("tv-status-" + hname)[0];
-        if (status.innerText == "idle") {
+        if (status.innerText.includes("idle")) {
             a.style.display = "none";
         } else {
             a.style.display = "";
@@ -667,7 +679,7 @@ function checkboxHideIdle() {
 
 function checkboxShowAll() {
     /*
-    Radio button 'show all' in the dropdown filter in table-view
+    Radio button 'show all' in the dropdown filter in table-view.
     */
 
     // declare variables
@@ -711,7 +723,7 @@ function removeClass(el, className) {
 
 function initTheme() {
     /*
-    This function is called when the page is loaded to initialize the theme
+    This function is called when the page is loaded to initialize the theme.
     */
 
     if (currentTheme === 'dark') {
@@ -723,7 +735,7 @@ function initTheme() {
 function getCookie(cookieName) {
     /*
     This function returns the value of the cookie
-    via parameter (cookieName)
+    via parameter (cookieName).
     */
     var name, decodedCookie, cookieArray, cookieEntry;
 
@@ -747,7 +759,7 @@ function getCookie(cookieName) {
 function updateSession(sessionVar, value) {
     /*
     This function sends a post request to the server to change
-    the session variable with the given input
+    the session variable with the given input.
     */
     var csrftoken = getCookie('csrftoken');
     sessionData = {
@@ -765,7 +777,7 @@ function updateSession(sessionVar, value) {
 
 function toggleTheme() {
     /*
-    This function toggles between light and dark theme
+    This function toggles between light and dark theme.
     */
     var newTheme;
     if (currentTheme === 'light') {
@@ -801,4 +813,26 @@ function resizeFunction() {
         $('.table-dropdown-btn').hide();
         $('.table-btn-group').show();
     }
+}
+
+function getStatusHistories() {
+    /*
+    This function calls the server and sets the content 
+    of the tooltip for the status history.
+    */
+    $('.status-history-button').each(function(i, obj) {
+        var message;
+        $.ajax({
+            type: 'GET',
+            url: $(this).attr("data-form"),
+            context: this,
+            success: function (response) {
+                $(this).attr("data-original-title", response.message);
+            },
+            error: function () {
+                message = "There has been an internal error. Please contact an administrator.";
+                $(this).attr("data-original-title", message);
+            },
+        });
+    });
 }

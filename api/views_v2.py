@@ -3,6 +3,8 @@ This is the views module which encapsulates the backend logic
 which will be riggered via the corresponding path (url).
 """
 import logging
+import json
+import collections
 
 from django.conf import settings
 from django.contrib import messages
@@ -25,7 +27,7 @@ from rest_framework.response import Response
 
 from api.constants import HCCJSONConstants as HCCJC
 from api.forms import (HarvesterForm, SchedulerForm, create_config_fields,
-                       create_config_form)
+                       create_config_form, UploadFileForm, ValidateFileForm)
 from api.harvester_api import InitHarvester
 from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
@@ -218,6 +220,19 @@ def get_harvester_progress(request, name):
 
 
 @login_required
+def harvester_status_history(request, name):
+    """
+    Returns the status history of a harvester.
+    """
+    feedback = {}
+    harvester = get_object_or_404(Harvester, name=name)
+    api = InitHarvester(harvester).get_harvester_api()
+    response = api.status_history()
+    feedback["message"] = response.data
+    return JsonResponse(feedback)
+
+
+@login_required
 def start_all_harvesters(request):
     """
     This function starts all harvesters.
@@ -288,6 +303,7 @@ def home(request):
 
     # if user is logged in
     if request.user.is_authenticated:
+        status_history = {}
         forms = {}
         response = None
         harvesters = Harvester.objects.all()
@@ -383,7 +399,7 @@ def home(request):
 @login_required
 def update_session(request):
     """
-    Updates session variables via POST request
+    Updates session variables via POST request.
     """
     if not request.is_ajax() or not request.method == 'POST':
         return JsonResponse({
@@ -486,6 +502,125 @@ def get_harvester_states(request, format=None):
         response = api.harvester_status()
         feedback[harvester.name] = response.data[harvester.name]
     return Response(feedback, status=status.HTTP_200_OK)
+
+
+@login_required
+def harvester_data_to_file(request):
+    """
+    Function that gets data of all harvesters in the database and returns it
+    through a file.
+    """
+    data = list(Harvester.objects.values('name', 'notes', 'url', 'enabled'))
+
+    return JsonResponse(data, safe=False)
+
+
+@permission_classes((IsAuthenticated, ))
+def upload_file(request):
+    """
+    This function handles POST requests to upload a file
+    containing harvester data and add it to the database
+    """
+    data = {}
+    f = request.FILES['upload_file']
+    # Check if file type is correct and get the content
+    if f.content_type == 'application/json':
+        try:
+            content = json.load(f)
+        except json.JSONDecodeError:
+            message = (
+                'Upload failed. '
+                'File content was either wrong formatted or empty. '
+                'Must be a JSON array of objects with harvester data.'
+            )
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
+    else:
+        message = (
+            'Upload failed. '
+            'File type could not been handled. '
+            'Must be a JSON file!'
+        )
+        messages.warning(request, message)
+        return HttpResponseRedirect(reverse('hcc_gui'))
+
+    required_keys = ('name', 'notes', 'url', 'enabled')
+    for harvester_data in content:
+        # 'content' should be a list of dictionaries
+        if not isinstance(harvester_data, collections.Mapping):
+            message = (
+                'Validation failed. '
+                'File content could not been handled.'
+                'Should be a list of dictionaries!'
+            )
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
+
+        # The json file should contain the required harvester data
+        if not all(key in harvester_data for key in required_keys):
+            message = (
+                'Validation failed. '
+                'Key missmatch! Required: name, notes, url, enabled'
+            )
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
+
+        data = harvester_data.copy()
+        if Harvester.objects.filter(name=harvester_data['name']).exists():
+            # Harvester already exists -> update harvester
+            harvester = Harvester.objects.get(name=harvester_data['name'])
+            data['notes'] = harvester.notes  # Notes should not be updated
+            if (harvester.url == harvester_data['url'] and
+                    harvester.enabled == harvester_data['enabled']):
+                continue
+            elif not harvester.url == harvester_data['url']:
+                if Harvester.objects.filter(url=harvester_data['url']).exists():
+                    # The url should be unique. Leave the existing harvester data
+                    # and ignore the new one.
+                    continue
+                # Create new Harvester with new url
+                harvester = Harvester(owner=request.user)
+                counter = 1
+                while True:
+                    # Loop until the harvester name is not already used
+                    postfix = '_{}'.format(counter)
+                    temp_name = harvester_data['name'] + postfix
+                    if not Harvester.objects.filter(name=temp_name).exists():
+                        data['name'] = temp_name
+                        break
+                    counter += 1
+        elif Harvester.objects.filter(url=harvester_data['url']).exists():
+            # The url should be unique. Leave the existing harvester data
+            # and ignore the new one
+            continue
+        else:
+            # Create a new harvester
+            harvester = Harvester(owner=request.user)
+
+        form = ValidateFileForm(data, instance=harvester)
+        if form.is_valid():
+            form.save()
+        else:
+            message = (
+                'Validation failed. '
+                'Content data could not been saved.'
+            )
+            messages.warning(request, message)
+            return HttpResponseRedirect(reverse('hcc_gui'))
+
+    messages.success(request, 'Upload successful!')
+    return HttpResponseRedirect(reverse('hcc_gui'))
+
+
+@permission_classes((IsAuthenticated, ))
+def upload_file_form(request):
+    """
+    This function handles GET requests to create a form
+    for uploading a file containing harvester data that
+    will be handled in upload_file.
+    """
+    data = {'uploadform': UploadFileForm()}
+    return render(request, "hcc/file_upload_form.html", data)
 
 
 class HarvesterCreateView(generics.ListCreateAPIView):
