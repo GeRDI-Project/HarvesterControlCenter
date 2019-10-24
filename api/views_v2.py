@@ -218,6 +218,19 @@ def get_harvester_progress(request, name):
 
 
 @login_required
+def harvester_status_history(request, name):
+    """
+    Returns the status history of a harvester.
+    """
+    feedback = {}
+    harvester = get_object_or_404(Harvester, name=name)
+    api = InitHarvester(harvester).get_harvester_api()
+    response = api.status_history()
+    feedback["message"] = response.data
+    return JsonResponse(feedback)
+
+
+@login_required
 def start_all_harvesters(request):
     """
     This function starts all harvesters.
@@ -288,6 +301,7 @@ def home(request):
 
     # if user is logged in
     if request.user.is_authenticated:
+        status_history = {}
         forms = {}
         response = None
         harvesters = Harvester.objects.all()
@@ -383,7 +397,7 @@ def home(request):
 @login_required
 def update_session(request):
     """
-    Updates session variables via POST request
+    Updates session variables via POST request.
     """
     if not request.is_ajax() or not request.method == 'POST':
         return JsonResponse({

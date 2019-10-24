@@ -124,6 +124,7 @@ class HarvesterApiConstantsV7:
     G_BOOLEAN_OUTDATED = "/outdated"
     G_HARVEST_CONFIG = "/config"
     P_HARVEST_CONFIG = "/config/_set"
+    STATE_HISTORY = "/etls"
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""

@@ -72,6 +72,10 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def set_harvester_config(self, harvester, changes):
         """abstract method for setting harvester configuration"""
+    
+    @abc.abstractmethod
+    def get_status_history(self, harvester):
+        """abstract method for getting the status history"""
 
 
 class HarvesterApiStrategy:
@@ -140,6 +144,10 @@ class HarvesterApiStrategy:
     def save_harvester_config_data(self, changes):
         """set configuration data"""
         return self._strategy.set_harvester_config(self.harvester, changes)
+
+    def status_history(self):
+        """get the status history of a harvester"""
+        return self._strategy.get_status_history(self.harvester)
 
 
 def a_response(harvester_name, url, method):
@@ -289,6 +297,10 @@ class BaseStrategy(Strategy):
         return Response({harvester.name: {
             HCCJC.HEALTH: 'config not supported'
         }},
+            status=status.HTTP_501_NOT_IMPLEMENTED)
+    
+    def get_status_history(self, harvester):
+        return Response('status history not supported',
             status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
@@ -535,6 +547,10 @@ class VersionBased6Strategy(Strategy):
                 harvester.name)
         return Response(feedback, status=response.status_code)
 
+    def get_status_history(self, harvester):
+        return Response("status history not supported", 
+            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
 
 class VersionBased7Strategy(Strategy):
     """
@@ -778,4 +794,25 @@ class VersionBased7Strategy(Strategy):
         feedback = {}
         feedback[harvester.name] = {}
         feedback[harvester.name][HCCJC.HEALTH] = json.loads(response.text)
+        return Response(feedback, status=response.status_code)
+
+    def get_status_history(self, harvester):
+        get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
+        response = requests.get(get_url, timeout=5)
+        response_data = json.loads(response.text).copy()
+        feedback = {}
+        feedback[harvester.name] = {}
+        if response.status_code == status.HTTP_200_OK:
+            history_data = ""
+            for info in response_data["overallInfo"]["stateHistory"]:
+                ms = info["timestamp"]
+                time = datetime.datetime.fromtimestamp(ms/1000.0)
+                converted_time = time.strftime("%d-%b-%Y %H:%M:%S")
+                history_data += converted_time + ": " + info["value"].lower() + "<br>"
+            feedback = history_data
+        else:
+            if "message" in response_data:
+                feedback = response_data["message"]
+            else:
+                feedback = "unable do get status history of harvester {}".format(harvester.name)
         return Response(feedback, status=response.status_code)
