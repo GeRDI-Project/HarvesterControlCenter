@@ -291,6 +291,12 @@
                                                     {% endif %}
                                                     {% endfor %}
                                                 </li>
+                                                <li class="list-group-item">
+                                                    <button class="status-history-button btn btn-outline-primary btn-sm" data-html="true"
+                                                        title="" data-toggle="tooltip" data-placement="right" data-form="{% url 'etls' name=harvester.name %}">
+                                                        Status History
+                                                    </button>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -350,7 +356,7 @@
                                                     <i class="fa fa-file-text-o" aria-hidden="true" title="Details" data-toggle="tooltip"></i>
                                                 </a>
                                                 <button id ="table-info-button-{{harvester.name}}" type="button" class="btn btn-sm btn-outline-primary" data-container="body" data-toggle="popover" title="Info" data-content="{{ val }}">
-                                                <i class="fa fa-info" aria-hidden="true"></i> 
+                                                    <i class="fa fa-info" aria-hidden="true"></i> 
                                                 </button>
                                                 {{ harvester.name }}
                                             </td>
@@ -391,6 +397,10 @@
                                             </td>
                                             <td class="tv-status-{{harvester.name}}">
                                                 {{val.status}}
+                                                <button class="status-history-button btn btn-outline-primary btn-sm" data-html="true"
+                                                title="" data-toggle="tooltip" data-placement="top" data-form="{% url 'etls' name=harvester.name %}">
+                                                    <i class="fa fa-info" aria-hidden=true></i>
+                                                </button>
                                                 <i id="health-exclamation-{{ harvester.name }}" class="fa fa-exclamation-triangle float-right"
                                                 style="color: #ffc107;{% if val.health == 'OK' %}display: none{% endif %};"
                                                 data-toggle="tooltip" data-placement="top" title="{{ val.health }}"

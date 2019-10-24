@@ -45,6 +45,7 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('hcc/', views.home, name='hcc_gui'),
     path('hcc/updatesession', views.update_session, name='update-session'),
+    path('hcc/<str:name>/etls', views.harvester_status_history, name='etls'),
     path(
         'hcc/<str:name>/toggle',
         views.toggle_harvester,
