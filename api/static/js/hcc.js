@@ -300,11 +300,20 @@ $(function () {
 
     $('.status-radio').click(function () {
         /*
-        Related to the radio buttons in drodown menu in table-view
+        Related to the radio buttons in dropdown menu in table-view
         */
         if ($('#checkbox-show-all').prop('checked')) checkboxShowAll();
         if ($('#checkbox-show-idle').prop('checked')) checkboxShowIdle();
         if ($('#checkbox-hide-idle').prop('checked')) checkboxHideIdle();
+    });
+
+    $('#btn-load-harvester-data').click(function(ev) {
+        ev.preventDefault();
+        var url = $(this).attr("href");
+        $("#form-modal").load(url, function () {
+            $(this).modal('show');
+        });
+        return false;
     });
 
     $('#toggle-theme-button').click(function (ev) {
@@ -439,6 +448,7 @@ $(window).ready(function () {
 /*
    Different functions for filtering, themeing and session handling
 */
+
 $(window).scroll(function (e) {
     // add/remove class to navbar when scrolling to hide/show
     var scroll = $(window).scrollTop();
