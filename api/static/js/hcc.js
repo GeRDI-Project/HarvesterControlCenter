@@ -34,6 +34,7 @@ $(function () {
         loadChart();
     }
 
+    resizeFunction();
     toggleViews();
     initTheme();
 
@@ -234,9 +235,7 @@ $(function () {
         load_into_modal(this);
     });
 
-    $('.toggle-view-button').click(function (ev) {
-        ev.preventDefault();
-
+    $('.toggle-view-button').click(function () {
         // id is btn-(viewtype)-view
         var viewtype = $(this).attr('id').split('-')[1];
 
@@ -250,8 +249,6 @@ $(function () {
         // actually change the viewtype and check for filter
         toggleViews();
         filterFunction();
-
-        return false;
     });
 
     $(".harvesteredit").click(function (ev) { // for each edit harvester url
@@ -542,9 +539,24 @@ function toggleViews() {
     tableDiv.style.display = tableView ? "" : "none";
 
     // only show buttons for inactive views
+    if (listView) {
+        addClass(listBtn, "disabled");
+        removeClass(cardBtn, "disabled");
+        removeClass(tableBtn, "disabled");
+    } else if (cardView) {
+        removeClass(listBtn, "disabled");
+        addClass(cardBtn, "disabled");
+        removeClass(tableBtn, "disabled");
+    } else {
+        removeClass(listBtn, "disabled");
+        removeClass(cardBtn, "disabled");
+        addClass(tableBtn, "disabled");
+    }
+    /*
     listBtn.style.display = listView ? "none" : "";
     cardBtn.style.display = cardView ? "none" : "";
     tableBtn.style.display = tableView ? "none" : "";
+    */
 }
 
 function checkboxFunction() {
@@ -783,6 +795,24 @@ function toggleTheme() {
     $('.navbar').toggleClass("light-theme-bg dark-theme-bg");
     $('.footer').toggleClass("footer-light footer-dark");
     $('input').toggleClass("dark-input-fields");
+}
+
+function resizeFunction() {
+    /*
+    This function is called, when the window is resized. 
+    
+    For small windows the button group in table view should turn into a 
+    dropdown menu and return to a button group, when the window is big again.
+    (<600px: dropdown, >=600px: button group)
+    */
+
+    if ($(window).width() < 600) {
+        $('.table-dropdown-btn').show();
+        $('.table-btn-group').hide();
+    } else {
+        $('.table-dropdown-btn').hide();
+        $('.table-btn-group').show();
+    }
 }
 
 function getStatusHistories() {
