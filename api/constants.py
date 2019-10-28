@@ -1,6 +1,9 @@
+"""
+This Module holds constant classes
+"""
 # import base64
 
-__author__ = "Jan Frömberg"
+__author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
@@ -39,26 +42,26 @@ class HCCJSONConstants:
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
 
-    OK      = "OK"
-    N_A     = "N/A"
+    OK = "OK"
+    N_A = "N/A"
     MESSAGE = "message"
 
-    INIT        = "initialization"
-    HARV        = "harvesting"
-    IDLE        = "idle"
-    IDLE_OLD    = "ideling"
+    INIT = "initialization"
+    HARV = "harvesting"
+    IDLE = "idle"
+    IDLE_OLD = "ideling"
     HARVESTER_STATES = [INIT, HARV, IDLE, IDLE_OLD]
 
     WARNING = "warning"
     SUCCESS = "success"
     PRIMARY = "primary"
-    INFO    = "info"
+    INFO = "info"
 
 
 class HarvesterApiConstants:
     """
 
-     This Class holds a list of Harvester Library API constants 
+     This Class holds a list of Harvester Library API constants
      which will be updated accordingly to the Harvester-BaseLibrary.
 
     """
@@ -68,7 +71,7 @@ class HarvesterApiConstants:
 class HarvesterApiConstantsV6:
     """
 
-     This Class holds a list of Harvester Library API constants 
+     This Class holds a list of Harvester Library API constants
      which will be updated accordingly to the Harvester-BaseLibrary.
 
     """
@@ -90,20 +93,22 @@ class HarvesterApiConstantsV6:
     G_DATA_PROVIDER = "/status/data-provider"
     G_HARVESTED_DOCS = "/status/harvested-documents"
     G_BOOLEAN_OUTDATED_DOCS = "/outdated"
+    G_HARVEST_CONFIG = "/config"
+    P_HARVEST_CONFIG = "/config/_set"
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""
-    #CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
+    # CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
 
 
 class HarvesterApiConstantsV7:
     """
 
-     This Class holds a list of Harvester API constants 
+     This Class holds a list of Harvester API constants
      which will be updated accordingly to the Harvester-BaseLibrary.
-     Current version is 7.x.x See: 
+     Current version is 7.x.x See:
      https://wiki.gerdi-project.de/display/GeRDI/Harvester+Library+7.x.x
-     
+
     """
     PG_HARVEST = "/"
     P_HARVEST_ABORT = "/abort"
@@ -111,13 +116,16 @@ class HarvesterApiConstantsV7:
     G_HARVEST_LOG = "/log?date="
     HARVESTER_LOG_FORMAT = "%Y-%m-%d"
     G_HARVEST_ALLLOG = "/log"
-    P_HARVEST_CRON = "/schedule/_add" #E.g. {"cronTab" : "0 0 * * *"}
+    P_HARVEST_CRON = "/schedule/_add"  # E.g. {"cronTab" : "0 0 * * *"}
     G_HARVEST_CRON = "/schedule"
-    D_HARVEST_CRON = "/schedule/_delete" #E.g. {"cronTab" : "0 0 * * *"}
+    D_HARVEST_CRON = "/schedule/_delete"  # E.g. {"cronTab" : "0 0 * * *"}
     DALL_HARVEST_CRON = "/schedule/_deleteAll"
     G_HEALTH = "/health"
     G_BOOLEAN_OUTDATED = "/outdated"
+    G_HARVEST_CONFIG = "/config"
+    P_HARVEST_CONFIG = "/config/_set"
+    STATE_HISTORY = "/etls"
 
     HARVESTER_USER = ""
     HARVESTER_PASS = ""
-    #CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)
+    # CREDENTIALS = base64.b64encode(HARVESTER_USER + ':' + HARVESTER_PASS)

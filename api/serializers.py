@@ -1,6 +1,10 @@
-from rest_framework import serializers
-from .models import Harvester
+"""
+This module does the serialization to (sqlite) DB operations.
+"""
 from django.contrib.auth.models import User
+from rest_framework import serializers
+
+from .models import Harvester
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -18,8 +22,8 @@ class HarvesterSerializer(serializers.ModelSerializer):
     class Meta:
         """Map this serializer to a model and their fields."""
         model = Harvester
-        fields = ('id', 'name', 'owner', 'metadataPrefix', 'notes',
-                  'enabled', 'url', 'date_created', 'date_modified')
+        fields = ('id', 'name', 'owner', 'metadataPrefix', 'notes', 'enabled',
+                  'url', 'date_created', 'date_modified')
         read_only_fields = ('date_created', 'date_modified')
 
 

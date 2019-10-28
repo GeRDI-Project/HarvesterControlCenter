@@ -11,14 +11,14 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-from django.contrib.messages import constants as messages
+
 from django.contrib.messages import constants as message_constants
 
 __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "3.4.9"
+__version__ = "3.14.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
@@ -30,15 +30,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj')
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    '1efkn42-jh%e=r7%+owr*7s1hl06^tqalaf++p8sunex^(x^lj')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # There is a BUG?! If it will be settet via ENV Var, this is parsed as a string
 DEBUG = os.environ.get('DEBUG', False) == 'True'
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 # A list/array of IPs and FQDNs
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.environ.get(
+    'ALLOWED_HOSTS',
+    '127.0.0.1,localhost').split(',')
 CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 # Logging configuration
@@ -70,19 +74,19 @@ LOGGING = {
         },
         'filedebug': {
             'class': 'logging.handlers.RotatingFileHandler',
-            #'filters': ['require_debug_true'],
+            # 'filters': ['require_debug_true'],
             'filename': './log/debug.log',
-            'maxBytes': 1024*1024*2, #2MB
+            'maxBytes': 1024 * 1024 * 2,  # 2MB
             'backupCount': 3,
-            'formatter': 'verbose',
+            'formatter': 'simple',
         },
         'fileinfo': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': './log/info.log',
-            'maxBytes': 1024*1024*1, #1MB
+            'maxBytes': 1024 * 1024 * 1,  # 1MB
             'backupCount': 3,
-            'formatter': 'simple',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
@@ -145,7 +149,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -165,11 +169,11 @@ MIDDLEWARE = [
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
 MESSAGE_TAGS = {
-    messages.DEBUG: 'alert-dark',
-    messages.INFO: 'alert-info',
-    messages.SUCCESS: 'alert-success',
-    messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger',
+    message_constants.DEBUG: 'alert-dark',
+    message_constants.INFO: 'alert-info',
+    message_constants.SUCCESS: 'alert-success',
+    message_constants.WARNING: 'alert-warning',
+    message_constants.ERROR: 'alert-danger',
 }
 
 MESSAGE_LEVEL = message_constants.INFO
@@ -201,7 +205,8 @@ WSGI_APPLICATION = 'hcc_py.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # this setting (adding a subpath for db) maybe causes a db creation failure on systems which uses manage.py runserver/test
+        # this setting (adding a subpath for db) maybe causes a db creation failure
+        # on systems which uses manage.py runserver/test
         'NAME': os.path.join(BASE_DIR, 'db/', 'db.sqlite3'),
     }
 }
