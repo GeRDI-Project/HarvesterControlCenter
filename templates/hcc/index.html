@@ -244,7 +244,7 @@
                                                     <a id="{{ harvester.name }}-name" class="card-title" href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a>
                                                 </li>
                                                 <li class="list-group-item">Harvester API:
-                                                    <a id='{{ harvester.name }}-url' href="{{ harvester.url }}">{{ harvester.name }}</a>
+                                                    <a id='btn-url-{{ harvester.name }}' title="{{ harvester.url }}">{{ harvester.name }}</a>
                                                 </li>
                                                 <li class="list-group-item">
                                                     <p>
