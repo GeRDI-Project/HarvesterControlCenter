@@ -354,27 +354,6 @@ $(window).ready(function () {
         return rhours + "h " + rminutes + "min " + rseconds + "sec";
     };
 
-    // this works only for one harvester at a time and w/o page refresh
-    // had to be implemented
-    function setTime(_harvester) {
-
-        var secs = pad(seconds % 60);
-        var mins = pad(parseInt(seconds / 60));
-        var hrs = pad( parseInt(seconds / 60 / 60) );
-        var time_string = 'elapsed time: ' + hrs + 'h ' + mins + 'm ' + secs + 's';
-        $( '#status-label-' + _harvester).html( time_string );
-        seconds++;
-    }
-
-    function pad(val) {
-        var valString = val + "";
-        if (valString.length < 2) {
-            return "0" + valString;
-        } else {
-            return valString;
-        }
-    }
-
     var lbl_status = document.querySelectorAll('*[id^="lbl-harvester-status-"]');
     var lblarray = Array.from(lbl_status);
     if (lblarray.length > 0) {
@@ -383,7 +362,6 @@ $(window).ready(function () {
             var obj = lblarray[key];
             var objid = obj.id;
             var me = objid.split('-')[3];
-            var seconds = 0;
 
             if (obj.innerText == 'harvesting' || obj.innerText == 'queued') {
 
@@ -392,8 +370,6 @@ $(window).ready(function () {
                 is.removeClass("progress-bar-grey");
                 var remember = is.attr("title");
                 var progressid = setInterval( getProgress, 1982, remember, me );
-                var timerid = setInterval( setTime, 1000, me);
-
             }
         }
     }
@@ -407,7 +383,7 @@ $(window).ready(function () {
         var width = parseInt(bar[0].innerText.replace('%', ''));
         var state = statuslabel[0].innerText;
         var perc = "%";
-        var remain;
+        var remain, elapsed, activated;
         var time = 0;
         var time_string = "";
 
@@ -430,6 +406,8 @@ $(window).ready(function () {
 
                     width = data[key].progress_cur;
                     remain = data[key].remainingHarvestTime;
+                    elapsed = data[key].lastHarvestDate;
+                    activated = data[key].lastActivated;
                     max = data[key].max_docs;
                     cache = data[key].progress;
                     state = data[key].state;
@@ -446,6 +424,18 @@ $(window).ready(function () {
                     if (typeof remain !== "undefined") {
                         time = timeConvert(remain);
                         time_string = 'remaining time: ' + time;
+                        timelabel.html( time_string );
+                    } else if (typeof elapsed !== "undefined") {
+                        var start = new Date(elapsed);
+                        var now = new Date();
+                        time = timeConvert(now - start);
+                        time_string = 'current runtime: ' + time;
+                        timelabel.html( time_string );
+                    } else if (typeof activated !== "undefined") {
+                        var start = new Date(activated);
+                        var now = new Date();
+                        time = timeConvert(now - start);
+                        time_string = 'waiting for harvest: ' + time;
                         timelabel.html( time_string );
                     }
                     bar.html(width + perc);
@@ -465,8 +455,7 @@ $(window).ready(function () {
             timelabel.html( "" );
             statuslabel.html("finished");
             clearInterval(progressid);
-            clearInterval(timerid);
-
+            
         }
     }
 

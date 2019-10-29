@@ -727,6 +727,22 @@ class VersionBased7Strategy(Strategy):
                 feedback[harvester.name][
                     HCCJC.REMAIN_HARVEST_TIME] = harvester_json[
                         HCCJC.REMAIN_HARVEST_TIME]
+            else:
+                # Get time of the beginning of the harvest, if remaining
+                # time is unknown.
+                # Call etls instead of harvester_json["lastHarvestDate"],
+                # because it is updated faster.
+                get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
+                etls = requests.get(get_url, timeout=5)
+                if etls.status_code == status.HTTP_200_OK:
+                    etls_data = json.loads(etls.text).copy()
+                    last = etls_data["overallInfo"]["stateHistory"][-1]
+                    if last["value"] == "HARVESTING":
+                        feedback[harvester.name][
+                            HCCJC.LAST_HARVEST_DATE] = last["timestamp"]
+                    elif last["value"] == "QUEUED":
+                        feedback[harvester.name][
+                            "lastActivated"] = last["timestamp"]
 
             if max_documents:
                 if int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) > 0:

@@ -196,7 +196,7 @@
                                                 </div>
                                                 {% for k, val in status.items %}
                                                 {% if k == harvester.name %}
-                                                {% if val.status == 'harvesting' %}
+                                                {% if val.status == 'harvesting' or val.status == 'submitting' or val.status == 'queued' %}
                                                 <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
                                                     role="button" class="btn btn-primary btn-sm">
                                                     <i class="fa fa-ban" aria-hidden="true"></i>
@@ -206,12 +206,6 @@
                                                 <a id="" title="{% url 'api:start-harvest' name=harvester.name %}" href="{% url 'start-harvester' name=harvester.name %}"
                                                     role="button" class="btn btn-primary btn-sm">
                                                     <i class="fa fa-play-circle" aria-hidden="true"></i>
-                                                </a>
-                                                {% endif %}
-                                                {% if val.status == 'submitting' %}
-                                                <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
-                                                    role="button" class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-ban" aria-hidden="true"></i>
                                                 </a>
                                                 {% endif %}
                                                 {% if val.nextHarvestDate or val.cron and val.cron != 'no crontab defined yet' and val.cron != 'cron not supported. basic mode.'%}
