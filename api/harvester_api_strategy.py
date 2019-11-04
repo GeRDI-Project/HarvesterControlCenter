@@ -735,7 +735,7 @@ class VersionBased7Strategy(Strategy):
                 get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
                 etls = requests.get(get_url, timeout=5)
                 if etls.status_code == status.HTTP_200_OK:
-                    etls_data = json.loads(etls.text).copy()
+                    etls_data = json.loads(etls.text)
                     last = etls_data["overallInfo"]["stateHistory"][-1]
                     if last["value"] == "HARVESTING":
                         feedback[harvester.name][

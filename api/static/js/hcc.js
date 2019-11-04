@@ -351,7 +351,17 @@ $(window).ready(function () {
         var rseconds = Math.floor((milisec / 1000) % 60);
         var rminutes = Math.floor((milisec / (1000 * 60)) % 60);
         var rhours = Math.round((milisec / (1000 * 60 * 60)) % 24);
-        return rhours + "h " + rminutes + "min " + rseconds + "sec";
+        var rdays = Math.round(milisec / (1000 * 60 * 60 * 24));
+        
+        if (rdays == 0 && rhours == 0 && rminutes == 0) {
+            return rseconds + "sec";
+        } else if (rdays == 0 && rhours == 0) {
+            return rminutes + "min " + rseconds + "sec";
+        } else if (rdays == 0) {
+            return rhours + "h " + rminutes + "min " + rseconds + "sec";
+        } else {
+            return rdays + "d" + rhours + "h " + rminutes + "min " + rseconds + "sec";
+        }
     };
 
     var lbl_status = document.querySelectorAll('*[id^="lbl-harvester-status-"]');
@@ -440,7 +450,9 @@ $(window).ready(function () {
                     }
                     bar.html(width + perc);
                 }
-
+            });
+            request.fail( function(data) {
+                timelabel.html("waiting for the server to respond...");
             });
 
         } else {
