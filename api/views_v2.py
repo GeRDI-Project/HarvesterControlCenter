@@ -303,7 +303,6 @@ def home(request):
 
     # if user is logged in
     if request.user.is_authenticated:
-        status_history = {}
         forms = {}
         response = None
         harvesters = Harvester.objects.all()

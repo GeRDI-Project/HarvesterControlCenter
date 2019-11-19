@@ -396,6 +396,7 @@ $(window).ready(function () {
         var remain, elapsed, activated;
         var time = 0;
         var time_string = "";
+        var start, now;
 
         if (state == 'harvesting' || state == 'queued' || typeof state == "undefined") {
 
@@ -436,14 +437,14 @@ $(window).ready(function () {
                         time_string = 'remaining time: ' + time;
                         timelabel.html( time_string );
                     } else if (typeof elapsed !== "undefined") {
-                        var start = new Date(elapsed);
-                        var now = new Date();
+                        start = new Date(elapsed);
+                        now = new Date();
                         time = timeConvert(now - start);
                         time_string = 'current runtime: ' + time;
                         timelabel.html( time_string );
                     } else if (typeof activated !== "undefined") {
-                        var start = new Date(activated);
-                        var now = new Date();
+                        start = new Date(activated);
+                        now = new Date();
                         time = timeConvert(now - start);
                         time_string = 'waiting for harvest: ' + time;
                         timelabel.html( time_string );
