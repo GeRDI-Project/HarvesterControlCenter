@@ -72,7 +72,7 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def set_harvester_config(self, harvester, changes):
         """abstract method for setting harvester configuration"""
-    
+
     @abc.abstractmethod
     def get_status_history(self, harvester):
         """abstract method for getting the status history"""
@@ -298,10 +298,10 @@ class BaseStrategy(Strategy):
             HCCJC.HEALTH: 'config not supported'
         }},
             status=status.HTTP_501_NOT_IMPLEMENTED)
-    
+
     def get_status_history(self, harvester):
         return Response('status history not supported',
-            status=status.HTTP_501_NOT_IMPLEMENTED)
+                        status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class VersionBased6Strategy(Strategy):
@@ -548,8 +548,8 @@ class VersionBased6Strategy(Strategy):
         return Response(feedback, status=response.status_code)
 
     def get_status_history(self, harvester):
-        return Response("status history not supported", 
-            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response("status history not supported",
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class VersionBased7Strategy(Strategy):
@@ -727,6 +727,22 @@ class VersionBased7Strategy(Strategy):
                 feedback[harvester.name][
                     HCCJC.REMAIN_HARVEST_TIME] = harvester_json[
                         HCCJC.REMAIN_HARVEST_TIME]
+            else:
+                # Get time of the beginning of the harvest, if remaining
+                # time is unknown.
+                # Call etls instead of harvester_json["lastHarvestDate"],
+                # because it is updated faster.
+                get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
+                etls = requests.get(get_url, timeout=5)
+                if etls.status_code == status.HTTP_200_OK:
+                    etls_data = json.loads(etls.text)
+                    last = etls_data["overallInfo"]["stateHistory"][-1]
+                    if last["value"] == "HARVESTING":
+                        feedback[harvester.name][
+                            HCCJC.LAST_HARVEST_DATE] = last["timestamp"]
+                    elif last["value"] == "QUEUED":
+                        feedback[harvester.name][
+                            "lastActivated"] = last["timestamp"]
 
             if max_documents:
                 if int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) > 0:
