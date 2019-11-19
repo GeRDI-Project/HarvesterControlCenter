@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/*jshint esversion: 6 */
+
 // currentTheme, startView and sessionUrl are set in bottom of base.html
 
 // set global variables for the current viewtype
@@ -796,7 +798,8 @@ function updateSession(sessionVar, value) {
     var csrftoken = getCookie('csrftoken');
     sessionData = {
         'csrfmiddlewaretoken': csrftoken,
-        [sessionVar]: value // computed property name -> ES6
+        // computed property name: >=EcmaScript 6
+        [sessionVar]: value
     };
     $.ajax({
         type: 'POST',
