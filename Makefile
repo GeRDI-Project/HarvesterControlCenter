@@ -35,7 +35,7 @@ PYTHON=$(shell "$(CMD_FROM_VENV)" "python")
 
 # Make will use these given recipes instead of file executables
 # https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
-.PHONY: hello venv freeze qa check fix clean migrations superuser runlocal
+.PHONY: hello venv freeze qa check fix clean migrations superuser runlocal test
 
 hello:
 	@echo ""
@@ -100,3 +100,8 @@ docker:
 dockerrun:
 	@docker build -t harvest/hccenter:latest .
 	@docker run --name=gerdi_hcc -it -p 8080:80 harvest/hccenter:latest
+
+# TEST
+
+test: venv
+	@$(PYTHON) $(SRC_DIR)/manage.py test --settings hcc_py.settings_local

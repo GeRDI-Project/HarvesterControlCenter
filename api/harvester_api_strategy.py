@@ -72,7 +72,7 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def set_harvester_config(self, harvester, changes):
         """abstract method for setting harvester configuration"""
-    
+
     @abc.abstractmethod
     def get_status_history(self, harvester):
         """abstract method for getting the status history"""
@@ -298,10 +298,10 @@ class BaseStrategy(Strategy):
             HCCJC.HEALTH: 'config not supported'
         }},
             status=status.HTTP_501_NOT_IMPLEMENTED)
-    
+
     def get_status_history(self, harvester):
         return Response('status history not supported',
-            status=status.HTTP_501_NOT_IMPLEMENTED)
+                        status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class VersionBased6Strategy(Strategy):
@@ -548,8 +548,8 @@ class VersionBased6Strategy(Strategy):
         return Response(feedback, status=response.status_code)
 
     def get_status_history(self, harvester):
-        return Response("status history not supported", 
-            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response("status history not supported",
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class VersionBased7Strategy(Strategy):
