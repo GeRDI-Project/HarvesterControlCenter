@@ -806,13 +806,15 @@ class VersionBased7Strategy(Strategy):
             history_data = ""
             for info in response_data["overallInfo"]["stateHistory"]:
                 ms = info["timestamp"]
-                time = datetime.datetime.fromtimestamp(ms/1000.0)
+                time = datetime.datetime.fromtimestamp(ms / 1000.0)
                 converted_time = time.strftime("%d-%b-%Y %H:%M:%S")
-                history_data += converted_time + ": " + info["value"].lower() + "<br>"
+                history_data += converted_time + ": " + \
+                    info["value"].lower() + "<br>"
             feedback = history_data
         else:
             if "message" in response_data:
                 feedback = response_data["message"]
             else:
-                feedback = "unable do get status history of harvester {}".format(harvester.name)
+                feedback = "unable do get status history of harvester {}".format(
+                    harvester.name)
         return Response(feedback, status=response.status_code)
