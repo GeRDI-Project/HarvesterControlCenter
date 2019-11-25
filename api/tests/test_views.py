@@ -2,6 +2,7 @@
 Testing Module for views_v2.py
 """
 import urllib
+import json
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
@@ -29,6 +30,7 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
     """Test suite for the api views."""
     urlpatterns = [
         path('v1/', include('api.urls_v2')),
+        path('', include('hcc_py.urls')),
     ]
 
     def setUp(self):
@@ -246,20 +248,29 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.content, b'{"message": "ok"}')
         apicall.assert_called()
 
-    # -> does not work so far
-    #
-    # @patch('api.harvester_api_strategy.VersionBased7Strategy.post_delete_harvester_schedule',
-    #       return_value=Response({'Harvester1':{HCCJC.HEALTH: {"message": "ok"}}},
-    #                             status.HTTP_200_OK))
-    # def test_ScheduleHarvesterView_delete_one_schedule_calls_api(self, apicall):
-    #    """Test the API command get harvester-cron with reverse lookup of the resource."""
-    #    url = reverse('api:harvester-cron', kwargs={'name': self.harvester.name})
-    #    data = {HCCJC.POSTCRONTAB: "crontab"}
-    #    response = self.client.delete(url,
-    #                                  urllib.parse.urlencode(data),
-    #                                  content_type='application/x-www-form-urlencoded')
-    #    self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #    apicall.assert_called()
+    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_delete_harvester_schedule',
+          return_value=Response({'Harvester1':{HCCJC.HEALTH: "ok"}},
+                                status.HTTP_200_OK))
+    def test_ScheduleHarvesterView_delete_one_schedule_redirects(self, apicall):
+       """Test the API command get harvester-cron with reverse lookup of the resource."""
+       url = reverse('api:harvester-cron', kwargs={'name': self.harvester.name})
+       data = {HCCJC.POSTCRONTAB: "crontab"}
+       response = self.client.delete(url,
+                                     json.dumps(data),
+                                     content_type='application/json')
+       self.assertRedirects(response, reverse("hcc_gui"))
+
+    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_delete_harvester_schedule',
+          return_value=Response({'Harvester1':{HCCJC.HEALTH: "ok"}},
+                                status.HTTP_200_OK))
+    def test_ScheduleHarvesterView_delete_one_schedule_calls_api(self, apicall):
+       """Test the API command get harvester-cron with reverse lookup of the resource."""
+       url = reverse('api:harvester-cron', kwargs={'name': self.harvester.name})
+       data = {HCCJC.POSTCRONTAB: "crontab"}
+       response = self.client.delete(url,
+                                     json.dumps(data),
+                                     content_type='application/json')
+       apicall.assert_called()
 
 
 class ViewsTests(APITestCase, URLPatternsTestCase):
@@ -455,13 +466,11 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.client.get(url)
         apicall.assert_called()
 
-    # -> backfiring!
-    #
-    # def test_start_selected_harvesters_login_required(self):
-    #    self.client.logout()
-    #    url = reverse("edit-harvester", kwargs={"name": self.harvester.name})
-    #    response = self.client.get(url)
-    #    self.assertRedirects(response, '/api-auth/login/?next=/hcc/edit/Harvester1')
+    def test_edit_harvester_login_required(self):
+        self.client.logout()
+        url = reverse("edit-harvester", kwargs={"name": self.harvester.name})
+        response = self.client.get(url)
+        self.assertRedirects(response, '/api-auth/login/?next=/hcc/edit/Harvester1')
 
     def test_get_edit_harvester_view(self):
         url = reverse("edit-harvester", kwargs={"name": self.harvester.name})

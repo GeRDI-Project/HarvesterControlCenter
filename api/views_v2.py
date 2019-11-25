@@ -670,7 +670,7 @@ class UserDetailsView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class EditHarvesterView(View, LoginRequiredMixin,
+class EditHarvesterView(LoginRequiredMixin, View,
                         AjaxableResponseMixin, FormMixin):
     """
     This class handles AJAx, GET, DELETE and POST requests
@@ -727,7 +727,7 @@ class EditHarvesterView(View, LoginRequiredMixin,
         return JsonResponse(response)
 
 
-class ConfigHarvesterView(View, LoginRequiredMixin,
+class ConfigHarvesterView(LoginRequiredMixin, View,
                           AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
@@ -819,7 +819,8 @@ class ScheduleHarvesterView(
         myname = kwargs['name']
         harvester = get_object_or_404(Harvester, name=myname)
         api = InitHarvester(harvester).get_harvester_api()
-        response = api.delete_schedule(request.POST[HCCJC.POSTCRONTAB])
+        data = json.loads(request.body)
+        response = api.delete_schedule(data[HCCJC.POSTCRONTAB])
         messages.add_message(
             request, messages.INFO, harvester.name + ': '
             + response.data[harvester.name][HCCJC.HEALTH])

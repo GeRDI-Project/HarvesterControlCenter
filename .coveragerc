@@ -5,7 +5,6 @@ omit =
     api/__init__.py
     api/admin.py
     api/constants.py
-    api/mixins.py
     hcc_py/__init__.py
     hcc_py/settings.py
     hcc_py/settings_local.py
@@ -18,7 +17,6 @@ omit =
     api/__init__.py
     api/admin.py
     api/constants.py
-    api/mixins.py
     hcc_py/__init__.py
     hcc_py/settings.py
     hcc_py/settings_local.py
