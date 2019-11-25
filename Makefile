@@ -60,12 +60,12 @@ freeze: venv
 qa: check fix
 
 check: venv
-	@$(FLAKE8) --max-line-length 120 api hcc_py --ignore=E501 api/migrations
+	@$(FLAKE8) --max-line-length 120 api hcc_py --exclude api/migrations
 	@$(ISORT) -rc -c api hcc_py
 
 fix: venv
-	@$(ISORT) -rc api hcc_py --ignore=E501 api/migrations
-	@$(AUTOPEP8) --in-place --aggressive --recursive api hcc_py
+	@$(ISORT) -rc api hcc_py
+	@$(AUTOPEP8) --in-place --aggressive --recursive api hcc_py --exclude api/migrations
 
 clean:
 	@rm -rf .cache
