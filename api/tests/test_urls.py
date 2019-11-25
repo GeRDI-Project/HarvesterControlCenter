@@ -2,11 +2,12 @@
 Testing Module for urls_v2.py and urls.py
 """
 import os
-from rest_framework_swagger.views import get_swagger_view
+
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
 from django.urls import include, path, resolve, reverse
 from rest_framework.test import APITestCase, URLPatternsTestCase
+from rest_framework_swagger.views import get_swagger_view
 
 from api.models import Harvester
 
@@ -321,7 +322,8 @@ class UrlsTests(APITestCase, URLPatternsTestCase):
         """
         Test, if 'sart-selected-harvesters' reverses to the correct url.
         """
-        url = reverse('start-selected-harvesters', kwargs={'hnames': 'Harvester1-Harvester2'})
+        url = reverse('start-selected-harvesters',
+                      kwargs={'hnames': 'Harvester1-Harvester2'})
         self.assertEqual(url, '/hcc/start/Harvester1-Harvester2')
 
     def test_start_selected_harvesters_url_resolves_to_correct_view(self):

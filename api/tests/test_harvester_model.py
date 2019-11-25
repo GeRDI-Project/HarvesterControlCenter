@@ -2,8 +2,8 @@
 Testing Module for the model "Harvester"
 """
 from django.contrib.auth.models import User
-from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.test import TestCase
 
 from api.forms import HarvesterForm
 from api.models import Harvester
@@ -21,19 +21,25 @@ class ModelTestCase(TestCase):
 
     def setUp(self):
         """Define the test client and other test variables."""
-        user = User.objects.create(username="AnyUser")
+        self.user = User.objects.create(username="AnyUser")
         self.name = "Harvester1"
         # specify owner of a harvester
-        self.harvester = Harvester.objects.create(name=self.name, owner=user, url='http://somewhere.url/v1')
+        self.harvester = Harvester.objects.create(
+            name=self.name, owner=self.user, url='http://somewhere.url/v1')
 
     def test_model_can_create_a_harvester(self):
         """Test the harvester model can create a harvester."""
         self.assertIsNotNone(self.harvester)
 
+    def test_model_owner_is_correct(self):
+        """Test if the owner is correct"""
+        self.assertEqual(self.harvester.owner, self.user)
+
     def test_harvester_default_values(self):
         """Test if the default values are correct"""
         self.assertFalse(self.harvester.enabled)
         self.assertEqual(self.harvester.notes, "")
+        self.assertEqual(self.harvester.metadataPrefix, "")
 
     def test_harvester_can_be_edited_correctly(self):
         """Test if editing works correctly"""
@@ -52,6 +58,14 @@ class ModelTestCase(TestCase):
         self.harvester.save()
         self.assertEqual(self.harvester.notes, new_notes)
 
+        self.harvester.enabled = True
+        self.harvester.save()
+        self.assertTrue(self.harvester.enabled)
+
+        self.harvester.enabled = False
+        self.harvester.save()
+        self.assertFalse(self.harvester.enabled)
+
     def test_harvester_enable_and_disable_function(self):
         """Test if the enable() and disable() functions work correctly"""
         self.harvester.enable()
@@ -62,8 +76,10 @@ class ModelTestCase(TestCase):
 
     def test_regex_validator_works(self):
         """Test if the regex validator works"""
-        dash_name = "bad-name"
-        self.harvester.name = dash_name
+        self.harvester.name = "bad-name"
+        self.assertRaises(ValidationError, self.harvester.save())
+
+        self.harvester.name = ""
         self.assertRaises(ValidationError, self.harvester.save())
 
     def test_harvester_returns_readable_representation(self):
@@ -105,6 +121,14 @@ class RegexTestCase(TestCase):
 
         data = {
             'name': 'bad-name',
+            'owner': user,
+            'url': url
+        }
+        form = HarvesterForm(data=data)
+        self.assertFalse(form.is_valid())
+
+        data = {
+            'name': '',
             'owner': user,
             'url': url
         }
