@@ -1,4 +1,10 @@
+import logging
+import sys
+
 from hcc_py.settings import *  # noqa: F401, F403
+
+if 'test' in sys.argv:
+    logging.disable(logging.CRITICAL)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

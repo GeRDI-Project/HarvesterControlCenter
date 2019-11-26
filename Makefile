@@ -105,3 +105,6 @@ dockerrun:
 
 test: venv
 	@$(PYTHON) $(SRC_DIR)/manage.py test --settings hcc_py.settings_local
+
+covhtml: venv
+	@$(PYTHON) $(SRC_DIR)/manage.py test --settings hcc_py.settings_local --cover-html --cover-html-dir=api/covhtml
