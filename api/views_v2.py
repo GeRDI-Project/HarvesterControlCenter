@@ -700,7 +700,7 @@ class EditHarvesterView(LoginRequiredMixin, View,
                     {'message': 'A Harvester named {} already exists!'.format(name)})
             else:
                 _h = Harvester(owner=self.request.user)
-                action = 'added'
+                action = 'initialised'
                 myname = name
         else:  # Edit Harvester
             myname = kwargs['name']
