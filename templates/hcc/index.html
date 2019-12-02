@@ -139,7 +139,7 @@
                                 {% if k == harvester.name %}
                                 <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip" data-placement="right" title="{{ val.health }}">
                                     <a href="{{ harvester.url }}">{{ harvester.name }}</a>
-                                    <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
+                                    <div>{{ val.status }}</div>
                                 </li>
                                 {% endif %}
                                 {% endfor %}
