@@ -2,10 +2,13 @@
 Testing Module for views_v2.py
 """
 import json
+import os
 import urllib
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
+from django.core.files import File
+from django.test.utils import override_settings
 from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -14,9 +17,6 @@ from rest_framework.test import APIClient, APITestCase, URLPatternsTestCase
 
 from api.constants import HCCJSONConstants as HCCJC
 from api.models import Harvester
-
-# from unittest.mock import Mock, MagicMock
-
 
 __author__ = "Jan Frömberg, Laura Höhle"
 __copyright__ = "Copyright 2018, GeRDI Project"
@@ -547,17 +547,24 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
     @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': {HCCJC.HEALTH: "ok"}},
+                        status.HTTP_200_OK),
+               Response({'Harvester2': {HCCJC.HEALTH: "ok"}},
+                        status.HTTP_200_OK)
            ])
     def test_start_all_harvesters_view_calls_api(self, apicall):
-        harvester = Harvester.objects.create(
+        Harvester.objects.create(
             name="Harvester2",
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
         for harvester in Harvester.objects.all():
             harvester.enable()
+        # this works:
+        #
+        # self.assertEqual(Harvester.objects.all().count(), 2)
+        # for harvester in Harvester.objects.all():
+        #     self.assertTrue(harvester.enabled)
         url = reverse("start-harvesters")
         self.client.get(url)
         # TODO:
@@ -585,8 +592,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
     @patch('api.harvester_api_strategy.VersionBased7Strategy.post_stop_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': {HCCJC.HEALTH: "ok"}},
+                        status.HTTP_200_OK),
+               Response({'Harvester2': {HCCJC.HEALTH: "ok"}},
+                        status.HTTP_200_OK)
            ])
     def test_abort_all_harvesters_view_calls_api(self, apicall):
         harvester = Harvester.objects.create(
@@ -658,7 +667,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
     def test_harvester_progress_login_required(self):
         self.client.logout()
-        url = reverse("harvester-progress", kwargs={"name": self.harvester.name})
+        url = reverse(
+            "harvester-progress",
+            kwargs={
+                "name": self.harvester.name})
         response = self.client.get(url)
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/Harvester1/progress')
@@ -668,9 +680,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
                Response({'Harvester1': "ok"}, status.HTTP_200_OK)
            ])
     def test_harvester_progress_view_response(self, apicall):
-        for harvester in Harvester.objects.all():
-            harvester.enable()
-        url = reverse("harvester-progress", kwargs={"name": self.harvester.name})
+        url = reverse(
+            "harvester-progress",
+            kwargs={
+                "name": self.harvester.name})
         response = self.client.get(url)
         self.assertTrue(self.harvester.name in json.loads(response.content))
 
@@ -679,6 +692,251 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
                Response({'Harvester1': "ok"}, status.HTTP_200_OK)
            ])
     def test_harvester_progress_view_calls_api(self, apicall):
-        url = reverse("harvester-progress", kwargs={"name": self.harvester.name})
+        url = reverse(
+            "harvester-progress",
+            kwargs={
+                "name": self.harvester.name})
         self.client.get(url)
         apicall.assert_called()
+
+    def test_harvester_to_file_view_login_required(self):
+        self.client.logout()
+        url = reverse("harvester-to-file")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, '/api-auth/login/?next=/hcc/saveharvesters')
+
+    def test_harvester_to_file_view_response(self):
+        url = reverse("harvester-to-file")
+        response = self.client.get(url)
+        data = [
+            {
+                "name": self.harvester.name,
+                "notes": self.harvester.notes,
+                "url": self.harvester.url,
+                "enabled": self.harvester.enabled
+            }
+        ]
+        self.assertEqual(json.loads(response.content), data)
+
+    # -> view upload_file_form has no @login_required annotation
+    #
+    # def test_harvester_file_form_view_login_required(self):
+    #     self.client.logout()
+    #     url = reverse("harvester-file-form")
+    #     response = self.client.get(url)
+    #     self.assertRedirects(
+    #         response, '/api-auth/login/?next=/hcc/harvesterloadform')
+
+    def test_harvester_file_form_view_response(self):
+        url = reverse("harvester-file-form")
+        self.client.get(url)
+        self.assertTemplateUsed('hcc/file_upload_form.html')
+
+    def test_harvester_from_file_redirects(self):
+        file_mock = MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'test1.json'
+        url = reverse("harvester-from-file")
+        response = self.client.post(url, {'upload_file': file_mock})
+        self.assertRedirects(response, reverse("hcc_gui"))
+
+    def test_harvester_from_file_no_changes(self):
+        """
+        When there are no changes in the uploaded file,
+        the harvester should not be changed either.
+        """
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)  # get current directory
+
+        file_path = os.path.join(
+            module_dir, 'test_files/valid_existing_harvester_no_changes.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-success")
+        harvester = Harvester.objects.get(name=self.harvester.name)
+        self.assertIsNotNone(harvester)
+        self.assertEqual(harvester.notes, self.harvester.notes)
+        self.assertEqual(harvester.url, self.harvester.url)
+        self.assertEqual(harvester.enabled, self.harvester.enabled)
+
+    def test_harvester_from_file_notes_and_enabled_changed(self):
+        """
+        Notes should never be updated. The enabled status should change.
+        """
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(
+            module_dir,
+            'test_files/valid_existing_harvester_with_changes.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-success")
+        harvester = Harvester.objects.get(name=self.harvester.name)
+        self.assertIsNotNone(harvester)
+        # notes should not be changed
+        self.assertEqual(harvester.notes, self.harvester.notes)
+        self.assertEqual(harvester.url, self.harvester.url)
+        self.assertTrue(harvester.enabled)
+
+    def test_harvester_from_file_url_changed(self):
+        """
+        When the name is already token, but the url is new, a new harvester
+        should be created with the new url and the name gets the ending "_n",
+        where n is 1,2,3,4,... the first not token name
+        """
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(
+            module_dir,
+            'test_files/valid_existing_harvester_url_changes.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-success")
+        # new harvesters should have been created
+        harvester = Harvester.objects.get(pk=2)
+        self.assertEqual(harvester.name, self.harvester.name + "_1")
+        harvester = Harvester.objects.get(pk=3)
+        self.assertEqual(harvester.name, self.harvester.name + "_2")
+        # the last one was not created, because of an already existing url
+        self.assertEqual(Harvester.objects.all().count(), 3)
+
+    def test_harvester_from_file_new_harvester(self):
+        """
+        When the name and the url are new, create a new harvester.
+        """
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(
+            module_dir, 'test_files/valid_new_harvester.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-success")
+        self.assertEqual(Harvester.objects.all().count(), 2)
+
+    def test_harvester_from_file_name_changed(self):
+        """
+        When the name is new, but the url already exists, do not make changes.
+        """
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(
+            module_dir,
+            'test_files/valid_existing_harvester_name_changes.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-success")
+        self.assertEqual(Harvester.objects.all().count(), 1)
+
+    def test_harvester_from_file_wrong_file_type(self):
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(module_dir, 'test_files/invalid_no_json.txt')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-warning")
+        self.assertEqual(Harvester.objects.all().count(), 1)
+
+    def test_harvester_from_file_no_content(self):
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(
+            module_dir, 'test_files/invalid_no_content.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-warning")
+        self.assertEqual(Harvester.objects.all().count(), 1)
+
+    def test_harvester_from_file_wrong_content_keys(self):
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(module_dir,
+                                 'test_files/invalid_wrong_content_keys.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-warning")
+        self.assertEqual(Harvester.objects.all().count(), 1)
+
+    def test_harvester_from_file_wrong_content_syntax(self):
+        url = reverse("harvester-from-file")
+        module_dir = os.path.dirname(__file__)
+
+        file_path = os.path.join(
+            module_dir, 'test_files/invalid_wrong_content_syntax.json')
+        file = File(open(file_path, 'r'))
+        response = self.client.post(url, {'upload_file': file}, follow=True)
+        message = list(response.context.get('messages'))[0]
+        self.assertEqual(message.tags, "alert-warning")
+        self.assertEqual(Harvester.objects.all().count(), 1)
+
+    def test_etls_login_required(self):
+        self.client.logout()
+        url = reverse("etls", kwargs={"name": self.harvester.name})
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, '/api-auth/login/?next=/hcc/Harvester1/etls')
+
+    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_status_history',
+           side_effect=[
+               Response({'Harvester1': "ok"}, status.HTTP_200_OK)
+           ])
+    def test_etls_view(self, apicall):
+        url = reverse("etls", kwargs={"name": self.harvester.name})
+        response = self.client.get(url)
+        self.assertTrue("message" in json.loads(response.content))
+        apicall.assert_called()
+
+    def test_update_session_login_required(self):
+        self.client.logout()
+        url = reverse("update-session")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, '/api-auth/login/?next=/hcc/updatesession')
+
+    def test_update_session_view(self):
+        url = reverse("update-session")
+        # should only take post ajax requests
+        response = self.client.get(url)
+        self.assertEqual(json.loads(response.content)["status"], "failed")
+        data = {
+            "csrfmiddlewaretoken": "somecsrf",
+            "theme": "dark"
+        }
+        response = self.client.post(url,
+                                    urllib.parse.urlencode(data),
+                                    content_type='application/x-www-form-urlencoded',
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(json.loads(response.content)["status"], "ok")
+
+    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_status',
+           return_value=Response({'Harvester1': {HCCJC.CRONTAB: HCCJC.NO_CRONTAB}},
+                                 status.HTTP_200_OK))
+    def test_hcc_gui_view_response(self, apicall):
+        url = reverse("hcc_gui")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTemplateUsed('hcc/index.html')
+
+    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_status',
+           return_value=Response({'Harvester1': {HCCJC.CRONTAB: HCCJC.NO_CRONTAB}},
+                                 status.HTTP_200_OK))
+    def test_hcc_gui_view_calls_api(self, apicall):
+        url = reverse("hcc_gui")
+        for harvester in Harvester.objects.all():
+            harvester.enable()
+        self.client.get(url)
+        # apicall.assert_called()
