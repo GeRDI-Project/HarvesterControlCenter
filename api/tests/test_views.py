@@ -560,16 +560,12 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         )
         for harvester in Harvester.objects.all():
             harvester.enable()
-        # this works:
-        #
-        # self.assertEqual(Harvester.objects.all().count(), 2)
-        # for harvester in Harvester.objects.all():
-        #     self.assertTrue(harvester.enabled)
         url = reverse("start-harvesters")
         self.client.get(url)
         # TODO:
         # Find out why this is not working.
-        # Without the 'if harvester.enabled:' it works.
+        # According to the html coverage, the function should
+        # have been called.
         #
         # self.assertEqual(apicall.call_count, 2)
 
@@ -608,8 +604,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         url = reverse("abort-harvesters")
         self.client.get(url)
         # TODO:
-        # Find out why this is not working.
-        # Without the 'if harvester.enabled:' it works.
+        # See test_start_all_harvesters_view_calls_api
         #
         # self.assertEqual(apicall.call_count, 2)
 
@@ -648,8 +643,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         url = reverse("harvesters-log")
         self.client.get(url)
         # TODO:
-        # Find out why this is not working.
-        # Without the 'if harvester.enabled:' it works.
+        # See test_start_all_harvesters_view_calls_api
         #
         # self.assertEqual(apicall.call_count, 2)
 
@@ -718,15 +712,6 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             }
         ]
         self.assertEqual(json.loads(response.content), data)
-
-    # -> view upload_file_form has no @login_required annotation
-    #
-    # def test_harvester_file_form_view_login_required(self):
-    #     self.client.logout()
-    #     url = reverse("harvester-file-form")
-    #     response = self.client.get(url)
-    #     self.assertRedirects(
-    #         response, '/api-auth/login/?next=/hcc/harvesterloadform')
 
     def test_harvester_file_form_view_response(self):
         url = reverse("harvester-file-form")
@@ -939,4 +924,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         for harvester in Harvester.objects.all():
             harvester.enable()
         self.client.get(url)
+        # TODO:
+        # See test_start_all_harvesters_view_calls_api
+        #
         # apicall.assert_called()
