@@ -1,0 +1,30 @@
+
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 id="logger-modal-header" class="modal-title">Info</h4>
+            <button id ="logger-modal-exit" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div id="logger-modal-body" class="modal-body">
+        {% for key, val in log_data.items %}
+            <div class="card">
+                <div class="card-header" id="loggerHeading{{key}}">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#loggerCollapse{{key}}" aria-expanded="true" aria-controls="loggerCollapse{{key}}">
+                        {{key}}
+                        </button>
+                    </h5>
+                </div>
+                <div id="loggerCollapse{{key}}" class="collapse" aria-labelledby="heading{{key}}" data-parent="#message-modal-body">
+                    <div class="card-body">
+                        {{val|linebreaks}}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        <div id="logger-modal-footer" class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>

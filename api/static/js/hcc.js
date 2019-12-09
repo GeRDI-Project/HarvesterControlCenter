@@ -76,36 +76,7 @@ $(function () {
             var data = JSON.stringify(result, undefined, 2);
             $('#message-modal-footer').show();
             $('#message-modal').modal('toggle');
-            if (status.constructor == Object) {
-                var content;
-                var body = $('#message-modal-body');
-                body.html('');
-                var counter = 0;
-                for (let key in status) {
-                    let obj = status[key];
-                    content = body[0].innerHTML;
-                    body.html(
-                        content + 
-                        `<div class="card">\
-                            <div class="card-header" id="loggerHeading${counter}">\
-                                <h5 class="mb-0">\
-                                    <button class="btn btn-link" data-toggle="collapse" data-target="#loggerCollapse${counter}" aria-expanded="true" aria-controls="loggerCollapse${counter}">\
-                                    ${key}\
-                                    </button>\
-                                </h5>\
-                            </div>\
-                            <div id="loggerCollapse${counter}" class="collapse" aria-labelledby="heading${counter}" data-parent="#message-modal-body">\
-                                <div class="card-body">\
-                                    ${obj}\
-                                </div>\
-                            </div>\
-                        </div>`
-                    );
-                    counter += 1;
-                }
-            } else {
-                $('#message-modal-body').html('<pre>' + data + '</pre>');
-            }
+            $('#message-modal-body').html('<pre>' + data + '</pre>');
             for (let key in status) {
                 let obj = status[key];
                 $('#hv-status-' + key).html(obj.log);
@@ -258,8 +229,15 @@ $(function () {
     /*
         Buttons
     */
-    $('#btn-harvester-log').on('click', function (event) {
-        load_into_modal(this);
+    $('#btn-harvester-log').on('click', function (ev) {
+        $('#loaderSpinnerLog').show();
+        ev.preventDefault();
+        var url = $(this).attr("title");
+        $("#form-modal").load(url, function () {
+            $(this).modal('show');
+        });
+        $('#loaderSpinnerLog').hide();
+        return false;
     });
 
     $('#btn-hcc-log').on('click', function (event) {

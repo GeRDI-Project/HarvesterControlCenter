@@ -181,13 +181,14 @@ def get_all_harvester_log(request):
     :return: JSON Feedback Array
     """
     feedback = {}
+    feedback["log_data"] = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         if harvester.enabled:
             api = InitHarvester(harvester).get_harvester_api()
             response = api.harvester_log()
-            feedback[harvester.name] = response.data[harvester.name][HCCJC.LOGS].replace('\n', '<br>')
-    return JsonResponse(feedback, status=status.HTTP_200_OK)
+            feedback["log_data"][harvester.name] = response.data[harvester.name][HCCJC.LOGS]#.replace('\n', '</br>')
+    return render(request, "hcc/harvester_logs.html", feedback)
 
 
 @login_required
