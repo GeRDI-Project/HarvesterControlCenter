@@ -50,6 +50,7 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhere.url/v1'
         )
+        self.harvester.enable()
 
     def test_api_can_create_a_harvester(self):
         """Test the api has harvester creation capability."""
@@ -121,8 +122,8 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.data['username'], self.user.username)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
-           return_value=Response({'Harvester1': 'ok'}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
+           return_value=Response({'Harvester1': 'dummy message'}, status.HTTP_200_OK))
     def test_start_harvest_view_calls_api(self, apicall):
         """Test the API command start-harvest with reverse lookup of the resource."""
         url = reverse(
@@ -134,8 +135,8 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response, apicall())
         apicall.assert_called()
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_stop_harvest',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.stop_harvest',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_stop_harvest_view_calls_api(self, apicall):
         """Test the API command stop-harvest with reverse lookup of the resource."""
         url = reverse('api:stop-harvest', kwargs={'name': self.harvester.name})
@@ -144,10 +145,10 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response, apicall())
         apicall.assert_called()
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_start_harvesters_view_calls_api(self, apicall):
         """Test the API command run-harvesters with reverse lookup of the resource."""
@@ -158,17 +159,18 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
-        expected_output = {self.harvester.name: "ok", "Harvester2": "ok"}
+        Harvester.objects.get(name="Harvester2").enable()
+        expected_output = {self.harvester.name: "dummy message", "Harvester2": "dummy message"}
         url = reverse('api:run-harvesters')
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_output)
         self.assertEqual(apicall.call_count, 2)
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_stop_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.stop_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_stop_harvesters_view_calls_api(self, apicall):
         """Test the API command stop-harvesters with reverse lookup of the resource."""
@@ -177,15 +179,16 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
-        expected_output = {self.harvester.name: "ok", "Harvester2": "ok"}
+        Harvester.objects.get(name="Harvester2").enable()
+        expected_output = {self.harvester.name: "dummy message", "Harvester2": "dummy message"}
         url = reverse('api:stop-harvesters')
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_output)
         self.assertEqual(apicall.call_count, 2)
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_status',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_status',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_harvester_state_view_calls_api(self, apicall):
         """Test the API command harvester-status with reverse lookup of the resource."""
         url = reverse(
@@ -197,10 +200,10 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response, apicall())
         apicall.assert_called()
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_status',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_status',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_harvester_states_view_calls_api(self, apicall):
         """Test the API command get all-harvester-status with reverse lookup of the resource."""
@@ -209,15 +212,16 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
-        expected_output = {self.harvester.name: "ok", "Harvester2": "ok"}
+        Harvester.objects.get(name="Harvester2").enable()
+        expected_output = {self.harvester.name: "dummy message", "Harvester2": "dummy message"}
         url = reverse('api:all-harvester-status')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_output)
         self.assertEqual(apicall.call_count, 2)
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_add_harvester_schedule',
-           return_value=Response({'Harvester1': {HCCJC.HEALTH: {"message": "ok"}}},
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.add_schedule',
+           return_value=Response({'Harvester1': {HCCJC.HEALTH: {"message": "dummy message"}}},
                                  status.HTTP_200_OK))
     def test_ScheduleHarvesterView_add_schedule_calls_api(self, apicall):
         """Test the API command get harvester-cron with reverse lookup of the resource."""
@@ -225,16 +229,16 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             'api:harvester-cron',
             kwargs={'name': self.harvester.name})
         key = self.harvester.name + "-" + HCCJC.POSTCRONTAB
-        data = {key: "crontab"}
+        data = {key: "dummy data"}
         response = self.client.post(url,
                                     urllib.parse.urlencode(data),
                                     content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.content, b'{"message": "ok"}')
+        self.assertEqual(response.content, b'{"message": "dummy message"}')
         apicall.assert_called()
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_delete_harvester_schedule',
-           return_value=Response({'Harvester1': {HCCJC.HEALTH: {"message": "ok"}}},
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.delete_schedule',
+           return_value=Response({'Harvester1': {HCCJC.HEALTH: {"message": "dummy message"}}},
                                  status.HTTP_200_OK))
     def test_ScheduleHarvesterView_delete_schedules_calls_api(self, apicall):
         """Test the API command get harvester-cron with reverse lookup of the resource."""
@@ -244,11 +248,11 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
                 'name': self.harvester.name})
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.content, b'{"message": "ok"}')
+        self.assertEqual(response.content, b'{"message": "dummy message"}')
         apicall.assert_called()
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_delete_harvester_schedule',
-           return_value=Response({'Harvester1': {HCCJC.HEALTH: "ok"}},
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.delete_schedule',
+           return_value=Response({'Harvester1': {HCCJC.HEALTH: "dummy message"}},
                                  status.HTTP_200_OK))
     def test_ScheduleHarvesterView_delete_one_schedule_redirects(
             self, apicall):
@@ -257,14 +261,14 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             'api:harvester-cron',
             kwargs={
                 'name': self.harvester.name})
-        data = {HCCJC.POSTCRONTAB: "crontab"}
+        data = {HCCJC.POSTCRONTAB: "dummy data"}
         response = self.client.delete(url,
                                       json.dumps(data),
                                       content_type='application/json')
         self.assertRedirects(response, reverse("hcc_gui"))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_delete_harvester_schedule',
-           return_value=Response({'Harvester1': {HCCJC.HEALTH: "ok"}},
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.delete_schedule',
+           return_value=Response({'Harvester1': {HCCJC.HEALTH: "dummy message"}},
                                  status.HTTP_200_OK))
     def test_ScheduleHarvesterView_delete_one_schedule_calls_api(
             self, apicall):
@@ -273,7 +277,7 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             'api:harvester-cron',
             kwargs={
                 'name': self.harvester.name})
-        data = {HCCJC.POSTCRONTAB: "crontab"}
+        data = {HCCJC.POSTCRONTAB: "dummy data"}
         self.client.delete(url,
                            json.dumps(data),
                            content_type='application/json')
@@ -303,6 +307,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhere.url/v1'
         )
+        self.harvester.enable()
 
     def test_index_view(self):
         url = reverse("home")
@@ -326,11 +331,11 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
         self.client.get(url)
         harvester = Harvester.objects.get(pk=1)
-        self.assertTrue(harvester.enabled)
+        self.assertFalse(harvester.enabled)
 
         self.client.get(url)
         harvester = Harvester.objects.get(pk=1)
-        self.assertFalse(harvester.enabled)
+        self.assertTrue(harvester.enabled)
 
     def test_toggle_harvesters_login_required(self):
         self.client.logout()
@@ -361,13 +366,13 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
         self.client.get(url)
         harvester = Harvester.objects.get(pk=1)
-        self.assertTrue(harvester.enabled)
+        self.assertFalse(harvester.enabled)
         harvester = Harvester.objects.get(pk=2)
         self.assertTrue(harvester.enabled)
 
         self.client.get(url)
         harvester = Harvester.objects.get(pk=1)
-        self.assertFalse(harvester.enabled)
+        self.assertTrue(harvester.enabled)
         harvester = Harvester.objects.get(pk=2)
         self.assertFalse(harvester.enabled)
 
@@ -378,15 +383,15 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/Harvester1/stop')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_stop_harvest',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.stop_harvest',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_stop_harvester_view_redirects(self, apicall):
         url = reverse("stop-harvester", kwargs={"name": self.harvester.name})
         response = self.client.get(url)
         self.assertRedirects(response, reverse("hcc_gui"))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_stop_harvest',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.stop_harvest',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_stop_harvester_view_calls_api(self, apicall):
         url = reverse("stop-harvester", kwargs={"name": self.harvester.name})
         self.client.get(url)
@@ -399,15 +404,15 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/Harvester1/start')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_start_harvester_view_redirects(self, apicall):
         url = reverse("start-harvester", kwargs={"name": self.harvester.name})
         response = self.client.get(url)
         self.assertRedirects(response, reverse("hcc_gui"))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_start_harvester_view_calls_api(self, apicall):
         url = reverse("start-harvester", kwargs={"name": self.harvester.name})
         self.client.get(url)
@@ -423,10 +428,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/start/Harvester1')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_start_selected_harvesters_view_redirects(self, apicall):
         url = reverse(
@@ -436,10 +441,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url)
         self.assertRedirects(response, reverse("hcc_gui"))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_start_selected_harvesters_view_calls_api(self, apicall):
         Harvester.objects.create(
@@ -447,6 +452,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
+        Harvester.objects.get(name="Harvester2").enable()
         hnames = self.harvester.name + "-Harvester2"
         url = reverse("start-selected-harvesters", kwargs={"hnames": hnames})
         self.client.get(url)
@@ -459,15 +465,15 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/Harvester1/reset')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_reset_harvest',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.reset_harvest',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_reset_harvester_view_redirects(self, apicall):
         url = reverse("reset-harvester", kwargs={"name": self.harvester.name})
         response = self.client.get(url)
         self.assertRedirects(response, reverse("hcc_gui"))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_reset_harvest',
-           return_value=Response({'Harvester1': "ok"}, status.HTTP_200_OK))
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.reset_harvest',
+           return_value=Response({'Harvester1': "dummy message"}, status.HTTP_200_OK))
     def test_reset_harvester_view_calls_api(self, apicall):
         url = reverse("reset-harvester", kwargs={"name": self.harvester.name})
         self.client.get(url)
@@ -535,21 +541,21 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/startall')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_start_all_harvesters_view_redirects(self, apicall):
         url = reverse("start-harvesters")
         response = self.client.get(url)
         self.assertRedirects(response, reverse("hcc_gui"))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_start_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.start_harvest',
            side_effect=[
-               Response({'Harvester1': {HCCJC.HEALTH: "ok"}},
+               Response({'Harvester1': {HCCJC.HEALTH: "dummy message"}},
                         status.HTTP_200_OK),
-               Response({'Harvester2': {HCCJC.HEALTH: "ok"}},
+               Response({'Harvester2': {HCCJC.HEALTH: "dummy message"}},
                         status.HTTP_200_OK)
            ])
     def test_start_all_harvesters_view_calls_api(self, apicall):
@@ -558,16 +564,12 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
+        Harvester.objects.get(name="Harvester2").enable()
         for harvester in Harvester.objects.all():
             harvester.enable()
         url = reverse("start-harvesters")
         self.client.get(url)
-        # TODO:
-        # Find out why this is not working.
-        # According to the html coverage, the function should
-        # have been called.
-        #
-        # self.assertEqual(apicall.call_count, 2)
+        self.assertEqual(apicall.call_count, 2)
 
     def test_abort_all_harvesters_login_required(self):
         self.client.logout()
@@ -576,21 +578,21 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/abortall')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_stop_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.stop_harvest',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_abort_all_harvesters_view_redirects(self, apicall):
         url = reverse("abort-harvesters")
         response = self.client.get(url)
         self.assertRedirects(response, reverse("hcc_gui"))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.post_stop_harvest',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.stop_harvest',
            side_effect=[
-               Response({'Harvester1': {HCCJC.HEALTH: "ok"}},
+               Response({'Harvester1': {HCCJC.HEALTH: "dummy message"}},
                         status.HTTP_200_OK),
-               Response({'Harvester2': {HCCJC.HEALTH: "ok"}},
+               Response({'Harvester2': {HCCJC.HEALTH: "dummy message"}},
                         status.HTTP_200_OK)
            ])
     def test_abort_all_harvesters_view_calls_api(self, apicall):
@@ -599,14 +601,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
-        for harvester in Harvester.objects.all():
-            harvester.enable()
+        harvester.enable()
         url = reverse("abort-harvesters")
         self.client.get(url)
-        # TODO:
-        # See test_start_all_harvesters_view_calls_api
-        #
-        # self.assertEqual(apicall.call_count, 2)
+        self.assertEqual(apicall.call_count, 2)
 
     def test_harvesters_log_login_required(self):
         self.client.logout()
@@ -615,22 +613,19 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/logs')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_log',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_log',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK)
            ])
     def test_harvesters_log_view_response(self, apicall):
-        for harvester in Harvester.objects.all():
-            harvester.enable()
         url = reverse("harvesters-log")
         response = self.client.get(url)
         self.assertTrue(self.harvester.name in json.loads(response.content))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_log',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_log',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK),
-               Response({"Harvester2": "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
+               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
            ])
     def test_harvesters_log_view_calls_api(self, apicall):
         harvester = Harvester.objects.create(
@@ -638,14 +633,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
             owner=self.user,
             url='http://somewhereelse.url/v1'
         )
-        for harvester in Harvester.objects.all():
-            harvester.enable()
+        harvester.enable()
         url = reverse("harvesters-log")
         self.client.get(url)
-        # TODO:
-        # See test_start_all_harvesters_view_calls_api
-        #
-        # self.assertEqual(apicall.call_count, 2)
+        self.assertEqual(apicall.call_count, 2)
 
     def test_hcc_log_login_required(self):
         self.client.logout()
@@ -669,9 +660,9 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/Harvester1/progress')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_progress',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_progress',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK)
            ])
     def test_harvester_progress_view_response(self, apicall):
         url = reverse(
@@ -681,9 +672,9 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url)
         self.assertTrue(self.harvester.name in json.loads(response.content))
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_progress',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_progress',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK)
            ])
     def test_harvester_progress_view_calls_api(self, apicall):
         url = reverse(
@@ -875,9 +866,9 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertRedirects(
             response, '/api-auth/login/?next=/hcc/Harvester1/etls')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_status_history',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.status_history',
            side_effect=[
-               Response({'Harvester1': "ok"}, status.HTTP_200_OK)
+               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK)
            ])
     def test_etls_view(self, apicall):
         url = reverse("etls", kwargs={"name": self.harvester.name})
@@ -907,7 +898,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(json.loads(response.content)["status"], "ok")
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_status',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_status',
            return_value=Response({'Harvester1': {HCCJC.CRONTAB: HCCJC.NO_CRONTAB}},
                                  status.HTTP_200_OK))
     def test_hcc_gui_view_response(self, apicall):
@@ -916,15 +907,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTemplateUsed('hcc/index.html')
 
-    @patch('api.harvester_api_strategy.VersionBased7Strategy.get_harvester_status',
+    @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_status',
            return_value=Response({'Harvester1': {HCCJC.CRONTAB: HCCJC.NO_CRONTAB}},
                                  status.HTTP_200_OK))
     def test_hcc_gui_view_calls_api(self, apicall):
         url = reverse("hcc_gui")
-        for harvester in Harvester.objects.all():
-            harvester.enable()
         self.client.get(url)
-        # TODO:
-        # See test_start_all_harvesters_view_calls_api
-        #
-        # apicall.assert_called()
+        apicall.assert_called()
