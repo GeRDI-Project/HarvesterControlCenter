@@ -181,13 +181,13 @@ def get_all_harvester_log(request):
     :return: JSON Feedback Array
     """
     feedback = {}
-    feedback["log_data"] = {}
+    feedback[HCCJC.LOG_DATA] = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         if harvester.enabled:
             api = InitHarvester(harvester).get_harvester_api()
             response = api.harvester_log()
-            feedback["log_data"][harvester.name] = response.data[harvester.name][HCCJC.LOGS]
+            feedback[HCCJC.LOG_DATA][harvester.name] = response.data[harvester.name][HCCJC.LOGS]
     return render(request, "hcc/harvester_logs.html", feedback)
 
 
