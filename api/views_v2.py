@@ -409,17 +409,18 @@ def update_session(request):
     for key, value in request.POST.items():
         if key == "csrfmiddlewaretoken":
             continue
-        elif key in request.session.keys():
+        elif key in HCCJC.SESSION_KEYS:
             request.session[key] = value
+            status = "ok"
             message += 'Session variable {} was changed to {}.'.format(
                 key, value)
         else:
             request.session[key] = value
-            message += 'Session variable {} was added and set to {}.'.format(
-                key, value)
+            status = "failed"
+            message += '{} is not a session variable.'.format(value)
 
     return JsonResponse({
-        'status': 'ok',
+        'status': status,
         'message': message
     })
 
@@ -514,7 +515,7 @@ def harvester_data_to_file(request):
     return JsonResponse(data, safe=False)
 
 
-@permission_classes((IsAuthenticated, ))
+@login_required
 def upload_file(request):
     """
     This function handles POST requests to upload a file
@@ -611,7 +612,7 @@ def upload_file(request):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
-@permission_classes((IsAuthenticated, ))
+@login_required
 def upload_file_form(request):
     """
     This function handles GET requests to create a form
@@ -668,7 +669,7 @@ class UserDetailsView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class EditHarvesterView(View, LoginRequiredMixin,
+class EditHarvesterView(LoginRequiredMixin, View,
                         AjaxableResponseMixin, FormMixin):
     """
     This class handles AJAx, GET, DELETE and POST requests
@@ -725,7 +726,7 @@ class EditHarvesterView(View, LoginRequiredMixin,
         return JsonResponse(response)
 
 
-class ConfigHarvesterView(View, LoginRequiredMixin,
+class ConfigHarvesterView(LoginRequiredMixin, View,
                           AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
@@ -790,7 +791,7 @@ class ConfigHarvesterView(View, LoginRequiredMixin,
 
 
 class ScheduleHarvesterView(
-        SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
+        LoginRequiredMixin, SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
