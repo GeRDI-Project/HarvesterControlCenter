@@ -41,6 +41,7 @@ class HCCJSONConstants:
     NO_LOGTEXT = "no log"
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
+    LOG_DATA = "log_data"
 
     OK = "OK"
     N_A = "N/A"
@@ -56,6 +57,8 @@ class HCCJSONConstants:
     SUCCESS = "success"
     PRIMARY = "primary"
     INFO = "info"
+
+    SESSION_KEYS = ["theme", "viewtype", "toolbox", "chart", "enabled_harvs", "disabled_harvs"]
 
 
 class HarvesterApiConstants:

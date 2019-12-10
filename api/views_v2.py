@@ -182,13 +182,14 @@ def get_all_harvester_log(request):
     :return: JSON Feedback Array
     """
     feedback = {}
+    feedback[HCCJC.LOG_DATA] = {}
     harvesters = Harvester.objects.all()
     for harvester in harvesters:
         if harvester.enabled:
             api = InitHarvester(harvester).get_harvester_api()
             response = api.harvester_log()
-            feedback[harvester.name] = response.data[harvester.name]
-    return JsonResponse(feedback, status=status.HTTP_200_OK)
+            feedback[HCCJC.LOG_DATA][harvester.name] = response.data[harvester.name][HCCJC.LOGS]
+    return render(request, "hcc/harvester_logs.html", feedback)
 
 
 @login_required
@@ -410,17 +411,18 @@ def update_session(request):
     for key, value in request.POST.items():
         if key == "csrfmiddlewaretoken":
             continue
-        elif key in request.session.keys():
+        elif key in HCCJC.SESSION_KEYS:
             request.session[key] = value
+            status = "ok"
             message += 'Session variable {} was changed to {}.'.format(
                 key, value)
         else:
             request.session[key] = value
-            message += 'Session variable {} was added and set to {}.'.format(
-                key, value)
+            status = "failed"
+            message += '{} is not a session variable.'.format(value)
 
     return JsonResponse({
-        'status': 'ok',
+        'status': status,
         'message': message
     })
 
@@ -515,7 +517,7 @@ def harvester_data_to_file(request):
     return JsonResponse(data, safe=False)
 
 
-@permission_classes((IsAuthenticated, ))
+@login_required
 def upload_file(request):
     """
     This function handles POST requests to upload a file
@@ -613,7 +615,7 @@ def upload_file(request):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
-@permission_classes((IsAuthenticated, ))
+@login_required
 def upload_file_form(request):
     """
     This function handles GET requests to create a form

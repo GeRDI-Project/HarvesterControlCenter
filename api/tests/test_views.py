@@ -615,17 +615,17 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
     @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_log',
            side_effect=[
-               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK)
+               Response({'Harvester1': {HCCJC.LOGS: "dummy message"}}, status.HTTP_200_OK)
            ])
     def test_harvesters_log_view_response(self, apicall):
         url = reverse("harvesters-log")
         response = self.client.get(url)
-        self.assertTrue(self.harvester.name in json.loads(response.content))
+        self.assertTemplateUsed('hcc/harvester_logs.html')
 
     @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_log',
            side_effect=[
-               Response({'Harvester1': "dummy message"}, status.HTTP_200_OK),
-               Response({"Harvester2": "dummy message"}, status.HTTP_200_OK)
+               Response({'Harvester1': {HCCJC.LOGS: "dummy message"}}, status.HTTP_200_OK),
+               Response({"Harvester2": {HCCJC.LOGS: "dummy message"}}, status.HTTP_200_OK)
            ])
     def test_harvesters_log_view_calls_api(self, apicall):
         harvester = Harvester.objects.create(
