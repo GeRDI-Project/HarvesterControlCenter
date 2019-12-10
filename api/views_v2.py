@@ -409,17 +409,18 @@ def update_session(request):
     for key, value in request.POST.items():
         if key == "csrfmiddlewaretoken":
             continue
-        elif key in request.session.keys():
+        elif key in HCCJC.SESSION_KEYS:
             request.session[key] = value
+            status = "ok"
             message += 'Session variable {} was changed to {}.'.format(
                 key, value)
         else:
             request.session[key] = value
-            message += 'Session variable {} was added and set to {}.'.format(
-                key, value)
+            status = "failed"
+            message += '{} is not a session variable.'.format(value)
 
     return JsonResponse({
-        'status': 'ok',
+        'status': status,
         'message': message
     })
 
