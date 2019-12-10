@@ -231,7 +231,7 @@ $(function () {
     */
     $('#btn-harvester-log').on('click', function (ev) {
         ev.preventDefault();
-        var url = $(this).attr("title");
+        let url = $(this).attr("title");
         $('#loaderSpinnerLog').show();
         $("#form-modal").load(url, function () {
             $(this).modal('show');
