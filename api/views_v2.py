@@ -515,7 +515,7 @@ def harvester_data_to_file(request):
     return JsonResponse(data, safe=False)
 
 
-@permission_classes((IsAuthenticated, ))
+@login_required
 def upload_file(request):
     """
     This function handles POST requests to upload a file
@@ -612,7 +612,7 @@ def upload_file(request):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
-@permission_classes((IsAuthenticated, ))
+@login_required
 def upload_file_form(request):
     """
     This function handles GET requests to create a form
@@ -669,7 +669,7 @@ class UserDetailsView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class EditHarvesterView(View, LoginRequiredMixin,
+class EditHarvesterView(LoginRequiredMixin, View,
                         AjaxableResponseMixin, FormMixin):
     """
     This class handles AJAx, GET, DELETE and POST requests
@@ -726,7 +726,7 @@ class EditHarvesterView(View, LoginRequiredMixin,
         return JsonResponse(response)
 
 
-class ConfigHarvesterView(View, LoginRequiredMixin,
+class ConfigHarvesterView(LoginRequiredMixin, View,
                           AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
@@ -791,7 +791,7 @@ class ConfigHarvesterView(View, LoginRequiredMixin,
 
 
 class ScheduleHarvesterView(
-        SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
+        LoginRequiredMixin, SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
