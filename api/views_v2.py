@@ -187,7 +187,7 @@ def get_all_harvester_log(request):
         if harvester.enabled:
             api = InitHarvester(harvester).get_harvester_api()
             response = api.harvester_log()
-            feedback["log_data"][harvester.name] = response.data[harvester.name][HCCJC.LOGS]#.replace('\n', '</br>')
+            feedback["log_data"][harvester.name] = response.data[harvester.name][HCCJC.LOGS]
     return render(request, "hcc/harvester_logs.html", feedback)
 
 
