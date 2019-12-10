@@ -1,0 +1,22 @@
+[run]
+omit =
+    */migrations/*
+    manage.py
+    api/__init__.py
+    api/admin.py
+    api/constants.py
+    hcc_py/__init__.py
+    hcc_py/settings.py
+    hcc_py/settings_local.py
+
+
+[report]
+omit =
+    */migrations/*
+    manage.py
+    api/__init__.py
+    api/admin.py
+    api/constants.py
+    hcc_py/__init__.py
+    hcc_py/settings.py
+    hcc_py/settings_local.py

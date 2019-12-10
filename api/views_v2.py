@@ -2,9 +2,9 @@
 This is the views module which encapsulates the backend logic
 which will be riggered via the corresponding path (url).
 """
-import logging
-import json
 import collections
+import json
+import logging
 
 from django.conf import settings
 from django.contrib import messages
@@ -26,8 +26,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.constants import HCCJSONConstants as HCCJC
-from api.forms import (HarvesterForm, SchedulerForm, create_config_fields,
-                       create_config_form, UploadFileForm, ValidateFileForm)
+from api.forms import (HarvesterForm, SchedulerForm, UploadFileForm,
+                       ValidateFileForm, create_config_fields,
+                       create_config_form)
 from api.harvester_api import InitHarvester
 from api.mixins import AjaxableResponseMixin
 from api.models import Harvester
@@ -571,11 +572,12 @@ def upload_file(request):
             # Harvester already exists -> update harvester
             harvester = Harvester.objects.get(name=harvester_data['name'])
             data['notes'] = harvester.notes  # Notes should not be updated
-            if (harvester.url == harvester_data['url'] and
-                    harvester.enabled == harvester_data['enabled']):
+            if ((harvester.url == harvester_data['url']
+                 and harvester.enabled == harvester_data['enabled'])):
                 continue
             elif not harvester.url == harvester_data['url']:
-                if Harvester.objects.filter(url=harvester_data['url']).exists():
+                if Harvester.objects.filter(
+                        url=harvester_data['url']).exists():
                     # The url should be unique. Leave the existing harvester data
                     # and ignore the new one.
                     continue
@@ -700,7 +702,7 @@ class EditHarvesterView(LoginRequiredMixin, View,
                     {'message': 'A Harvester named {} already exists!'.format(name)})
             else:
                 _h = Harvester(owner=self.request.user)
-                action = 'added'
+                action = 'initialised'
                 myname = name
         else:  # Edit Harvester
             myname = kwargs['name']
@@ -792,7 +794,7 @@ class ConfigHarvesterView(LoginRequiredMixin, View,
 
 
 class ScheduleHarvesterView(
-        LoginRequiredMixin, SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
+        SuccessMessageMixin, RedirectView, AjaxableResponseMixin, FormMixin):
     """
     This class handles GET, DELETE and POST requests
     to control the scheduling of harvesters.
@@ -819,8 +821,9 @@ class ScheduleHarvesterView(
         myname = kwargs['name']
         harvester = get_object_or_404(Harvester, name=myname)
         api = InitHarvester(harvester).get_harvester_api()
-        response = api.delete_schedule(request.POST[HCCJC.POSTCRONTAB])
+        data = json.loads(request.body)
+        response = api.delete_schedule(data[HCCJC.POSTCRONTAB])
         messages.add_message(
-            request, messages.INFO, harvester.name + ': ' +
-            response.data[harvester.name][HCCJC.HEALTH])
+            request, messages.INFO, harvester.name + ': '
+            + response.data[harvester.name][HCCJC.HEALTH])
         return HttpResponseRedirect(reverse('hcc_gui'))
