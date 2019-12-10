@@ -427,7 +427,7 @@ $(window).ready(function () {
 
                     $('#btn-harvester-status-' + key).attr('data-original-title',
                         cache + ' of ' + max);
-                    statuslabel.html(state);
+                    $('.harvester-status-' + _harv).html(state);
 
                     // referenced by context, this
                     bar.css("width", width + "%");

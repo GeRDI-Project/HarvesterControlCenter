@@ -139,7 +139,7 @@
                                 {% if k == harvester.name %}
                                 <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip" data-placement="right" title="{{ val.health }}">
                                     <a href="{{ harvester.url }}">{{ harvester.name }}</a>
-                                    <div id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</div>
+                                    <div class="harvester-status-{{ harvester.name }}">{{ val.status }}</div>
                                 </li>
                                 {% endif %}
                                 {% endfor %}
@@ -214,7 +214,7 @@
                                                     aria-hidden="true"></i>
                                                 {% endif %}
 
-                                                <small id="lbl-harvester-status-{{ harvester.name }}">{{ val.status }}</small>
+                                                <small id="lbl-harvester-status-{{ harvester.name }}" class="harvester-status-{{ harvester.name }}">{{ val.status }}</small>
 
                                                 <i id="health-exclamation-{{ harvester.name }}" class="fa fa-exclamation-triangle float-right"
                                                     style="color: #ffc107;{% if val.health == 'OK' %}display: none{% endif %};"
@@ -375,7 +375,7 @@
                                                         class="dropdown-item">
                                                         <i class="fa fa-refresh" aria-hidden="true"></i> Reset
                                                     </a>
-                                                    {% if val.status == 'harvesting' %}
+                                                    {% if val.status == 'harvesting' or val.status == 'queued' or val.status == 'submitting' %}
                                                     <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
                                                         class="dropdown-item">
                                                         <i class="fa fa-ban" aria-hidden="true"></i> Stop Harvester
@@ -385,12 +385,6 @@
                                                     <a id="" title="{% url 'api:start-harvest' name=harvester.name %}" href="{% url 'start-harvester' name=harvester.name %}"
                                                         class="dropdown-item">
                                                         <i class="fa fa-play-circle" aria-hidden="true"></i> Start Harvester
-                                                    </a>
-                                                    {% endif %}
-                                                    {% if val.status == 'submitting' %}
-                                                    <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
-                                                        class="dropdown-item">
-                                                        <i class="fa fa-ban" aria-hidden="true"></i> Stop Harvester
                                                     </a>
                                                     {% endif %}
                                                 </div>
@@ -410,7 +404,7 @@
                                                         <i class="fa fa-refresh" title="Reset" aria-hidden="true"
                                                         data-toggle="tooltip"></i>
                                                     </a>
-                                                    {% if val.status == 'harvesting' %}
+                                                    {% if val.status == 'harvesting' or val.status == 'queued' or val.status == 'submitting' %}
                                                     <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
                                                         role="button" class="btn btn-primary btn-sm">
                                                         <i class="fa fa-ban" aria-hidden="true" title="Stop Harvester" data-toggle="tooltip"></i>
@@ -422,16 +416,10 @@
                                                         <i class="fa fa-play-circle" aria-hidden="true" title="Start Harvester" data-toggle="tooltip"></i>
                                                     </a>
                                                     {% endif %}
-                                                    {% if val.status == 'submitting' %}
-                                                    <a id="" title="{% url 'api:stop-harvest' name=harvester.name %}" href="{% url 'stop-harvester' name=harvester.name %}"
-                                                        role="button" class="btn btn-primary btn-sm">
-                                                        <i class="fa fa-ban" aria-hidden="true" title="Stop Harvester" data-toggle="tooltip"></i>
-                                                    </a>
-                                                    {% endif %}
                                                 </div>
                                             </td>
                                             <td class="tv-status-{{harvester.name}}">
-                                                {{val.status}}
+                                                <span class="harvester-status-{{ harvester.name }}">{{val.status}}</span>
                                                 <button class="status-history-button btn btn-outline-primary btn-sm" data-html="true"
                                                 title="" data-toggle="tooltip" data-placement="top" data-form="{% url 'etls' name=harvester.name %}">
                                                     <i class="fa fa-info" aria-hidden=true></i>
