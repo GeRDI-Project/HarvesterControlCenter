@@ -230,13 +230,13 @@ $(function () {
         Buttons
     */
     $('#btn-harvester-log').on('click', function (ev) {
-        $('#loaderSpinnerLog').show();
         ev.preventDefault();
         var url = $(this).attr("title");
+        $('#loaderSpinnerLog').show();
         $("#form-modal").load(url, function () {
             $(this).modal('show');
+            $('#loaderSpinnerLog').hide();
         });
-        $('#loaderSpinnerLog').hide();
         return false;
     });
 
