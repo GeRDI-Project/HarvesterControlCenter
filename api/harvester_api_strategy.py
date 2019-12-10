@@ -195,6 +195,8 @@ def a_response(harvester_name, url, method):
 
         feedback[harvester_name][HCCJC.HEALTH] = str(_e)
         feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+        feedback[harvester_name][HCCJC.STATUS] = "no status"
+        feedback[harvester_name][HCCJC.STATE] = "no status"
 
     return Response(feedback,
                     status=response.status_code if response is not None else
