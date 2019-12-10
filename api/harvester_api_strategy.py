@@ -814,7 +814,11 @@ class VersionBased7Strategy(Strategy):
 
     def get_status_history(self, harvester):
         get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
-        response = requests.get(get_url, timeout=5)
+        try:
+            response = requests.get(get_url, timeout=5)
+        except requests.exceptions.ReadTimeout:
+            feedback = "server is not responding for harvester {}".format(harvester.name)
+            return Response(feedback, status=response.status_code)
         response_data = json.loads(response.text).copy()
         feedback = {}
         feedback[harvester.name] = {}
