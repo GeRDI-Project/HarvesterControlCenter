@@ -77,8 +77,8 @@ $(function () {
             $('#message-modal-footer').show();
             $('#message-modal').modal('toggle');
             $('#message-modal-body').html('<pre>' + data + '</pre>');
-            for (var key in status) {
-                var obj = status[key];
+            for (let key in status) {
+                let obj = status[key];
                 $('#hv-status-' + key).html(obj.log);
             }
             $('#loaderSpinnerLog').hide();
@@ -229,8 +229,15 @@ $(function () {
     /*
         Buttons
     */
-    $('#btn-harvester-log').on('click', function (event) {
-        load_into_modal(this);
+    $('#btn-harvester-log').on('click', function (ev) {
+        ev.preventDefault();
+        let url = $(this).attr("title");
+        $('#loaderSpinnerLog').show();
+        $("#form-modal").load(url, function () {
+            $(this).modal('show');
+            $('#loaderSpinnerLog').hide();
+        });
+        return false;
     });
 
     $('#btn-hcc-log').on('click', function (event) {

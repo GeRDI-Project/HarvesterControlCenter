@@ -41,6 +41,7 @@ class HCCJSONConstants:
     NO_LOGTEXT = "no log"
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
+    LOG_DATA = "log_data"
 
     OK = "OK"
     N_A = "N/A"
