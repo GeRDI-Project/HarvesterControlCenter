@@ -9,7 +9,7 @@ if 'test' in sys.argv:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-INSTALLED_APPS.append('django_nose')
+INSTALLED_APPS.append('django_nose')  # noqa: F405
 
 # Use nose to run all tests
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
