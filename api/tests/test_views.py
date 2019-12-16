@@ -8,7 +8,6 @@ from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
 from django.core.files import File
-from django.test.utils import override_settings
 from django.urls import include, path, reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -619,7 +618,7 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
            ])
     def test_harvesters_log_view_response(self, apicall):
         url = reverse("harvesters-log")
-        response = self.client.get(url)
+        self.client.get(url)
         self.assertTemplateUsed('hcc/harvester_logs.html')
 
     @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_log',
