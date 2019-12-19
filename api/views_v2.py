@@ -281,6 +281,19 @@ def abort_all_harvesters(request):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
+@login_required
+def harvester_api_data(request, name):
+    """
+    This function returns the api data of an harvester.
+    """
+    feedback = {}
+    harvester = get_object_or_404(Harvester, name=name)
+    api = InitHarvester(harvester).get_harvester_api()
+    response = api.api_data()
+    feedback["message"] = response.data[harvester.name]
+    return JsonResponse(feedback)
+
+
 def home(request):
     """
     Home entry point of Web-Application GUI.
@@ -303,7 +316,6 @@ def home(request):
 
     # if user is logged in
     if request.user.is_authenticated:
-        status_history = {}
         forms = {}
         response = None
         harvesters = Harvester.objects.all()

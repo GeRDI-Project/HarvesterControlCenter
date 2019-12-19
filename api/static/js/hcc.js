@@ -236,7 +236,22 @@ $(function () {
     });
 
     $('[id^=btn-url]').on('click', function (event) {
-        load_into_modal(this);
+        event.preventDefault();
+        var url = $(this).attr("title");
+        $.get(url, function (response) {
+            // this line is neccessacry, if the response is an html object and 
+            // tries to replace the current javascript
+            data = response.message.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, " ");
+            $('#message-modal-footer').show();
+            $('#message-modal-body').html(data);
+            $('#message-modal').modal('show');
+
+        }).fail(function (response) {
+            $('#message-modal-footer').show();
+            $('#message-modal-body').html(response.responseText);
+            $('#message-modal').modal('show');
+        });
+        return false;
     });
 
     $('.toggle-view-button').click(function () {

@@ -244,7 +244,7 @@
                                                     <a id="{{ harvester.name }}-name" class="card-title" href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a>
                                                 </li>
                                                 <li class="list-group-item">Harvester API:
-                                                    <a id='btn-url-{{ harvester.name }}' title="{{ harvester.url }}">{{ harvester.name }}</a>
+                                                    <a id='btn-url-{{ harvester.name }}' title="{% url 'api:harvester-api-data' name=harvester.name %}" href="#">{{ harvester.name }}</a>
                                                 </li>
                                                 <li class="list-group-item">
                                                     <p>
@@ -493,7 +493,7 @@
 
                                         <p class="card-text">Metadata: {{ harvester.metadataPrefix }}</p>
                                         <p class="card-text">Notes: {{ harvester.notes }}</p>
-                                        <p class="card-text">API: <a href="{{ harvester.url }}">
+                                        <p class="card-text">API: <a id='btn-url-{{ harvester.name }}' title="{% url 'api:harvester-api-data' name=harvester.name %}" href="{{ harvester.url }}">
                                             {{ harvester.url|slice:":30"|add:"..." }}</a>
                                         </p>
                                         <p class="card-text">Status:

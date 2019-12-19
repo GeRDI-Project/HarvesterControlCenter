@@ -72,7 +72,7 @@ class Strategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def set_harvester_config(self, harvester, changes):
         """abstract method for setting harvester configuration"""
-    
+
     @abc.abstractmethod
     def get_status_history(self, harvester):
         """abstract method for getting the status history"""
@@ -148,6 +148,10 @@ class HarvesterApiStrategy:
     def status_history(self):
         """get the status history of a harvester"""
         return self._strategy.get_status_history(self.harvester)
+
+    def api_data(self):
+        """get the api data of a harvester"""
+        return self._strategy.get_api_data(self.harvester)
 
 
 def a_response(harvester_name, url, method):
@@ -298,10 +302,14 @@ class BaseStrategy(Strategy):
             HCCJC.HEALTH: 'config not supported'
         }},
             status=status.HTTP_501_NOT_IMPLEMENTED)
-    
+
     def get_status_history(self, harvester):
-        return Response('status history not supported',
-            status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response('status history not available',
+                        status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    def get_api_data(self, harvester):
+        return Response({harvester.name: 'api data not available'},
+                        status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class VersionBased6Strategy(Strategy):
@@ -548,8 +556,22 @@ class VersionBased6Strategy(Strategy):
         return Response(feedback, status=response.status_code)
 
     def get_status_history(self, harvester):
-        return Response("status history not supported", 
-            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response("status history not supported",
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    def get_api_data(self, harvester):
+        feedback = {}
+        try:
+            response = requests.get(harvester.url + "?pretty", timeout=5)
+        except ConnectionError:
+            feedback[harvester.name] = "unable do get api data of harvester {}".format(harvester.name)
+            return Response(feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        if response.status_code == status.HTTP_200_OK:
+            feedback[harvester.name] = {}
+            feedback[harvester.name] = response.text
+        else:
+            feedback[harvester.name] = "unable do get api data of harvester {}".format(harvester.name)
+        return Response(feedback, status=response.status_code)
 
 
 class VersionBased7Strategy(Strategy):
@@ -815,4 +837,18 @@ class VersionBased7Strategy(Strategy):
                 feedback = response_data["message"]
             else:
                 feedback = "unable do get status history of harvester {}".format(harvester.name)
+        return Response(feedback, status=response.status_code)
+
+    def get_api_data(self, harvester):
+        feedback = {}
+        try:
+            response = requests.get(harvester.url + "?pretty", timeout=5)
+        except requests.exceptions.ConnectionError:
+            feedback[harvester.name] = "unable do get api data of harvester {}".format(harvester.name)
+            return Response(feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        if response.status_code == status.HTTP_200_OK:
+            feedback[harvester.name] = {}
+            feedback[harvester.name] = response.text
+        else:
+            feedback[harvester.name] = "unable do get api data of harvester {}".format(harvester.name)
         return Response(feedback, status=response.status_code)
