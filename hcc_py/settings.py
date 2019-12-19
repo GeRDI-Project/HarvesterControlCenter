@@ -18,7 +18,7 @@ __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "3.12.0"
+__version__ = "3.16.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
