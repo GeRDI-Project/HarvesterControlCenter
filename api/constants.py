@@ -41,6 +41,7 @@ class HCCJSONConstants:
     NO_LOGTEXT = "no log"
     SCHEDULE = "scheduledHarvestTasks"
     LOGS = "log"
+    LOG_DATA = "log_data"
 
     OK = "OK"
     N_A = "N/A"
@@ -56,6 +57,8 @@ class HCCJSONConstants:
     SUCCESS = "success"
     PRIMARY = "primary"
     INFO = "info"
+
+    SESSION_KEYS = ["theme", "viewtype", "toolbox", "chart", "enabled_harvs", "disabled_harvs"]
 
 
 class HarvesterApiConstants:
@@ -75,6 +78,7 @@ class HarvesterApiConstantsV6:
      which will be updated accordingly to the Harvester-BaseLibrary.
 
     """
+    PRETTY_FLAG = "?pretty"
     P_HARVEST = "/"
     P_HARVEST_ABORT = "/abort"
     P_HARVEST_RESET = "/reset"
@@ -110,6 +114,7 @@ class HarvesterApiConstantsV7:
      https://wiki.gerdi-project.de/display/GeRDI/Harvester+Library+7.x.x
 
     """
+    PRETTY_FLAG = "?pretty"
     PG_HARVEST = "/"
     P_HARVEST_ABORT = "/abort"
     P_HARVEST_RESET = "/reset"

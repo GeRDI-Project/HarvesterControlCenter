@@ -199,6 +199,8 @@ def a_response(harvester_name, url, method):
 
         feedback[harvester_name][HCCJC.HEALTH] = str(_e)
         feedback[harvester_name][HCCJC.GUI_STATUS] = HCCJC.WARNING
+        feedback[harvester_name][HCCJC.STATUS] = "no status"
+        feedback[harvester_name][HCCJC.STATE] = "no status"
 
     return Response(feedback,
                     status=response.status_code if response is not None else
@@ -562,7 +564,7 @@ class VersionBased6Strategy(Strategy):
     def get_api_data(self, harvester):
         feedback = {}
         try:
-            response = requests.get(harvester.url + "?pretty", timeout=5)
+            response = requests.get(harvester.url + HarvesterApiConstantsV6.PRETTY_FLAG, timeout=5)
         except ConnectionError:
             feedback[harvester.name] = "unable do get api data of harvester {}".format(harvester.name)
             return Response(feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -749,6 +751,22 @@ class VersionBased7Strategy(Strategy):
                 feedback[harvester.name][
                     HCCJC.REMAIN_HARVEST_TIME] = harvester_json[
                         HCCJC.REMAIN_HARVEST_TIME]
+            else:
+                # Get time of the beginning of the harvest, if remaining
+                # time is unknown.
+                # Call etls instead of harvester_json["lastHarvestDate"],
+                # because it is updated faster.
+                get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
+                etls = requests.get(get_url, timeout=5)
+                if etls.status_code == status.HTTP_200_OK:
+                    etls_data = json.loads(etls.text)
+                    last = etls_data["overallInfo"]["stateHistory"][-1]
+                    if last["value"] == "HARVESTING":
+                        feedback[harvester.name][
+                            HCCJC.LAST_HARVEST_DATE] = last["timestamp"]
+                    elif last["value"] == "QUEUED":
+                        feedback[harvester.name][
+                            "lastActivated"] = last["timestamp"]
 
             if max_documents:
                 if int(harvester_json[HCCJC.MAX_DOCUMENT_COUNT]) > 0:
@@ -820,7 +838,11 @@ class VersionBased7Strategy(Strategy):
 
     def get_status_history(self, harvester):
         get_url = harvester.url + HarvesterApiConstantsV7.STATE_HISTORY
-        response = requests.get(get_url, timeout=5)
+        try:
+            response = requests.get(get_url, timeout=5)
+        except requests.exceptions.ReadTimeout:
+            feedback = "server is not responding for harvester {}".format(harvester.name)
+            return Response(feedback, status=response.status_code)
         response_data = json.loads(response.text).copy()
         feedback = {}
         feedback[harvester.name] = {}
@@ -828,21 +850,23 @@ class VersionBased7Strategy(Strategy):
             history_data = ""
             for info in response_data["overallInfo"]["stateHistory"]:
                 ms = info["timestamp"]
-                time = datetime.datetime.fromtimestamp(ms/1000.0)
+                time = datetime.datetime.fromtimestamp(ms / 1000.0)
                 converted_time = time.strftime("%d-%b-%Y %H:%M:%S")
-                history_data += converted_time + ": " + info["value"].lower() + "<br>"
+                history_data += converted_time + ": " + \
+                    info["value"].lower() + "<br>"
             feedback = history_data
         else:
             if "message" in response_data:
                 feedback = response_data["message"]
             else:
-                feedback = "unable do get status history of harvester {}".format(harvester.name)
+                feedback = "unable do get status history of harvester {}".format(
+                    harvester.name)
         return Response(feedback, status=response.status_code)
 
     def get_api_data(self, harvester):
         feedback = {}
         try:
-            response = requests.get(harvester.url + "?pretty", timeout=5)
+            response = requests.get(harvester.url + HarvesterApiConstantsV7.PRETTY_FLAG, timeout=5)
         except requests.exceptions.ConnectionError:
             feedback[harvester.name] = "unable do get api data of harvester {}".format(harvester.name)
             return Response(feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
