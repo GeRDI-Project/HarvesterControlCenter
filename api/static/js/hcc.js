@@ -246,11 +246,23 @@ $(function () {
 
     $('[id^=btn-url]').on('click', function (event) {
         event.preventDefault();
+        var data;
         var url = $(this).attr("title");
         $.get(url, function (response) {
-            // this line is neccessacry, if the response is an html object and 
-            // tries to replace the current javascript
-            data = response.message.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, " ");
+            try { 
+                // response.message is JSON
+                var obj = JSON.parse(response.message);
+                data = "";
+                for (let key in obj) {
+                    data += key + ": " + obj[key] + "<br>";
+                }
+            } catch (error) { 
+                // response.message is String
+
+                // this line is neccessacry, if the response is an html object and 
+                // tries to replace/add smth. the current javascript
+                data = response.message.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, " ");
+            }
             $('#message-modal-footer').show();
             $('#message-modal-body').html(data);
             $('#message-modal').modal('show');
