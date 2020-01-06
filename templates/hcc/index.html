@@ -138,7 +138,7 @@
                                 {% for k, val in status.items %}
                                 {% if k == harvester.name %}
                                 <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip" data-placement="right" title="{{ val.health }}">
-                                    <a href="{{ harvester.url }}">{{ harvester.name }}</a>
+                                    <a id='btn-url-{{ harvester.name }}' title="{% url 'api:harvester-api-data' name=harvester.name %}" href="#">{{ harvester.name }}</a>
                                     <div class="harvester-status-{{ harvester.name }}">{{ val.status }}</div>
                                 </li>
                                 {% endif %}
