@@ -12,4 +12,16 @@ if __name__ == "__main__":
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    is_testing = 'test' in sys.argv
+    local_settings = '--settings hcc_py.settings_local' in sys.argv
+    if is_testing and local_settings:
+        import coverage
+        cov = coverage.coverage(source=['app'], omit=['*/tests/*'])
+        cov.set_option('report:show_missing', True)
+        cov.erase()
+        cov.start()
     execute_from_command_line(sys.argv)
+    if is_testing and local_settings:
+        cov.stop()
+        cov.save()
+        cov.report()

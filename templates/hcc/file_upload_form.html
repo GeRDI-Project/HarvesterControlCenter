@@ -1,0 +1,28 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                Upload file here: 
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="upload-file-form" class="form-horizontal" action="{% url 'harvester-from-file' %}" method="POST" enctype=multipart/form-data>
+            <div id="modal-body" class="modal-body">
+                {% csrf_token %}
+                {{ uploadform|crispy }}
+            </div>
+            <div id="modal-footer" class="modal-footer">
+                <button class="btn btn-primary" type="submit" Value="Save">
+                    Upload
+                </button>    
+                <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -35,7 +35,7 @@ PYTHON=$(shell "$(CMD_FROM_VENV)" "python")
 
 # Make will use these given recipes instead of file executables
 # https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
-.PHONY: hello venv freeze qa check fix clean migrations superuser runlocal
+.PHONY: hello venv freeze qa check fix clean migrations superuser runlocal test
 
 hello:
 	@echo ""
@@ -60,12 +60,12 @@ freeze: venv
 qa: check fix
 
 check: venv
-	@$(FLAKE8) --max-line-length 120 api hcc_py
+	@$(FLAKE8) --max-line-length 120 api hcc_py --exclude api/migrations
 	@$(ISORT) -rc -c api hcc_py
 
 fix: venv
 	@$(ISORT) -rc api hcc_py
-	@$(AUTOPEP8) --in-place --aggressive --recursive api hcc_py
+	@$(AUTOPEP8) --in-place --aggressive --recursive api hcc_py --exclude api/migrations
 
 clean:
 	@rm -rf .cache
@@ -100,3 +100,8 @@ docker:
 dockerrun:
 	@docker build -t harvest/hccenter:latest .
 	@docker run --name=gerdi_hcc -it -p 8080:80 harvest/hccenter:latest
+
+# TEST
+
+test: venv
+	@$(PYTHON) $(SRC_DIR)/manage.py test --settings hcc_py.settings_local --cover-html --cover-html-dir=api/coverage_report
