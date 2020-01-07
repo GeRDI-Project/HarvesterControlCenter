@@ -46,7 +46,7 @@ SCHEMA_VIEW = get_schema_view(
         title="Harvester Control Center API",
         default_version='v1',
         description="This is an interactiv Django REST Swagger documentation",
-        terms_of_service="https://www.gerdi-project.eu/imprint/,
+        terms_of_service="https://www.gerdi-project.eu/imprint/",
         contact=openapi.Contact(email="zbw@zbw.eu"),
         license=openapi.License(name="Apache 2.0 License"),
         url=os.environ.get('FORCE_SCRIPT_NAME', ''),
