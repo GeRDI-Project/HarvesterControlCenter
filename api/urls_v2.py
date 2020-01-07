@@ -49,6 +49,7 @@ urlpatterns = [
          views.get_harvester_states, name="all-harvester-status"),
     path('harvesters/<str:name>/schedule/',
          ScheduleHarvesterView.as_view(), name="harvester-cron"),
+    path('harvesters/<str:name>/harvesterapiinfo', views.harvester_api_info, name="harvester-api-info"),
     path('users/',
          UserView.as_view(), name="users"),
     path('users/<int:pk>/',
