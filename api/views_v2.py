@@ -283,6 +283,19 @@ def abort_all_harvesters(request):
     return HttpResponseRedirect(reverse('hcc_gui'))
 
 
+@login_required
+def harvester_api_info(request, name):
+    """
+    This function returns the pretty rendered
+    api help text of an harvester.
+    """
+    harvester = get_object_or_404(Harvester, name=name)
+    api = InitHarvester(harvester).get_harvester_api()
+    response = api.api_infotext()
+    content = response.data[harvester.name].replace('\n', '<br>')
+    return HttpResponse(content, content_type='text/plain')
+
+
 def home(request):
     """
     Home entry point of Web-Application GUI.

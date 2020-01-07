@@ -71,7 +71,7 @@ $(function () {
     function load_into_modal(_this) {
         var url = $(_this).attr("title");
         $('#loaderSpinnerLog').show();
-        $.get(url, function (result) {
+        $.getJSON(url, function (result) {
             var status = result;
             var data = JSON.stringify(result, undefined, 2);
             $('#message-modal-footer').show();
@@ -241,6 +241,10 @@ $(function () {
     });
 
     $('#btn-hcc-log').on('click', function (event) {
+        load_into_modal(this);
+    });
+
+    $('[id^=btn-url]').on('click', function (event) {
         load_into_modal(this);
     });
 

@@ -138,7 +138,7 @@
                                 {% for k, val in status.items %}
                                 {% if k == harvester.name %}
                                 <li class="list-group-item list-group-item-{{ val.gui_status }}" data-toggle="tooltip" data-placement="right" title="{{ val.health }}">
-                                    <a href="{{ harvester.url }}">{{ harvester.name }}</a>
+                                    <a id='btn-url-{{ harvester.name }}' title="{% url 'api:harvester-api-info' name=harvester.name %}" href="#">{{ harvester.name }}</a>
                                     <div class="harvester-status-{{ harvester.name }}">{{ val.status }}</div>
                                 </li>
                                 {% endif %}
@@ -237,11 +237,12 @@
                                                 <li class="list-group-item">Control Center API:
                                                     <a id="{{ harvester.name }}-name" class="card-title" href="{% url 'api:harvester-detail' name=harvester.name %}">{{ harvester.name }}</a>
                                                 </li>
-                                                <li class="list-group-item">Harvester API:
-                                                    <a id='{{ harvester.name }}-url' href="{{ harvester.url }}">{{ harvester.name }}</a>
-                                                </li>
                                                 <li class="list-group-item">
                                                     <p>
+                                                        <a id="btn-url-{{ harvester.name }}" title="{% url 'api:harvester-api-info' name=harvester.name %}" 
+                                                        class="btn btn-primary btn-sm" hef="#" role="button">
+                                                        Info
+                                                        </a>
                                                         <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseStatus{{ forloop.counter }}"
                                                         role="button" aria-expanded="false" aria-controls="collapseStatus">
                                                         Status
@@ -475,7 +476,7 @@
 
                                         <p class="card-text">Metadata: {{ harvester.metadataPrefix }}</p>
                                         <p class="card-text">Notes: {{ harvester.notes }}</p>
-                                        <p class="card-text">API: <a href="{{ harvester.url }}">
+                                        <p class="card-text">API: <a id='btn-url-{{ harvester.name }}' title="{% url 'api:harvester-api-info' name=harvester.name %}" href="{{ harvester.url }}">
                                             {{ harvester.url|slice:":30"|add:"..." }}</a>
                                         </p>
                                         <p class="card-text">Status:
