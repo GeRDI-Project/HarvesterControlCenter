@@ -1,4 +1,4 @@
-Django==2.2.9
+Django==3.0.2
 django-crispy-forms==1.8.0
 django-rest-swagger==2.2.0
 djangorestframework==3.10.3
