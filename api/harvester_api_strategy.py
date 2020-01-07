@@ -564,15 +564,21 @@ class VersionBased6Strategy(Strategy):
     def get_api_info(self, harvester):
         feedback = {}
         try:
-            response = requests.get(harvester.url + HarvesterApiConstantsV6.PRETTY_FLAG, timeout=5)
+            response = requests.get(
+                harvester.url +
+                HarvesterApiConstantsV6.PRETTY_FLAG,
+                timeout=5)
         except ConnectionError:
-            feedback[harvester.name] = "unable do get api info of harvester {}".format(harvester.name)
-            return Response(feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            feedback[harvester.name] = "unable do get api info of harvester {}".format(
+                harvester.name)
+            return Response(
+                feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         if response.status_code == status.HTTP_200_OK:
             feedback[harvester.name] = {}
             feedback[harvester.name] = response.text
         else:
-            feedback[harvester.name] = "unable do get api info of harvester {}".format(harvester.name)
+            feedback[harvester.name] = "unable do get api info of harvester {}".format(
+                harvester.name)
         return Response(feedback, status=response.status_code)
 
 
@@ -841,7 +847,8 @@ class VersionBased7Strategy(Strategy):
         try:
             response = requests.get(get_url, timeout=5)
         except requests.exceptions.ReadTimeout:
-            feedback = "server is not responding for harvester {}".format(harvester.name)
+            feedback = "server is not responding for harvester {}".format(
+                harvester.name)
             return Response(feedback, status=response.status_code)
         response_data = json.loads(response.text).copy()
         feedback = {}
@@ -866,14 +873,18 @@ class VersionBased7Strategy(Strategy):
     def get_api_info(self, harvester):
         feedback = {}
         try:
-            get_url = harvester.url + HarvesterApiConstantsV7.PG_HARVEST + HarvesterApiConstantsV7.PRETTY_FLAG
+            get_url = harvester.url + HarvesterApiConstantsV7.PG_HARVEST + \
+                HarvesterApiConstantsV7.PRETTY_FLAG
             response = requests.get(get_url, timeout=5)
         except requests.exceptions.ConnectionError:
-            feedback[harvester.name] = "unable do get api info of harvester {}".format(harvester.name)
-            return Response(feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            feedback[harvester.name] = "unable do get api info of harvester {}".format(
+                harvester.name)
+            return Response(
+                feedback, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         if response.status_code == status.HTTP_200_OK:
             feedback[harvester.name] = {}
             feedback[harvester.name] = response.text
         else:
-            feedback[harvester.name] = "unable do get api info of harvester {}".format(harvester.name)
+            feedback[harvester.name] = "unable do get api info of harvester {}".format(
+                harvester.name)
         return Response(feedback, status=response.status_code)

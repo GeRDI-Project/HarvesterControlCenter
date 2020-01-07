@@ -18,7 +18,7 @@ __author__ = "Jan Frömberg"
 __copyright__ = "Copyright 2018, GeRDI Project"
 __credits__ = ["Jan Frömberg"]
 __license__ = "Apache 2.0"
-__version__ = "3.16.0"
+__version__ = "3.17.0"
 __maintainer__ = "Jan Frömberg"
 __email__ = "jan.froemberg@tu-dresden.de"
 
@@ -125,7 +125,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'rest_framework.authtoken',
-    'rest_framework_swagger',
+    'drf_yasg',
     'crispy_forms',
 ]
 
@@ -235,7 +235,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'de-ch'
+LANGUAGE_CODE = 'de'
 
 TIME_ZONE = 'Europe/Berlin'
 
