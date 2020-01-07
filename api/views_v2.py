@@ -284,14 +284,14 @@ def abort_all_harvesters(request):
 
 
 @login_required
-def harvester_api_data(request, name):
+def harvester_api_info(request, name):
     """
-    This function returns the pretty rendered 
-    api data of an harvester.
+    This function returns the pretty rendered
+    api help text of an harvester.
     """
     harvester = get_object_or_404(Harvester, name=name)
     api = InitHarvester(harvester).get_harvester_api()
-    response = api.api_data()
+    response = api.api_infotext()
     content = response.data[harvester.name].replace('\n', '<br>')
     return HttpResponse(content, content_type='text/plain')
 
