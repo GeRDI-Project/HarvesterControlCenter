@@ -58,7 +58,13 @@ class HCCJSONConstants:
     PRIMARY = "primary"
     INFO = "info"
 
-    SESSION_KEYS = ["theme", "viewtype", "toolbox", "chart", "enabled_harvs", "disabled_harvs"]
+    SESSION_KEYS = [
+        "theme",
+        "viewtype",
+        "toolbox",
+        "chart",
+        "enabled_harvs",
+        "disabled_harvs"]
 
 
 class HarvesterApiConstants:
