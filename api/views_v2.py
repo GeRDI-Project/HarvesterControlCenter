@@ -296,6 +296,45 @@ def harvester_api_info(request, name):
     return HttpResponse(content, content_type='text/plain')
 
 
+def create_form(response, harvester_name):
+    """
+    This method generates a scheduler form for a harvester
+    based on a harvester specific JSON response.
+    If there is no response a default empty form will be created
+    for that harvester.
+
+    :param response: the response
+    :return: SchedulerForm(prefix=harvester.name)
+    """
+    if response:
+        response_dict = response.data[harvester_name]
+        if HCCJC.CRONTAB in response_dict:
+            # if a GET (or any other method) we'll create form
+            # initialized with a schedule for this harvester
+            jsonstr = {
+                HCCJC.POSTCRONTAB:
+                response_dict[HCCJC.CRONTAB]
+            }
+            placehldr = response_dict[HCCJC.CRONTAB]
+            form = SchedulerForm(prefix=harvester_name)
+            if isinstance(placehldr, list):
+                if len(placehldr) > 0:
+                    placehldr = response_dict[HCCJC.CRONTAB][0]
+            form.fields[HCCJC.POSTCRONTAB].widget.attrs.update(
+                {'placeholder': placehldr})
+            return form
+        else:
+            jsonstr = {HCCJC.POSTCRONTAB: '0 0 * * *'}
+            form = SchedulerForm(initial=jsonstr,
+                                 prefix=harvester_name)
+            return form
+    else:
+        jsonstr = {HCCJC.POSTCRONTAB: '0 0 * * *'}
+        form = SchedulerForm(initial=jsonstr,
+                             prefix=harvester_name)
+        return form
+
+
 def home(request):
     """
     Home entry point of Web-Application GUI.
@@ -331,39 +370,14 @@ def home(request):
                 num_enabled_harvesters += 1
                 api = InitHarvester(harvester).get_harvester_api()
                 response = api.harvester_status()
+                forms[harvester.name] = create_form(response, harvester.name)
                 if response:
                     feedback[harvester.name] = response.data[harvester.name]
-
-                    if HCCJC.CRONTAB in response.data[harvester.name]:
-                        # if a GET (or any other method) we'll create form
-                        # initialized with a schedule for this harvester
-                        jsonstr = {
-                            HCCJC.POSTCRONTAB:
-                            response.data[harvester.name][HCCJC.CRONTAB]
-                        }
-                        placehldr = response.data[harvester.name][
-                            HCCJC.CRONTAB]
-                        form = SchedulerForm(prefix=harvester.name)
-                        if isinstance(placehldr, list):
-                            if len(placehldr) > 0:
-                                placehldr = response.data[harvester.name][HCCJC.CRONTAB][0]
-                        form.fields[HCCJC.POSTCRONTAB].widget.attrs.update(
-                            {'placeholder': placehldr})
-                        forms[harvester.name] = form
-                    else:
-                        jsonstr = {HCCJC.POSTCRONTAB: '0 0 * * *'}
-                        form = SchedulerForm(initial=jsonstr,
-                                             prefix=harvester.name)
-                        forms[harvester.name] = form
                 else:
-                    jsonstr = {HCCJC.POSTCRONTAB: '0 0 * * *'}
-                    form = SchedulerForm(initial=jsonstr,
-                                         prefix=harvester.name)
-                    forms[harvester.name] = form
                     feedback[harvester.name] = {}
                     feedback[harvester.name][HCCJC.GUI_STATUS] = HCCJC.WARNING
-                    feedback[harvester.name][
-                        HCCJC.HEALTH] = 'Error : no response object'
+                    err = 'Error : no response object'
+                    feedback[harvester.name][HCCJC.HEALTH] = err
             else:
                 num_disabled_harvesters += 1
 
