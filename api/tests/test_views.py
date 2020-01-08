@@ -159,7 +159,9 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             url='http://somewhereelse.url/v1'
         )
         Harvester.objects.get(name="Harvester2").enable()
-        expected_output = {self.harvester.name: "dummy message", "Harvester2": "dummy message"}
+        expected_output = {
+            self.harvester.name: "dummy message",
+            "Harvester2": "dummy message"}
         url = reverse('api:run-harvesters')
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -179,7 +181,9 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             url='http://somewhereelse.url/v1'
         )
         Harvester.objects.get(name="Harvester2").enable()
-        expected_output = {self.harvester.name: "dummy message", "Harvester2": "dummy message"}
+        expected_output = {
+            self.harvester.name: "dummy message",
+            "Harvester2": "dummy message"}
         url = reverse('api:stop-harvesters')
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -212,7 +216,9 @@ class ApiViewsTests(APITestCase, URLPatternsTestCase):
             url='http://somewhereelse.url/v1'
         )
         Harvester.objects.get(name="Harvester2").enable()
-        expected_output = {self.harvester.name: "dummy message", "Harvester2": "dummy message"}
+        expected_output = {
+            self.harvester.name: "dummy message",
+            "Harvester2": "dummy message"}
         url = reverse('api:all-harvester-status')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -614,7 +620,8 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
     @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_log',
            side_effect=[
-               Response({'Harvester1': {HCCJC.LOGS: "dummy message"}}, status.HTTP_200_OK)
+               Response({'Harvester1': {HCCJC.LOGS: "dummy message"}},
+                        status.HTTP_200_OK)
            ])
     def test_harvesters_log_view_response(self, apicall):
         url = reverse("harvesters-log")
@@ -623,8 +630,10 @@ class ViewsTests(APITestCase, URLPatternsTestCase):
 
     @patch('api.harvester_api_strategy.HarvesterApiStrategy.harvester_log',
            side_effect=[
-               Response({'Harvester1': {HCCJC.LOGS: "dummy message"}}, status.HTTP_200_OK),
-               Response({"Harvester2": {HCCJC.LOGS: "dummy message"}}, status.HTTP_200_OK)
+               Response({'Harvester1': {HCCJC.LOGS: "dummy message"}},
+                        status.HTTP_200_OK),
+               Response({"Harvester2": {HCCJC.LOGS: "dummy message"}},
+                        status.HTTP_200_OK)
            ])
     def test_harvesters_log_view_calls_api(self, apicall):
         harvester = Harvester.objects.create(
